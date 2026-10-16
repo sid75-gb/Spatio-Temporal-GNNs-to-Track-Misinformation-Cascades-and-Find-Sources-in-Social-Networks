@@ -1,0 +1,19 @@
+{
+  "model": "stgnn",
+  "dataset": "politifact",
+  "temporal_mode": "timestamp",
+  "seed": 42,
+  "metrics": {
+    "accuracy": 0.8054298642533937,
+    "precision_macro": 0.8122916666666666,
+    "recall_macro": 0.8070714519829565,
+    "f1_macro": 0.8048545084912828,
+    "f1_binary": 0.7942583732057417,
+    "roc_auc": 0.8549655850540806,
+    "tp": 83.0,
+    "fp": 13.0,
+    "tn": 95.0,
+    "fn": 30.0,
+    "loss": 0.4713075204132909
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "dataset": "politifact",
+  "evaluation_timestamp_utc": "2026-10-13T08:57:45.219349+00:00",
+  "random_seed": 42,
+  "proxy_definition": {
+    "target": "earliest_observed_retweeter",
+    "candidate_set": "user_nodes_with_valid_timestamps (1..N-1)",
+    "excluded_nodes": [
+      "node_0_news_article"
+    ],
+    "tie_handling": "Multi-target convention (hit if top-K contains any tied earliest retweeter; best rank used for MRR)",
+    "alternative_tie_handling": "Average reciprocal rank across all tied targets included as mrr_avg_convention",
+    "scientific_disclaimer": "The target is an observational timestamp crawl proxy. It does NOT represent verified misinformation authors, original publishers, or ground-truth patient zero."
+  },
+  "cascade_counts": {
+    "total_test_cascades": 221,
+    "evaluated_eligible_cascades": 221,
+    "skipped_cascades": 0,
+    "tied_earliest_cascades": 6,
+    "tied_pct": 2.7149321266968327,
+    "skipped_reasons": []
+  },
+  "baselines_and_methods": {
+    "random_baseline": {
+      "hit@1": 0.058823529411764705,
+      "hit@3": 0.10407239819004525,
+      "hit@5": 0.14027149321266968,
+      "mrr": 0.12164668341122312,
+      "mrr_avg_convention": 0.11934610683670828,
+      "mean_hop_distance": 2.3484162895927603
+    },
+    "random_analytical_expectation": {
+      "hit@1": 0.045133586616955025,
+      "hit@3": 0.12046863315403251,
+      "hit@5": 0.17250051227029553,
+      "mean_mrr_approx": 0.1190124072135457
+    },
+    "out_degree_centrality": {
+      "hit@1": 0.09954751131221719,
+      "hit@3": 0.1493212669683258,
+      "hit@5": 0.21266968325791855,
+      "mrr": 0.16741923483235857,
+      "mrr_avg_convention": 0.1640964024054251,
+      "mean_hop_distance": 1.8597285067873304
+    },
+    "rumor_centrality": {
+      "hit@1": 0.09954751131221719,
+      "hit@3": 0.1583710407239819,
+      "hit@5": 0.23076923076923078,
+      "mrr": 0.18053122355797152,
+      "mrr_avg_convention": 0.17602975499800383,
+      "mean_hop_distance": 1.8054298642533937
+    }
+  },
+  "sanity_check_oracle": {
+    "note": "Upper-bound verification check sorting directly by timestamp; NOT a discovery method.",
+    "metrics": {
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "mrr": 1.0,
+      "mrr_avg_convention": 0.991955756661639,
+      "mean_hop_distance": 0.0
+    }
+  }
+}

@@ -1,0 +1,417 @@
+{
+  "dataset": "politifact",
+  "temporal_mode": "timestamp",
+  "num_samples": 10,
+  "results": [
+    {
+      "cascade_index": 0,
+      "true_label": "FAKE",
+      "predicted_label": "REAL",
+      "confidence": 0.9797257781028748,
+      "num_nodes": 45,
+      "temporal_mode": "timestamp",
+      "top_driver": 7,
+      "driver_candidates": [
+        {
+          "node": 7,
+          "score": 0.03682920769564175
+        },
+        {
+          "node": 12,
+          "score": 0.03307917835720566
+        },
+        {
+          "node": 14,
+          "score": 0.03307917835720566
+        },
+        {
+          "node": 16,
+          "score": 0.03307917835720566
+        },
+        {
+          "node": 30,
+          "score": 0.03307917835720566
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 45.0,
+        "max_depth": 2.0,
+        "max_breadth": 35.0,
+        "structural_virality": 2.3353535353535353,
+        "out_degree_max": 35.0,
+        "out_degree_mean": 0.9777777777777777,
+        "leaf_ratio": 0.8
+      },
+      "visualization": ".\\outputs\\source_analysis\\politifact_timestamp\\cascade_0_fake.png"
+    },
+    {
+      "cascade_index": 1,
+      "true_label": "FAKE",
+      "predicted_label": "FAKE",
+      "confidence": 0.9808688163757324,
+      "num_nodes": 18,
+      "temporal_mode": "timestamp",
+      "top_driver": 2,
+      "driver_candidates": [
+        {
+          "node": 2,
+          "score": 0.2825272169821452
+        },
+        {
+          "node": 1,
+          "score": 0.2281590212276813
+        },
+        {
+          "node": 9,
+          "score": 0.05436819575446373
+        },
+        {
+          "node": 10,
+          "score": 0.05436819575446373
+        },
+        {
+          "node": 11,
+          "score": 0.05436819575446373
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 18.0,
+        "max_depth": 2.0,
+        "max_breadth": 15.0,
+        "structural_virality": 2.69281045751634,
+        "out_degree_max": 9.0,
+        "out_degree_mean": 0.9444444444444444,
+        "leaf_ratio": 0.8333333333333334
+      },
+      "visualization": ".\\outputs\\source_analysis\\politifact_timestamp\\cascade_1_fake.png"
+    },
+    {
+      "cascade_index": 2,
+      "true_label": "FAKE",
+      "predicted_label": "REAL",
+      "confidence": 0.5063037276268005,
+      "num_nodes": 195,
+      "temporal_mode": "timestamp",
+      "top_driver": 37,
+      "driver_candidates": [
+        {
+          "node": 37,
+          "score": 0.008401798942711595
+        },
+        {
+          "node": 7,
+          "score": 0.007379308468527202
+        },
+        {
+          "node": 47,
+          "score": 0.006979294694449248
+        },
+        {
+          "node": 25,
+          "score": 0.0069179101528538305
+        },
+        {
+          "node": 100,
+          "score": 0.006830775580170091
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 195.0,
+        "max_depth": 5.0,
+        "max_breadth": 100.0,
+        "structural_virality": 3.3340734866508064,
+        "out_degree_max": 62.0,
+        "out_degree_mean": 0.9948717948717949,
+        "leaf_ratio": 0.8307692307692308
+      },
+      "visualization": ".\\outputs\\source_analysis\\politifact_timestamp\\cascade_2_fake.png"
+    },
+    {
+      "cascade_index": 3,
+      "true_label": "FAKE",
+      "predicted_label": "FAKE",
+      "confidence": 0.981848955154419,
+      "num_nodes": 14,
+      "temporal_mode": "timestamp",
+      "top_driver": 10,
+      "driver_candidates": [
+        {
+          "node": 10,
+          "score": 0.11515284216528124
+        },
+        {
+          "node": 1,
+          "score": 0.08044065071224717
+        },
+        {
+          "node": 2,
+          "score": 0.08044065071224717
+        },
+        {
+          "node": 3,
+          "score": 0.08044065071224717
+        },
+        {
+          "node": 4,
+          "score": 0.08044065071224717
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 14.0,
+        "max_depth": 2.0,
+        "max_breadth": 12.0,
+        "structural_virality": 1.978021978021978,
+        "out_degree_max": 12.0,
+        "out_degree_mean": 0.9285714285714286,
+        "leaf_ratio": 0.8571428571428571
+      },
+      "visualization": ".\\outputs\\source_analysis\\politifact_timestamp\\cascade_3_fake.png"
+    },
+    {
+      "cascade_index": 4,
+      "true_label": "REAL",
+      "predicted_label": "REAL",
+      "confidence": 0.981646716594696,
+      "num_nodes": 41,
+      "temporal_mode": "timestamp",
+      "top_driver": 10,
+      "driver_candidates": [
+        {
+          "node": 10,
+          "score": 0.03291857413210732
+        },
+        {
+          "node": 24,
+          "score": 0.03291857413210732
+        },
+        {
+          "node": 34,
+          "score": 0.03291857413210732
+        },
+        {
+          "node": 1,
+          "score": 0.026507184635402293
+        },
+        {
+          "node": 2,
+          "score": 0.026507184635402293
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 41.0,
+        "max_depth": 2.0,
+        "max_breadth": 37.0,
+        "structural_virality": 2.0902439024390245,
+        "out_degree_max": 37.0,
+        "out_degree_mean": 0.975609756097561,
+        "leaf_ratio": 0.9024390243902439
+      },
+      "visualization": ".\\outputs\\source_analysis\\politifact_timestamp\\cascade_4_real.png"
+    },
+    {
+      "cascade_index": 5,
+      "true_label": "REAL",
+      "predicted_label": "REAL",
+      "confidence": 0.9809325933456421,
+      "num_nodes": 38,
+      "temporal_mode": "timestamp",
+      "top_driver": 11,
+      "driver_candidates": [
+        {
+          "node": 11,
+          "score": 0.051353665416865535
+        },
+        {
+          "node": 2,
+          "score": 0.0384134737546346
+        },
+        {
+          "node": 25,
+          "score": 0.0384134737546346
+        },
+        {
+          "node": 29,
+          "score": 0.0384134737546346
+        },
+        {
+          "node": 1,
+          "score": 0.030748198200323044
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 38.0,
+        "max_depth": 2.0,
+        "max_breadth": 29.0,
+        "structural_virality": 2.317211948790896,
+        "out_degree_max": 29.0,
+        "out_degree_mean": 0.9736842105263158,
+        "leaf_ratio": 0.868421052631579
+      },
+      "visualization": ".\\outputs\\source_analysis\\politifact_timestamp\\cascade_5_real.png"
+    },
+    {
+      "cascade_index": 6,
+      "true_label": "FAKE",
+      "predicted_label": "FAKE",
+      "confidence": 0.9856141209602356,
+      "num_nodes": 315,
+      "temporal_mode": "timestamp",
+      "top_driver": 71,
+      "driver_candidates": [
+        {
+          "node": 71,
+          "score": 0.004418259445757131
+        },
+        {
+          "node": 21,
+          "score": 0.004264902017278636
+        },
+        {
+          "node": 107,
+          "score": 0.004104939209296932
+        },
+        {
+          "node": 146,
+          "score": 0.004087809909972597
+        },
+        {
+          "node": 32,
+          "score": 0.004069250688667625
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 315.0,
+        "max_depth": 5.0,
+        "max_breadth": 169.0,
+        "structural_virality": 3.1798200384187645,
+        "out_degree_max": 169.0,
+        "out_degree_mean": 0.9968253968253968,
+        "leaf_ratio": 0.834920634920635
+      },
+      "visualization": ".\\outputs\\source_analysis\\politifact_timestamp\\cascade_6_fake.png"
+    },
+    {
+      "cascade_index": 7,
+      "true_label": "REAL",
+      "predicted_label": "REAL",
+      "confidence": 0.9830164313316345,
+      "num_nodes": 12,
+      "temporal_mode": "timestamp",
+      "top_driver": 3,
+      "driver_candidates": [
+        {
+          "node": 3,
+          "score": 0.20076067899296293
+        },
+        {
+          "node": 4,
+          "score": 0.14525530022826355
+        },
+        {
+          "node": 1,
+          "score": 0.09749357689693507
+        },
+        {
+          "node": 2,
+          "score": 0.09749357689693507
+        },
+        {
+          "node": 5,
+          "score": 0.09749357689693507
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 12.0,
+        "max_depth": 2.0,
+        "max_breadth": 7.0,
+        "structural_virality": 2.287878787878788,
+        "out_degree_max": 7.0,
+        "out_degree_mean": 0.9166666666666666,
+        "leaf_ratio": 0.75
+      },
+      "visualization": ".\\outputs\\source_analysis\\politifact_timestamp\\cascade_7_real.png"
+    },
+    {
+      "cascade_index": 8,
+      "true_label": "FAKE",
+      "predicted_label": "REAL",
+      "confidence": 0.9832915663719177,
+      "num_nodes": 221,
+      "temporal_mode": "timestamp",
+      "top_driver": 72,
+      "driver_candidates": [
+        {
+          "node": 72,
+          "score": 0.005647411298449782
+        },
+        {
+          "node": 93,
+          "score": 0.0054585612292756104
+        },
+        {
+          "node": 66,
+          "score": 0.005357708923844386
+        },
+        {
+          "node": 123,
+          "score": 0.005357708923844386
+        },
+        {
+          "node": 137,
+          "score": 0.005357708923844386
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 221.0,
+        "max_depth": 5.0,
+        "max_breadth": 170.0,
+        "structural_virality": 2.6445084327437267,
+        "out_degree_max": 170.0,
+        "out_degree_mean": 0.995475113122172,
+        "leaf_ratio": 0.8461538461538461
+      },
+      "visualization": ".\\outputs\\source_analysis\\politifact_timestamp\\cascade_8_fake.png"
+    },
+    {
+      "cascade_index": 9,
+      "true_label": "REAL",
+      "predicted_label": "REAL",
+      "confidence": 0.9758029580116272,
+      "num_nodes": 48,
+      "temporal_mode": "timestamp",
+      "top_driver": 5,
+      "driver_candidates": [
+        {
+          "node": 5,
+          "score": 0.034191631280854416
+        },
+        {
+          "node": 17,
+          "score": 0.03157609939231907
+        },
+        {
+          "node": 12,
+          "score": 0.029455330766293062
+        },
+        {
+          "node": 10,
+          "score": 0.026973271249130654
+        },
+        {
+          "node": 15,
+          "score": 0.026973271249130654
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 48.0,
+        "max_depth": 4.0,
+        "max_breadth": 22.0,
+        "structural_virality": 3.0407801418439715,
+        "out_degree_max": 21.0,
+        "out_degree_mean": 0.9791666666666666,
+        "leaf_ratio": 0.75
+      },
+      "visualization": ".\\outputs\\source_analysis\\politifact_timestamp\\cascade_9_real.png"
+    }
+  ]
+}

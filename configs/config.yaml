@@ -1,0 +1,37 @@
+# Spatio-Temporal GNN Configuration
+dataset:
+  root: "./data/UPFD"
+  name: "politifact"           # 'politifact' or 'gossipcop'
+  feature: "bert"              # 'bert', 'profile', 'content', 'spacy'
+  multimodal: true             # Combine BERT text embeddings with user profile attributes
+  batch_size: 16
+  num_workers: 0
+
+temporal:
+  num_snapshots: 4             # Discrete temporal cascade stages (Early, Growth, Viral, Saturation)
+  decay_factor: 0.1            # Time decay parameter for edge propagation
+  add_diffusion_depth: true    # Append tree depth feature to node representations
+  add_degree_features: true    # In-degree and out-degree structural cues
+
+model:
+  hidden_dim: 64
+  num_spatial_layers: 2
+  num_attention_heads: 4
+  temporal_cell: "gru"         # 'gru', 'lstm', or 'attention'
+  dropout: 0.3
+  pooling: "attention"         # 'attention', 'mean', 'max', 'root'
+  num_classes: 2               # Veracity: 0 (Real), 1 (Fake)
+
+training:
+  epochs: 30
+  lr: 0.001
+  weight_decay: 0.0001
+  patience: 8                  # Early stopping patience
+  device: "cpu"                # 'cpu' or 'cuda'
+  save_dir: "./checkpoints"
+
+source_identification:
+  top_k_eval: [1, 3, 5]
+  algorithm: "hybrid"          # 'gnn', 'rumor_centrality', 'hybrid'
+  bot_velocity_threshold: 1.5  # Z-score threshold for bot cascade acceleration
+  bot_fanout_threshold: 5      # Out-degree threshold for amplification hubs

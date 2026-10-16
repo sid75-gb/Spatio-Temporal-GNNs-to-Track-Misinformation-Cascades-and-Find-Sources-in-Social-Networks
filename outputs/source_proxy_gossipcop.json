@@ -1,0 +1,66 @@
+{
+  "dataset": "gossipcop",
+  "evaluation_timestamp_utc": "2026-10-13T08:58:16.217163+00:00",
+  "random_seed": 42,
+  "proxy_definition": {
+    "target": "earliest_observed_retweeter",
+    "candidate_set": "user_nodes_with_valid_timestamps (1..N-1)",
+    "excluded_nodes": [
+      "node_0_news_article"
+    ],
+    "tie_handling": "Multi-target convention (hit if top-K contains any tied earliest retweeter; best rank used for MRR)",
+    "alternative_tie_handling": "Average reciprocal rank across all tied targets included as mrr_avg_convention",
+    "scientific_disclaimer": "The target is an observational timestamp crawl proxy. It does NOT represent verified misinformation authors, original publishers, or ground-truth patient zero."
+  },
+  "cascade_counts": {
+    "total_test_cascades": 3826,
+    "evaluated_eligible_cascades": 3826,
+    "skipped_cascades": 0,
+    "tied_earliest_cascades": 62,
+    "tied_pct": 1.6204913748039729,
+    "skipped_reasons": []
+  },
+  "baselines_and_methods": {
+    "random_baseline": {
+      "hit@1": 0.04521693674856247,
+      "hit@3": 0.14218504966021955,
+      "hit@5": 0.22556194458964976,
+      "mrr": 0.1465882169057595,
+      "mrr_avg_convention": 0.14562858549008212,
+      "mean_hop_distance": 2.069524307370622
+    },
+    "random_analytical_expectation": {
+      "hit@1": 0.04903569615406342,
+      "hit@3": 0.14378769483960793,
+      "hit@5": 0.225938775827528,
+      "mean_mrr_approx": 0.14884698454869194
+    },
+    "out_degree_centrality": {
+      "hit@1": 0.1356508102456874,
+      "hit@3": 0.23523261892315733,
+      "hit@5": 0.30475692629377943,
+      "mrr": 0.23114827964797188,
+      "mrr_avg_convention": 0.23023695061585697,
+      "mean_hop_distance": 1.7616309461578672
+    },
+    "rumor_centrality": {
+      "hit@1": 0.1390486147412441,
+      "hit@3": 0.24803972817564035,
+      "hit@5": 0.332723470987977,
+      "mrr": 0.24291207263143086,
+      "mrr_avg_convention": 0.24214931968632317,
+      "mean_hop_distance": 1.7237323575535808
+    }
+  },
+  "sanity_check_oracle": {
+    "note": "Upper-bound verification check sorting directly by timestamp; NOT a discovery method.",
+    "metrics": {
+      "hit@1": 1.0,
+      "hit@3": 1.0,
+      "hit@5": 1.0,
+      "mrr": 1.0,
+      "mrr_avg_convention": 0.9953834872509728,
+      "mean_hop_distance": 0.0
+    }
+  }
+}

@@ -1,0 +1,417 @@
+{
+  "dataset": "gossipcop",
+  "temporal_mode": "timestamp",
+  "num_samples": 10,
+  "results": [
+    {
+      "cascade_index": 0,
+      "true_label": "FAKE",
+      "predicted_label": "FAKE",
+      "confidence": 0.9991406202316284,
+      "num_nodes": 116,
+      "temporal_mode": "timestamp",
+      "top_driver": 1,
+      "driver_candidates": [
+        {
+          "node": 1,
+          "score": 0.02061152261332032
+        },
+        {
+          "node": 42,
+          "score": 0.017459645130276757
+        },
+        {
+          "node": 15,
+          "score": 0.013263649770413503
+        },
+        {
+          "node": 47,
+          "score": 0.011490375866814746
+        },
+        {
+          "node": 7,
+          "score": 0.01070459397567582
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 116.0,
+        "max_depth": 3.0,
+        "max_breadth": 51.0,
+        "structural_virality": 2.890854572713643,
+        "out_degree_max": 44.0,
+        "out_degree_mean": 0.9913793103448276,
+        "leaf_ratio": 0.9396551724137931
+      },
+      "visualization": ".\\outputs\\source_analysis\\gossipcop_timestamp\\cascade_0_fake.png"
+    },
+    {
+      "cascade_index": 1,
+      "true_label": "FAKE",
+      "predicted_label": "FAKE",
+      "confidence": 0.9991833567619324,
+      "num_nodes": 17,
+      "temporal_mode": "timestamp",
+      "top_driver": 9,
+      "driver_candidates": [
+        {
+          "node": 9,
+          "score": 0.08949252924649562
+        },
+        {
+          "node": 1,
+          "score": 0.0650362479109646
+        },
+        {
+          "node": 2,
+          "score": 0.0650362479109646
+        },
+        {
+          "node": 3,
+          "score": 0.0650362479109646
+        },
+        {
+          "node": 4,
+          "score": 0.0650362479109646
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 17.0,
+        "max_depth": 2.0,
+        "max_breadth": 15.0,
+        "structural_virality": 1.9852941176470589,
+        "out_degree_max": 15.0,
+        "out_degree_mean": 0.9411764705882353,
+        "leaf_ratio": 0.8823529411764706
+      },
+      "visualization": ".\\outputs\\source_analysis\\gossipcop_timestamp\\cascade_1_fake.png"
+    },
+    {
+      "cascade_index": 2,
+      "true_label": "REAL",
+      "predicted_label": "REAL",
+      "confidence": 0.9900972843170166,
+      "num_nodes": 98,
+      "temporal_mode": "timestamp",
+      "top_driver": 7,
+      "driver_candidates": [
+        {
+          "node": 7,
+          "score": 0.01968774392358751
+        },
+        {
+          "node": 45,
+          "score": 0.015648384414783185
+        },
+        {
+          "node": 68,
+          "score": 0.014765905569476078
+        },
+        {
+          "node": 73,
+          "score": 0.013535268089514593
+        },
+        {
+          "node": 1,
+          "score": 0.01145378227329678
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 98.0,
+        "max_depth": 2.0,
+        "max_breadth": 78.0,
+        "structural_virality": 2.3248474647590993,
+        "out_degree_max": 78.0,
+        "out_degree_mean": 0.9897959183673469,
+        "leaf_ratio": 0.9489795918367347
+      },
+      "visualization": ".\\outputs\\source_analysis\\gossipcop_timestamp\\cascade_2_real.png"
+    },
+    {
+      "cascade_index": 3,
+      "true_label": "FAKE",
+      "predicted_label": "FAKE",
+      "confidence": 0.9992139339447021,
+      "num_nodes": 71,
+      "temporal_mode": "timestamp",
+      "top_driver": 37,
+      "driver_candidates": [
+        {
+          "node": 37,
+          "score": 0.01945885351088857
+        },
+        {
+          "node": 67,
+          "score": 0.017708000243331252
+        },
+        {
+          "node": 1,
+          "score": 0.014758945226317927
+        },
+        {
+          "node": 2,
+          "score": 0.014758945226317927
+        },
+        {
+          "node": 3,
+          "score": 0.014758945226317927
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 71.0,
+        "max_depth": 2.0,
+        "max_breadth": 67.0,
+        "structural_virality": 2.053118712273642,
+        "out_degree_max": 67.0,
+        "out_degree_mean": 0.9859154929577465,
+        "leaf_ratio": 0.9577464788732394
+      },
+      "visualization": ".\\outputs\\source_analysis\\gossipcop_timestamp\\cascade_3_fake.png"
+    },
+    {
+      "cascade_index": 4,
+      "true_label": "REAL",
+      "predicted_label": "REAL",
+      "confidence": 0.991104006767273,
+      "num_nodes": 78,
+      "temporal_mode": "timestamp",
+      "top_driver": 55,
+      "driver_candidates": [
+        {
+          "node": 55,
+          "score": 0.01567239879505114
+        },
+        {
+          "node": 1,
+          "score": 0.013124368016065988
+        },
+        {
+          "node": 2,
+          "score": 0.013124368016065988
+        },
+        {
+          "node": 3,
+          "score": 0.013124368016065988
+        },
+        {
+          "node": 4,
+          "score": 0.013124368016065988
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 78.0,
+        "max_depth": 2.0,
+        "max_breadth": 76.0,
+        "structural_virality": 1.9993339993339994,
+        "out_degree_max": 76.0,
+        "out_degree_mean": 0.9871794871794872,
+        "leaf_ratio": 0.9743589743589743
+      },
+      "visualization": ".\\outputs\\source_analysis\\gossipcop_timestamp\\cascade_4_real.png"
+    },
+    {
+      "cascade_index": 5,
+      "true_label": "REAL",
+      "predicted_label": "REAL",
+      "confidence": 0.9905773401260376,
+      "num_nodes": 34,
+      "temporal_mode": "timestamp",
+      "top_driver": 31,
+      "driver_candidates": [
+        {
+          "node": 31,
+          "score": 0.03909037780201973
+        },
+        {
+          "node": 1,
+          "score": 0.03099708458703162
+        },
+        {
+          "node": 2,
+          "score": 0.03099708458703162
+        },
+        {
+          "node": 3,
+          "score": 0.03099708458703162
+        },
+        {
+          "node": 4,
+          "score": 0.03099708458703162
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 34.0,
+        "max_depth": 2.0,
+        "max_breadth": 32.0,
+        "structural_virality": 1.9964349376114081,
+        "out_degree_max": 32.0,
+        "out_degree_mean": 0.9705882352941176,
+        "leaf_ratio": 0.9411764705882353
+      },
+      "visualization": ".\\outputs\\source_analysis\\gossipcop_timestamp\\cascade_5_real.png"
+    },
+    {
+      "cascade_index": 6,
+      "true_label": "REAL",
+      "predicted_label": "REAL",
+      "confidence": 0.9959697723388672,
+      "num_nodes": 36,
+      "temporal_mode": "timestamp",
+      "top_driver": 2,
+      "driver_candidates": [
+        {
+          "node": 2,
+          "score": 0.04012487834940467
+        },
+        {
+          "node": 8,
+          "score": 0.04012487834940467
+        },
+        {
+          "node": 9,
+          "score": 0.04012487834940467
+        },
+        {
+          "node": 10,
+          "score": 0.04012487834940467
+        },
+        {
+          "node": 13,
+          "score": 0.04012487834940467
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 36.0,
+        "max_depth": 2.0,
+        "max_breadth": 30.0,
+        "structural_virality": 2.2063492063492065,
+        "out_degree_max": 30.0,
+        "out_degree_mean": 0.9722222222222222,
+        "leaf_ratio": 0.8333333333333334
+      },
+      "visualization": ".\\outputs\\source_analysis\\gossipcop_timestamp\\cascade_6_real.png"
+    },
+    {
+      "cascade_index": 7,
+      "true_label": "FAKE",
+      "predicted_label": "FAKE",
+      "confidence": 0.9991551637649536,
+      "num_nodes": 16,
+      "temporal_mode": "timestamp",
+      "top_driver": 3,
+      "driver_candidates": [
+        {
+          "node": 3,
+          "score": 0.10562913296286595
+        },
+        {
+          "node": 9,
+          "score": 0.10562913296286595
+        },
+        {
+          "node": 12,
+          "score": 0.10562913296286595
+        },
+        {
+          "node": 1,
+          "score": 0.0759014001234891
+        },
+        {
+          "node": 2,
+          "score": 0.0759014001234891
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 16.0,
+        "max_depth": 2.0,
+        "max_breadth": 12.0,
+        "structural_virality": 2.2,
+        "out_degree_max": 12.0,
+        "out_degree_mean": 0.9375,
+        "leaf_ratio": 0.75
+      },
+      "visualization": ".\\outputs\\source_analysis\\gossipcop_timestamp\\cascade_7_fake.png"
+    },
+    {
+      "cascade_index": 8,
+      "true_label": "REAL",
+      "predicted_label": "REAL",
+      "confidence": 0.9936031699180603,
+      "num_nodes": 66,
+      "temporal_mode": "timestamp",
+      "top_driver": 62,
+      "driver_candidates": [
+        {
+          "node": 62,
+          "score": 0.021636261250171616
+        },
+        {
+          "node": 1,
+          "score": 0.015780060302416587
+        },
+        {
+          "node": 2,
+          "score": 0.015780060302416587
+        },
+        {
+          "node": 3,
+          "score": 0.015780060302416587
+        },
+        {
+          "node": 4,
+          "score": 0.015780060302416587
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 66.0,
+        "max_depth": 2.0,
+        "max_breadth": 63.0,
+        "structural_virality": 2.0275058275058275,
+        "out_degree_max": 63.0,
+        "out_degree_mean": 0.9848484848484849,
+        "leaf_ratio": 0.9696969696969697
+      },
+      "visualization": ".\\outputs\\source_analysis\\gossipcop_timestamp\\cascade_8_real.png"
+    },
+    {
+      "cascade_index": 9,
+      "true_label": "REAL",
+      "predicted_label": "REAL",
+      "confidence": 0.9074677228927612,
+      "num_nodes": 121,
+      "temporal_mode": "timestamp",
+      "top_driver": 88,
+      "driver_candidates": [
+        {
+          "node": 88,
+          "score": 0.012436069935283268
+        },
+        {
+          "node": 62,
+          "score": 0.01176605363334722
+        },
+        {
+          "node": 69,
+          "score": 0.01176605363334722
+        },
+        {
+          "node": 65,
+          "score": 0.010829763327410265
+        },
+        {
+          "node": 67,
+          "score": 0.010829763327410265
+        }
+      ],
+      "cascade_metrics": {
+        "cascade_size": 121.0,
+        "max_depth": 2.0,
+        "max_breadth": 105.0,
+        "structural_virality": 2.2258953168044076,
+        "out_degree_max": 105.0,
+        "out_degree_mean": 0.9917355371900827,
+        "leaf_ratio": 0.9008264462809917
+      },
+      "visualization": ".\\outputs\\source_analysis\\gossipcop_timestamp\\cascade_9_real.png"
+    }
+  ]
+}

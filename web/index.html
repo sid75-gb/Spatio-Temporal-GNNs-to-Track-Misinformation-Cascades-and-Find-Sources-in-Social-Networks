@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STGNN Misinformation Cascade Explorer • UPFD Benchmark</title>
+
+  <script src="./vis-network.min.js"></script>
+  <script>
+    if (typeof vis === "undefined") {
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/vis-network@10.1.2/standalone/umd/vis-network.min.js";
+      document.head.appendChild(script);
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg: #080d17;
+      --panel: #101827;
+      --panel2: #0c1422;
+      --border: #223047;
+      --accent: #38bdf8;
+      --fake: #ef4444;
+      --real: #10b981;
+      --driver: #fbbf24;
+      --anomaly: #f43f5e;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    header {
+      height: 70px;
+      padding: 0 1.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: #0d1524;
+    }
+
+    .header-title h1 {
+      font-size: 1.18rem;
+      font-weight: 750;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header-title p {
+      color: var(--muted);
+      font-size: 0.76rem;
+      margin-top: 0.2rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.22rem 0.55rem;
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      border-radius: 999px;
+      color: var(--accent);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .benchmark-strip {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .benchmark {
+      padding: 0.38rem 0.65rem;
+      background: #111c2d;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      text-align: center;
+      min-width: 82px;
+    }
+
+    .benchmark-value {
+      font-weight: 800;
+      font-size: 0.84rem;
+      color: #fff;
+    }
+
+    .benchmark-label {
+      color: var(--muted);
+      font-size: 0.58rem;
+      margin-top: 0.1rem;
+    }
+
+    .container {
+      height: calc(100vh - 70px);
+      display: grid;
+      grid-template-columns: 345px 1fr 340px;
+      gap: 0.9rem;
+      padding: 0.9rem;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar {
+      padding: 1rem;
+      overflow-y: auto;
+      gap: 0.9rem;
+    }
+
+    .section-title {
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: #dbeafe;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.45rem;
+      margin-bottom: 0.55rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control {
+      margin-bottom: 0.75rem;
+    }
+
+    .control label {
+      display: block;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    select, input[type="range"], button {
+      width: 100%;
+      background: #0b1321;
+      color: white;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 0.58rem 0.65rem;
+      outline: none;
+      font-size: 0.82rem;
+    }
+
+    select:focus, button:hover {
+      border-color: var(--accent);
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .primary {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border: none;
+    }
+
+    .primary:hover {
+      filter: brightness(1.15);
+    }
+
+    .phase-info-box {
+      margin-top: 0.55rem;
+      padding: 0.65rem 0.75rem;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .phase-title {
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: var(--accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .phase-timestamp {
+      margin-top: 0.35rem;
+      font-size: 0.73rem;
+      font-weight: 700;
+      color: #f8fafc;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      letter-spacing: 0.02em;
+    }
+
+    .phase-meta {
+      margin-top: 0.25rem;
+      font-size: 0.62rem;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    .phase-btn {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: 700;
+      transition: all 0.15s ease;
+    }
+
+    .phase-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .phase-btn.active {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .verdict {
+      padding: 0.85rem;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      text-align: center;
+    }
+
+    .verdict-label {
+      font-size: 1.05rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+    }
+
+    .verdict-confidence {
+      color: var(--muted);
+      font-size: 0.72rem;
+      margin-top: 0.45rem;
+    }
+
+    .progress {
+      width: 100%;
+      height: 8px;
+      margin-top: 0.55rem;
+      background: #1f2937;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      transition: width 0.25s ease;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 0.22rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      margin-top: 0.45rem;
+    }
+
+    .status-correct {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--real);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .status-misclassified {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--fake);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+    }
+
+    .metric {
+      padding: 0.65rem;
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 0.98rem;
+    }
+
+    .metric span {
+      display: block;
+      font-size: 0.62rem;
+      color: var(--muted);
+      margin-top: 0.12rem;
+    }
+
+    /* Benchmark Table */
+    .benchmark-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.68rem;
+      margin-top: 0.4rem;
+    }
+
+    .benchmark-table th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 700;
+      padding: 0.35rem 0.3rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+    }
+
+    .benchmark-table td {
+      padding: 0.35rem 0.3rem;
+      border-bottom: 1px solid rgba(34, 48, 71, 0.5);
+      color: var(--text);
+    }
+
+    .benchmark-table tr.highlight-stgnn td {
+      color: var(--accent);
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    /* Early-Stage Evaluation Table */
+    .early-stage-card {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem;
+    }
+
+    .early-stage-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.68rem;
+      margin-top: 0.35rem;
+    }
+
+    .early-stage-table th {
+      text-align: left;
+      color: var(--muted);
+      font-weight: 700;
+      padding: 0.3rem 0.25rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.60rem;
+      text-transform: uppercase;
+    }
+
+    .early-stage-table td {
+      padding: 0.35rem 0.25rem;
+      border-bottom: 1px solid rgba(34, 48, 71, 0.4);
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .early-stage-table tr.active-stage-row td {
+      color: var(--accent);
+      font-weight: 800;
+      background: rgba(56, 189, 248, 0.14);
+    }
+
+    .early-stage-table tr.active-stage-row td:first-child {
+      border-left: 2.5px solid var(--accent);
+      padding-left: 0.4rem;
+    }
+
+
+    .extended-card {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem;
+      margin-top: 0.65rem;
+    }
+
+    .extended-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.3rem;
+    }
+
+    .extended-desc {
+      font-size: 0.61rem;
+      color: var(--muted);
+      line-height: 1.35;
+      margin-bottom: 0.45rem;
+    }
+
+    .graph-panel {
+      min-width: 0;
+    }
+
+    .graph-header {
+      min-height: 65px;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .graph-header h2 {
+      font-size: 0.9rem;
+    }
+
+    .graph-subtitle {
+      color: var(--accent);
+      font-size: 0.7rem;
+      margin-top: 0.15rem;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .toolbar button {
+      width: auto;
+      padding: 0.4rem 0.65rem;
+      font-size: 0.68rem;
+    }
+
+    #graph {
+      flex: 1;
+      min-height: 0;
+      background: radial-gradient(circle at center, #111d31, #060a13);
+    }
+
+    .graph-footer {
+      padding: 0.5rem 0.8rem;
+      color: var(--muted);
+      font-size: 0.65rem;
+      border-top: 1px solid var(--border);
+      background: #0c1422;
+    }
+
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .item {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 0.55rem 0.65rem;
+      cursor: pointer;
+      transition: border-color 0.15s ease;
+    }
+
+    .item:hover {
+      border-color: var(--driver);
+    }
+
+    .item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rank {
+      color: var(--driver);
+      font-weight: 800;
+      margin-right: 0.25rem;
+    }
+
+    .score {
+      color: var(--driver);
+      font-weight: 800;
+    }
+
+    .item-small {
+      color: var(--muted);
+      font-size: 0.62rem;
+      margin-top: 0.2rem;
+    }
+
+    .node-details {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.7rem;
+    }
+
+    .detail {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.8rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid rgba(34, 48, 71, 0.7);
+      font-size: 0.68rem;
+    }
+
+    .detail:last-child {
+      border-bottom: none;
+    }
+
+    .detail span {
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .notice {
+      color: var(--muted);
+      font-size: 0.63rem;
+      line-height: 1.45;
+      padding: 0.55rem;
+      border: 1px dashed var(--border);
+      border-radius: 7px;
+    }
+
+    .error {
+      padding: 2rem;
+      color: #fca5a5;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="header-title">
+      <h1>
+        Spatio-Temporal Graph Neural Network
+        <span class="badge" id="active-dataset-badge">UPFD PolitiFact</span>
+        <span class="badge" id="header-split-badge" style="border-color: rgba(56, 189, 248, 0.4); color: var(--accent);">Held-Out Test Set: 221 Cascades</span>
+        <span class="badge" style="border-color: rgba(16, 185, 129, 0.4); color: var(--real);">STGNN Active</span>
+      </h1>
+      <p id="header-subtitle">
+        Misinformation Cascade Tracking & Early Detection Benchmark • UPFD PolitiFact
+      </p>
+    </div>
+
+    <div class="benchmark-strip">
+      <div class="benchmark">
+        <div class="benchmark-value" id="bench-acc">—</div>
+        <div class="benchmark-label">Checkpoint Test Acc</div>
+      </div>
+      <div class="benchmark">
+        <div class="benchmark-value" id="bench-f1">—</div>
+        <div class="benchmark-label">Macro F1</div>
+      </div>
+      <div class="benchmark">
+        <div class="benchmark-value" id="bench-auc">—</div>
+        <div class="benchmark-label">ROC-AUC</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- =========================================================
+         LEFT SIDEBAR
+         ========================================================= -->
+    <div class="panel sidebar">
+
+      <!-- Dataset & Cascade Selection -->
+      <div>
+        <div class="section-title">
+          Dataset & Cascade Selection
+        </div>
+
+        <div class="control">
+          <label for="dataset-select">Benchmark Dataset</label>
+          <select id="dataset-select">
+            <option value="politifact">UPFD PolitiFact</option>
+            <option value="gossipcop">UPFD GossipCop</option>
+          </select>
+        </div>
+
+        <div class="control">
+          <label for="cascade-select">
+            Test Cascade (<span id="cascade-count-label">—</span>)
+          </label>
+          <select id="cascade-select"></select>
+        </div>
+
+        <!-- Historical Timestamp Quantiles Progression -->
+        <div class="control">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+            <label for="phase-slider" style="margin-bottom:0;">Chronological Progression (Quantiles)</label>
+            <div style="display:flex; gap:0.25rem;">
+              <button class="phase-btn" data-phase="1" style="width:auto; padding:0.12rem 0.38rem; font-size:0.58rem;">25%</button>
+              <button class="phase-btn" data-phase="2" style="width:auto; padding:0.12rem 0.38rem; font-size:0.58rem;">50%</button>
+              <button class="phase-btn" data-phase="3" style="width:auto; padding:0.12rem 0.38rem; font-size:0.58rem;">75%</button>
+              <button class="phase-btn active" data-phase="4" style="width:auto; padding:0.12rem 0.38rem; font-size:0.58rem;">100%</button>
+            </div>
+          </div>
+          <input type="range" id="phase-slider" min="1" max="4" value="4" step="1">
+
+          <div class="phase-info-box" id="phase-info-box">
+            <div class="phase-title">
+              <span id="phase-label">Phase 4 (100% Quantile Snapshot)</span>
+              <span class="badge" id="phase-badge" style="font-size: 0.58rem; padding: 0.12rem 0.45rem;">P4 • 100%</span>
+            </div>
+            <div class="phase-timestamp" id="phase-cutoff-time">
+              Observed through: —
+            </div>
+            <div class="phase-meta" id="phase-meta-info">
+              Cumulative historical snapshot of observed retweets up to cutoff time.
+            </div>
+          </div>
+        </div>
+
+        <button class="primary" id="refresh-btn">Refresh Model View</button>
+      </div>
+
+      <!-- Model Prediction Card (Single Example) -->
+      <div>
+        <div class="section-title">
+          Cascade Prediction (Single Example)
+        </div>
+        <div style="font-size:0.62rem; color:var(--muted); margin-bottom:0.35rem; line-height:1.35;">
+          Model inference on single selected test cascade at current quantile (distinct from aggregate test-set metrics):
+        </div>
+
+        <div class="verdict">
+          <div class="verdict-label" id="verdict">—</div>
+
+          <div style="display:flex; justify-content:center; gap:0.5rem; margin-top:0.45rem; align-items:center;">
+            <span id="actual-pill" class="badge" style="background:#1e293b; color:#cbd5e1; border-color:#334155; margin:0;">
+              Actual: —
+            </span>
+            <span id="pred-pill" class="badge" style="margin:0;">
+              Predicted: —
+            </span>
+          </div>
+
+          <div id="prediction-status" class="status-pill status-correct">
+            Awaiting prediction
+          </div>
+
+          <div class="verdict-confidence">
+            STGNN Confidence: <strong id="confidence">—</strong>
+          </div>
+
+          <div class="progress">
+            <div class="progress-fill" id="confidence-bar"></div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--muted); margin-top:0.4rem;">
+            <span>P(Real): <strong id="prob-real" style="color:var(--real)">—</strong></span>
+            <span>P(Fake): <strong id="prob-fake" style="color:var(--fake)">—</strong></span>
+          </div>
+
+          <div id="misclass-warning" style="display:none; margin-top:0.4rem; font-size:0.62rem; color:#fca5a5; line-height:1.3; background:rgba(239,68,68,0.1); padding:0.35rem 0.5rem; border-radius:5px; border:1px solid rgba(239,68,68,0.25); text-align:left;">
+            ⚠️ <strong>Misclassification Note:</strong> Model predicted with high confidence despite disagreeing with ground truth label.
+          </div>
+        </div>
+      </div>
+
+      <!-- Cascade Metrics -->
+      <div>
+        <div class="section-title">
+          Cascade Topology Metrics
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric">
+            <strong id="metric-nodes">—</strong>
+            <span>Active Nodes</span>
+          </div>
+          <div class="metric">
+            <strong id="metric-depth">—</strong>
+            <span>Max Depth</span>
+          </div>
+          <div class="metric">
+            <strong id="metric-virality">—</strong>
+            <span>Structural Virality</span>
+          </div>
+          <div class="metric">
+            <strong id="metric-anomaly">—</strong>
+            <span>Anomalous Amplifiers</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Early-Stage Detection Performance (Held-Out Test Set) -->
+      <div>
+        <div class="section-title">
+          <span>Early-Stage Detection</span>
+          <span class="badge" id="test-size-badge" style="font-size:0.58rem; padding:0.12rem 0.45rem;">—</span>
+        </div>
+        <div style="font-size:0.62rem; color:var(--muted); margin-bottom:0.35rem; line-height:1.35;">
+          Held-out test set performance across timestamp-based chronological observation quantiles (prefix STGNN; no future-event leakage):
+        </div>
+
+        <div class="early-stage-card">
+          <table class="early-stage-table">
+            <thead>
+              <tr>
+                <th>Obs Stage</th>
+                <th>Prefix</th>
+                <th>Test Acc</th>
+                <th>Macro F1</th>
+                <th>ROC-AUC</th>
+              </tr>
+            </thead>
+            <tbody id="early-stage-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+          <div id="early-detection-insight" style="margin-top:0.45rem; font-size:0.62rem; color:#bae6fd; background:rgba(56,189,248,0.08); padding:0.35rem 0.5rem; border-radius:5px; border:1px solid rgba(56,189,248,0.25); line-height:1.35;">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Baseline Model Comparison Benchmark -->
+      <div>
+        <div class="section-title">
+          Baseline Comparison (10 Epochs)
+        </div>
+        <div style="font-size:0.62rem; color:var(--muted); margin-bottom:0.35rem; line-height:1.35;">
+          Standardized 10-epoch comparative ablation on <span id="bench-dataset-label" style="color:var(--accent); font-weight:700;">UPFD PolitiFact</span>. Timestamp-Trained STGNN Checkpoint (Epoch 20 / ES) performance shown in top strip and table above:
+        </div>
+
+        <table class="benchmark-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Acc</th>
+              <th>Prec</th>
+              <th>Rec</th>
+              <th>F1</th>
+              <th>AUC</th>
+            </tr>
+          </thead>
+          <tbody id="benchmark-tbody">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+
+        <!-- Timestamp-Trained STGNN Checkpoint Results (Separate section) -->
+        <div class="extended-card" id="extended-card">
+          <div class="extended-title">
+            <span>Timestamp-Trained STGNN Checkpoint (Full 100% Cascade)</span>
+            <span class="badge" style="font-size:0.55rem; padding:0.1rem 0.4rem;">Epoch 20 / ES=8</span>
+          </div>
+          <div class="extended-desc">
+            Official held-out test split metrics with best validation checkpoint (exact source of truth from evaluation JSON):
+          </div>
+          <div class="metric-grid" style="grid-template-columns: repeat(3, 1fr); gap: 0.3rem;">
+            <div class="metric" style="padding:0.4rem 0.2rem;">
+              <strong id="ext-acc" style="font-size:0.82rem; color:var(--accent);">—</strong>
+              <span style="font-size:0.55rem;">Accuracy</span>
+            </div>
+            <div class="metric" style="padding:0.4rem 0.2rem;">
+              <strong id="ext-f1" style="font-size:0.82rem; color:var(--accent);">—</strong>
+              <span style="font-size:0.55rem;">Macro F1</span>
+            </div>
+            <div class="metric" style="padding:0.4rem 0.2rem;">
+              <strong id="ext-auc" style="font-size:0.82rem; color:var(--accent);">—</strong>
+              <span style="font-size:0.55rem;">ROC-AUC</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Method Status & Research Safeguards -->
+      <div>
+        <div class="section-title">
+          Method & Research Safeguards
+        </div>
+
+        <div class="notice">
+          Spatial encoder: <strong>Bidirectional GAT</strong><br>
+          Temporal encoder: <strong>GRU + Attention</strong><br>
+          Temporal mode: <strong>Timestamp Quantile Snapshots</strong><br><br>
+          <strong>Research Safeguards & Scope:</strong><br>
+          • <em>Chronological Quantile Snapshots:</em> Cumulative snapshots represent observed retweeter diffusion progress at 25%, 50%, 75%, and 100% quantile cutoffs. They represent chronological progression, not fixed elapsed-time windows or live social-media monitoring.<br><br>
+          • <em>Held-Out Test Scope:</em> Aggregate performance is evaluated on the official held-out test split (221 PolitiFact cascades, 3,826 GossipCop cascades) with zero future-event leakage.<br><br>
+          • <em>Root Node (Node 0):</em> Represents the news claim/article; it has no individual retweet timestamp in UPFD.<br><br>
+          • <em>Propagation Driver Candidates:</em> Structural rumor-centrality heuristics; UPFD contains no verified human patient-zero labels.<br><br>
+          • <em>Propagation Amplifiers:</em> Heuristic fan-out and velocity anomaly indicators; not confirmed bot accounts or live account enforcements.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =========================================================
+         CENTER: GRAPH PANEL
+         ========================================================= -->
+    <div class="panel graph-panel">
+      <div class="graph-header">
+        <div>
+          <h2>Propagation Cascade Graph</h2>
+          <div class="graph-subtitle" id="graph-subtitle">Loading cascade data...</div>
+        </div>
+
+        <div class="toolbar">
+          <button id="btn-tree">Tree Layout</button>
+          <button id="btn-force">Force Physics</button>
+          <button id="btn-fit">Fit View</button>
+        </div>
+      </div>
+
+      <div id="graph"></div>
+
+      <div class="graph-footer">
+        <span style="color:#fbbf24;">★ Gold Star: News / Root</span>
+        &nbsp; • &nbsp;
+        <span style="color:#fbbf24;">◆ Yellow Diamond: Driver Candidate (Heuristic)</span>
+        &nbsp; • &nbsp;
+        <span style="color:#f43f5e;">◆ Pink Diamond: Amplifier (Heuristic)</span>
+        &nbsp; • &nbsp;
+        <span style="color:#f43f5e; border: 1.5px solid #fbbf24; border-radius: 4px; padding: 0.08rem 0.35rem; background: rgba(244, 63, 94, 0.15);">◆ Pink + Gold Border: Driver & Amplifier (Dual Role)</span>
+        &nbsp; • &nbsp;
+        <span style="color:#38bdf8;">● Blue Dot: Retweeter Node</span>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         RIGHT: DRIVER & AMPLIFIER INSPECTION
+         ========================================================= -->
+    <div class="panel sidebar">
+
+      <div>
+        <div class="section-title">
+          Propagation Driver Candidates (Heuristic)
+        </div>
+        <div class="list" id="driver-list"></div>
+      </div>
+
+      <div>
+        <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>Selected Node Inspector</span>
+          <button id="btn-inspect-root" class="secondary" style="width:auto; font-size:0.58rem; padding:0.15rem 0.45rem; text-transform:none; margin:0;">
+            Inspect News Root
+          </button>
+        </div>
+
+        <div class="node-details" id="node-details">
+          <div class="detail">
+            <span>Node</span>
+            <strong id="detail-node">—</strong>
+          </div>
+          <div class="detail">
+            <span>Role</span>
+            <strong id="detail-role">—</strong>
+          </div>
+          <div class="detail">
+            <span>Depth</span>
+            <strong id="detail-depth">—</strong>
+          </div>
+          <div class="detail">
+            <span>Out-Degree</span>
+            <strong id="detail-degree">—</strong>
+          </div>
+          <div class="detail">
+            <span>Driver Score</span>
+            <strong id="detail-driver">—</strong>
+          </div>
+          <div class="detail">
+            <span>Anomaly Score</span>
+            <strong id="detail-anomaly">—</strong>
+          </div>
+          <div class="detail">
+            <span>Observed Time</span>
+            <strong id="detail-timestamp" style="font-family: monospace; font-size: 0.65rem; color: var(--accent);">—</strong>
+          </div>
+          <div id="root-timestamp-note" style="display: none; font-size: 0.61rem; color: var(--muted); line-height: 1.35; margin-top: 0.35rem; padding-top: 0.35rem; border-top: 1px dashed rgba(34, 48, 71, 0.6);">
+            ℹ️ News root node (Node 0) represents the initial published story/claim and does not possess an individual tweet/retweet timestamp in UPFD.
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-title">
+          Propagation Amplifiers (Heuristic)
+        </div>
+        <div class="list" id="amplifier-list"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    let dashboardData = null;
+    let network = null;
+    let currentMode = "tree";
+    let activeDataset = "politifact";
+    let selectedCascade = 0;
+    let selectedPhase = 4;
+    let currentlySelectedNodeId = null;
+
+    /* =========================================================
+       Load data
+       ========================================================= */
+    async function loadDashboard() {
+      try {
+        const response = await fetch("./dashboard_data.json");
+        if (!response.ok) {
+          throw new Error("dashboard_data.json could not be loaded (HTTP " + response.status + ")");
+        }
+
+        dashboardData = await response.json();
+        initializeDashboard();
+      } catch (error) {
+        document.body.innerHTML = `
+          <div class="error">
+            <h3>Dashboard data could not be loaded</h3>
+            <br>
+            ${error.message}
+            <br><br>
+            Start the multi-dataset server with:
+            <br>
+            <code>python scripts/demo_dashboard.py --port 8080 --open</code>
+          </div>
+        `;
+      }
+    }
+
+    /* =========================================================
+       Initialize
+       ========================================================= */
+    function initializeDashboard() {
+      // Determine active dataset from JSON or default to politifact
+      if (dashboardData.project && dashboardData.project.active_dataset) {
+        activeDataset = dashboardData.project.active_dataset;
+      } else if (dashboardData.datasets) {
+        activeDataset = Object.keys(dashboardData.datasets)[0] || "politifact";
+      }
+
+      // Dataset Selector
+      const datasetSelect = document.getElementById("dataset-select");
+      if (datasetSelect) {
+        if (dashboardData.datasets) {
+          datasetSelect.innerHTML = "";
+          for (const dsKey of Object.keys(dashboardData.datasets)) {
+            const dsObj = dashboardData.datasets[dsKey];
+            const opt = document.createElement("option");
+            opt.value = dsKey;
+            opt.textContent = dsObj.name || (dsKey === "politifact" ? "UPFD PolitiFact" : "UPFD GossipCop");
+            if (dsKey === activeDataset) opt.selected = true;
+            datasetSelect.appendChild(opt);
+          }
+        } else {
+          datasetSelect.value = activeDataset;
+        }
+
+        datasetSelect.addEventListener("change", (e) => {
+          switchDataset(e.target.value);
+        });
+      }
+
+      // Cascade Selector setup
+      populateCascadeSelect();
+
+      const cascadeSelect = document.getElementById("cascade-select");
+      cascadeSelect.addEventListener("change", () => {
+        selectedCascade = parseInt(cascadeSelect.value) || 0;
+        currentlySelectedNodeId = null;
+        updateDashboard();
+      });
+
+      // Phase slider and quick buttons
+      const slider = document.getElementById("phase-slider");
+      if (slider) {
+        slider.addEventListener("input", (e) => handleSliderChange(e.target.value));
+        slider.addEventListener("change", (e) => handleSliderChange(e.target.value));
+      }
+
+      document.querySelectorAll(".phase-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          handleSliderChange(btn.getAttribute("data-phase"));
+        });
+      });
+
+      // Inspect Root button
+      const rootBtn = document.getElementById("btn-inspect-root");
+      if (rootBtn) {
+        rootBtn.addEventListener("click", () => {
+          selectNode(0, true);
+        });
+      }
+
+      // Refresh button
+      document.getElementById("refresh-btn").addEventListener("click", updateDashboard);
+
+      // Graph layout buttons
+      document.getElementById("btn-tree").addEventListener("click", () => {
+        currentMode = "tree";
+        renderGraph();
+      });
+
+      document.getElementById("btn-force").addEventListener("click", () => {
+        currentMode = "force";
+        renderGraph();
+      });
+
+      document.getElementById("btn-fit").addEventListener("click", () => {
+        if (network) network.fit({ animation: { duration: 400 } });
+      });
+
+      // Update UI
+      switchDataset(activeDataset);
+    }
+
+    /* =========================================================
+       Slider & Phase Change Handler
+       ========================================================= */
+    function handleSliderChange(val) {
+      selectedPhase = parseInt(val);
+      const slider = document.getElementById("phase-slider");
+      if (slider) slider.value = selectedPhase;
+      updateDashboard();
+    }
+
+    /* =========================================================
+       Dataset Switcher
+       ========================================================= */
+    function switchDataset(newDatasetKey) {
+      activeDataset = newDatasetKey;
+
+      const currentDs = getCurrentDataset();
+      const dsDisplayName = currentDs.name || (activeDataset === "politifact" ? "UPFD PolitiFact" : "UPFD GossipCop");
+
+      // Sync dropdown select if needed
+      const datasetSelect = document.getElementById("dataset-select");
+      if (datasetSelect && datasetSelect.value !== newDatasetKey) {
+        datasetSelect.value = newDatasetKey;
+      }
+
+      // Update headers & badges
+      const activeBadge = document.getElementById("active-dataset-badge");
+      if (activeBadge) activeBadge.textContent = dsDisplayName;
+      const subtitle = document.getElementById("header-subtitle");
+      if (subtitle) subtitle.textContent =
+        `Misinformation Cascade Tracking & Early Detection Benchmark • ${dsDisplayName}`;
+      const benchLabel = document.getElementById("bench-dataset-label");
+      if (benchLabel) benchLabel.textContent = dsDisplayName;
+
+      // Update header test split badge
+      const headerSplitBadge = document.getElementById("header-split-badge");
+      if (headerSplitBadge) {
+        const testCount = (currentDs.early_stage && currentDs.early_stage.evaluated_test_cascades)
+          ? currentDs.early_stage.evaluated_test_cascades
+          : (activeDataset === "politifact" ? 221 : 3826);
+        headerSplitBadge.textContent = `Held-Out Test Set: ${Number(testCount).toLocaleString()} Cascades`;
+      }
+
+      // Update benchmark strip, early-stage table, and model comparison
+      updateBenchmark();
+      updateEarlyStage();
+      updateModelComparison();
+
+      // Populate cascades for active dataset
+      populateCascadeSelect();
+      selectedCascade = 0;
+      selectedPhase = 4;
+      currentlySelectedNodeId = null;
+
+      updateDashboard();
+    }
+
+    function getCurrentDataset() {
+      if (dashboardData.datasets && dashboardData.datasets[activeDataset]) {
+        return dashboardData.datasets[activeDataset];
+      }
+      return dashboardData; // fallback
+    }
+
+    function populateCascadeSelect() {
+      const currentDs = getCurrentDataset();
+      const select = document.getElementById("cascade-select");
+      select.innerHTML = "";
+
+      const cascades = currentDs.cascades || [];
+      const totalTest = currentDs.total_test_cascades || cascades.length;
+
+      document.getElementById("cascade-count-label").textContent =
+        `${cascades.length} of ${totalTest} loaded`;
+
+      cascades.forEach((cascade) => {
+        const option = document.createElement("option");
+        option.value = cascade.id;
+        option.textContent = `Cascade #${cascade.id} — ${cascade.actual_label} (${cascade.num_nodes} nodes)`;
+        select.appendChild(option);
+      });
+
+      if (cascades.length > 0) {
+        select.value = cascades[0].id;
+      }
+    }
+
+    /* =========================================================
+       Benchmark & Model Comparison
+       ========================================================= */
+    function updateBenchmark() {
+      const currentDs = getCurrentDataset();
+
+      // Timestamp-trained STGNN checkpoint metrics (exact source of truth)
+      let m = null;
+      if (currentDs.early_stage && currentDs.early_stage.stages && currentDs.early_stage.stages["100%"]) {
+        m = currentDs.early_stage.stages["100%"].metrics;
+      } else if (currentDs.extended_results && currentDs.extended_results.metrics) {
+        m = currentDs.extended_results.metrics;
+      } else if (currentDs.benchmark && currentDs.benchmark.results && currentDs.benchmark.results.stgnn) {
+        m = currentDs.benchmark.results.stgnn;
+      }
+
+      if (!m) {
+        document.getElementById("bench-acc").textContent = "—";
+        document.getElementById("bench-f1").textContent = "—";
+        document.getElementById("bench-auc").textContent = "—";
+        return;
+      }
+
+      const acc = Number(m.accuracy);
+      const f1 = Number(m.f1_macro);
+      const auc = Number(m.roc_auc);
+
+      document.getElementById("bench-acc").textContent = Number.isFinite(acc) ? (acc * 100).toFixed(2) + "%" : "Unavailable";
+      document.getElementById("bench-f1").textContent = Number.isFinite(f1) ? (f1 * 100).toFixed(2) + "%" : "Unavailable";
+      document.getElementById("bench-auc").textContent = Number.isFinite(auc) ? auc.toFixed(4) : "Unavailable";
+    }
+
+    /* =========================================================
+       Early-Stage Performance Table
+       ========================================================= */
+    function updateEarlyStage() {
+      const currentDs = getCurrentDataset();
+      const early = currentDs.early_stage;
+      const tbody = document.getElementById("early-stage-tbody");
+      const badge = document.getElementById("test-size-badge");
+      const insight = document.getElementById("early-detection-insight");
+      if (!tbody) return;
+
+      tbody.innerHTML = "";
+
+      const testCount = early ? (early.evaluated_test_cascades || early.total_test_cascades) :
+        (currentDs.total_test_cascades || (activeDataset === "politifact" ? 221 : 3826));
+      const formattedTestCount = Number(testCount).toLocaleString();
+
+      if (badge) {
+        badge.textContent = `N = ${formattedTestCount} Test Cascades`;
+      }
+
+      if (!early || !early.stages) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted); text-align:center;">Early-stage evaluation data unavailable</td></tr>`;
+        if (insight) insight.style.display = "none";
+        return;
+      }
+
+      const stageKeys = [
+        { key: "25%", phase: 1, prefix: "1 / 4", label: "25% Quantile" },
+        { key: "50%", phase: 2, prefix: "2 / 4", label: "50% Quantile" },
+        { key: "75%", phase: 3, prefix: "3 / 4", label: "75% Quantile" },
+        { key: "100%", phase: 4, prefix: "4 / 4 (Full)", label: "100% Quantile" },
+      ];
+
+      stageKeys.forEach(({ key, phase, prefix, label }) => {
+        const stageData = early.stages[key];
+        if (!stageData || !stageData.metrics) return;
+
+        const m = stageData.metrics;
+        const tr = document.createElement("tr");
+        if (selectedPhase === phase) {
+          tr.className = "active-stage-row";
+        }
+
+        tr.style.cursor = "pointer";
+        tr.title = `Click to view Phase ${phase} (${key}) cascade topology`;
+        tr.addEventListener("click", () => {
+          handleSliderChange(phase);
+        });
+
+        const acc = Number(m.accuracy);
+        const f1 = Number(m.f1_macro);
+        const auc = Number(m.roc_auc);
+
+        tr.innerHTML = `
+          <td><strong>${label}</strong></td>
+          <td><span style="font-family:monospace; font-size:0.62rem; color:var(--muted);">${prefix}</span></td>
+          <td>${Number.isFinite(acc) ? (acc * 100).toFixed(2) + "%" : "—"}</td>
+          <td>${Number.isFinite(f1) ? (f1 * 100).toFixed(2) + "%" : "—"}</td>
+          <td>${Number.isFinite(auc) ? auc.toFixed(4) : "—"}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (insight) {
+        insight.style.display = "block";
+        if (activeDataset === "politifact") {
+          insight.innerHTML = `
+            <strong>PolitiFact Finding:</strong> Early detection achieves <strong>84.16% Acc</strong> and <strong>0.8795 ROC-AUC</strong> with only 25% chronological observation (1 snapshot prefix), performing at parity with full 100% cascades (83.71% Acc, 0.8818 AUC).
+          `;
+        } else {
+          insight.innerHTML = `
+            <strong>GossipCop Finding:</strong> Monotonic detection scaling from <strong>93.20% Acc / 0.9537 AUC</strong> at 25% observation up to <strong>96.60% Acc / 0.9837 AUC</strong> at 100% full propagation across ${formattedTestCount} test cascades.
+          `;
+        }
+      }
+    }
+
+    function updateModelComparison() {
+      const currentDs = getCurrentDataset();
+      const bench = currentDs.benchmark;
+      const tbody = document.getElementById("benchmark-tbody");
+      tbody.innerHTML = "";
+
+      if (!bench || !bench.results) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:var(--muted); text-align:center;">Benchmark data unavailable</td></tr>`;
+      } else {
+        const modelNames = [
+          { key: "nlp", label: "BERT NLP" },
+          { key: "static_gnn", label: "Static GAT" },
+          { key: "stgnn", label: "STGNN (10 ep)" },
+        ];
+
+        modelNames.forEach(({ key, label }) => {
+          const res = bench.results[key];
+          if (!res) return;
+
+          const tr = document.createElement("tr");
+          if (key === "stgnn") tr.className = "highlight-stgnn";
+
+          const acc = Number(res.accuracy);
+          const prec = Number(res.precision_macro);
+          const rec = Number(res.recall_macro);
+          const f1 = Number(res.f1_macro);
+          const auc = Number(res.roc_auc);
+
+          tr.innerHTML = `
+            <td><strong>${label}</strong></td>
+            <td>${Number.isFinite(acc) ? (acc * 100).toFixed(1) + "%" : "—"}</td>
+            <td>${Number.isFinite(prec) ? (prec * 100).toFixed(1) + "%" : "—"}</td>
+            <td>${Number.isFinite(rec) ? (rec * 100).toFixed(1) + "%" : "—"}</td>
+            <td>${Number.isFinite(f1) ? (f1 * 100).toFixed(1) + "%" : "—"}</td>
+            <td>${Number.isFinite(auc) ? auc.toFixed(3) : "—"}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // Extended STGNN Card (Timestamp-Trained STGNN Checkpoint)
+      let extMetrics = null;
+      if (currentDs.early_stage && currentDs.early_stage.stages && currentDs.early_stage.stages["100%"]) {
+        extMetrics = currentDs.early_stage.stages["100%"].metrics;
+      } else if (currentDs.extended_results && currentDs.extended_results.metrics) {
+        extMetrics = currentDs.extended_results.metrics;
+      }
+
+      if (extMetrics) {
+        const eAcc = Number(extMetrics.accuracy);
+        const eF1 = Number(extMetrics.f1_macro);
+        const eAuc = Number(extMetrics.roc_auc);
+
+        document.getElementById("ext-acc").textContent = Number.isFinite(eAcc) ? (eAcc * 100).toFixed(2) + "%" : "Unavailable";
+        document.getElementById("ext-f1").textContent = Number.isFinite(eF1) ? (eF1 * 100).toFixed(2) + "%" : "Unavailable";
+        document.getElementById("ext-auc").textContent = Number.isFinite(eAuc) ? eAuc.toFixed(4) : "Unavailable";
+      } else {
+        document.getElementById("ext-acc").textContent = "—";
+        document.getElementById("ext-f1").textContent = "—";
+        document.getElementById("ext-auc").textContent = "—";
+      }
+    }
+
+    /* =========================================================
+       Main Dashboard Update
+       ========================================================= */
+    function updateDashboard() {
+      const currentDs = getCurrentDataset();
+      const cascades = currentDs.cascades || [];
+      const cascade = cascades.find(c => c.id === selectedCascade) || cascades[0];
+
+      if (!cascade) return;
+
+      selectedPhase = Math.max(1, Math.min(4, selectedPhase));
+      const phaseSliderEl = document.getElementById("phase-slider");
+      if (phaseSliderEl) phaseSliderEl.value = selectedPhase;
+
+      // Update quick quantile buttons
+      document.querySelectorAll(".phase-btn").forEach((btn) => {
+        const p = parseInt(btn.getAttribute("data-phase"));
+        if (p === selectedPhase) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
+
+      // Sync active row in early-stage table
+      updateEarlyStage();
+
+      const phase = cascade.phases[selectedPhase - 1];
+
+      // Update Phase Info Box
+      document.getElementById("phase-label").textContent =
+        `Phase ${phase.index} (${phase.quantile_pct}% Quantile Snapshot)`;
+
+      const phaseBadge = document.getElementById("phase-badge");
+      if (phaseBadge) phaseBadge.textContent = `P${phase.index} • ${phase.quantile_pct}%`;
+
+      const cutoffTimeEl = document.getElementById("phase-cutoff-time");
+      if (cutoffTimeEl) {
+        cutoffTimeEl.textContent = phase.cutoff_datetime_utc
+          ? `Observed through: ${phase.cutoff_datetime_utc}`
+          : "Cutoff: Timestamp unavailable";
+      }
+
+      const phaseMetaEl = document.getElementById("phase-meta-info");
+      if (phaseMetaEl) {
+        phaseMetaEl.textContent =
+          `${phase.active_nodes} active nodes (${phase.quantile_pct}% cumulative diffusion events)`;
+      }
+
+      // Graph Subtitle
+      const dsName = currentDs.name || (activeDataset === "politifact" ? "UPFD PolitiFact" : "UPFD GossipCop");
+      const cutoffStr = phase.cutoff_datetime_utc ? `Observed through ${phase.cutoff_datetime_utc}` : `Phase ${phase.index}`;
+      document.getElementById("graph-subtitle").textContent =
+        `${dsName} • Cascade #${cascade.id} (${cascade.actual_label}) • P${phase.index} (${phase.quantile_pct}% Quantile) • ${cutoffStr} • ${phase.active_nodes} of ${cascade.num_nodes} nodes`;
+
+      // Prediction
+      const pred = phase.prediction;
+      const actualLabel = cascade.actual_label || "UNKNOWN";
+      const predictedLabel = pred.predicted_label || "UNKNOWN";
+
+      const verdictEl = document.getElementById("verdict");
+      verdictEl.textContent = predictedLabel === "FAKE" ? "FAKE MISINFORMATION" : "REAL / AUTHENTIC";
+      verdictEl.style.color = predictedLabel === "FAKE" ? "var(--fake)" : "var(--real)";
+
+      // Actual and predicted pills
+      document.getElementById("actual-pill").textContent = `Actual: ${actualLabel}`;
+      const predPill = document.getElementById("pred-pill");
+      predPill.textContent = `Predicted: ${predictedLabel}`;
+      predPill.style.color = predictedLabel === "FAKE" ? "var(--fake)" : "var(--real)";
+      predPill.style.borderColor = predictedLabel === "FAKE" ? "rgba(239, 68, 68, 0.5)" : "rgba(16, 185, 129, 0.5)";
+
+      // Correctness status
+      const isCorrect = (actualLabel === predictedLabel);
+      const statusEl = document.getElementById("prediction-status");
+      if (isCorrect) {
+        statusEl.className = "status-pill status-correct";
+        statusEl.textContent = `CORRECT PREDICTION (${predictedLabel})`;
+      } else {
+        statusEl.className = "status-pill status-misclassified";
+        statusEl.textContent = `MISCLASSIFICATION (Predicted ${predictedLabel}, Actual ${actualLabel})`;
+      }
+
+      // Confidence & Probabilities
+      const confVal = Number(pred.confidence);
+      const hasConf = Number.isFinite(confVal) && confVal >= 0 && confVal <= 1;
+
+      document.getElementById("confidence").textContent = hasConf ? `${(confVal * 100).toFixed(1)}%` : "Unavailable";
+      const confBar = document.getElementById("confidence-bar");
+      confBar.style.width = hasConf ? `${confVal * 100}%` : "0%";
+      confBar.style.background = predictedLabel === "FAKE" ? "var(--fake)" : "var(--real)";
+
+      const realProb = Number(pred.real_probability);
+      const fakeProb = Number(pred.fake_probability);
+      document.getElementById("prob-real").textContent = Number.isFinite(realProb) ? `${(realProb * 100).toFixed(1)}%` : "—";
+      document.getElementById("prob-fake").textContent = Number.isFinite(fakeProb) ? `${(fakeProb * 100).toFixed(1)}%` : "—";
+
+      // Misclassification warning on overconfidence
+      const warningEl = document.getElementById("misclass-warning");
+      if (!isCorrect && hasConf && confVal > 0.8) {
+        warningEl.style.display = "block";
+      } else {
+        warningEl.style.display = "none";
+      }
+
+      // Topology Metrics
+      document.getElementById("metric-nodes").textContent = phase.active_nodes;
+      document.getElementById("metric-depth").textContent = cascade.max_depth;
+      document.getElementById("metric-virality").textContent =
+        Number.isFinite(cascade.structural_virality) ? cascade.structural_virality.toFixed(3) : "—";
+      document.getElementById("metric-anomaly").textContent = cascade.num_anomalous_amplifiers;
+
+      // Driver & Amplifier lists
+      renderDrivers(cascade.driver_candidates || []);
+      renderAmplifiers(cascade.amplifier_candidates || []);
+
+      // Graph
+      renderGraph();
+
+      // Node details
+      if (currentlySelectedNodeId !== null) {
+        selectNode(currentlySelectedNodeId, false);
+      } else {
+        resetNodeDetails();
+      }
+    }
+
+    /* =========================================================
+       Driver List
+       ========================================================= */
+    function renderDrivers(drivers) {
+      const container = document.getElementById("driver-list");
+      container.innerHTML = "";
+
+      if (!drivers.length) {
+        container.innerHTML = `<div class="notice">No structural driver candidates identified.</div>`;
+        return;
+      }
+
+      drivers.forEach((driver) => {
+        const item = document.createElement("div");
+        item.className = "item";
+        item.innerHTML = `
+          <div class="item-top">
+            <div>
+              <span class="rank">#${driver.rank}</span>
+              Node ${driver.node}
+            </div>
+            <span class="score">${(Number(driver.score) * 100).toFixed(2)}%</span>
+          </div>
+          <div class="item-small">Structural rumor-centrality heuristic candidate</div>
+        `;
+        item.onclick = () => selectNode(driver.node);
+        container.appendChild(item);
+      });
+    }
+
+    /* =========================================================
+       Amplifier List
+       ========================================================= */
+    function renderAmplifiers(amplifiers) {
+      const container = document.getElementById("amplifier-list");
+      container.innerHTML = "";
+
+      if (!amplifiers.length) {
+        container.innerHTML = `<div class="notice">No anomalous propagation amplifiers identified.</div>`;
+        return;
+      }
+
+      amplifiers.slice(0, 6).forEach((amplifier) => {
+        const item = document.createElement("div");
+        item.className = "item";
+        item.innerHTML = `
+          <div class="item-top">
+            <div>Node ${amplifier.node}</div>
+            <span class="score" style="color:var(--anomaly);">${(Number(amplifier.score) * 100).toFixed(1)}%</span>
+          </div>
+          <div class="item-small">Heuristic anomaly score • Fan-out: ${amplifier.fanout}</div>
+        `;
+        item.onclick = () => selectNode(amplifier.node);
+        container.appendChild(item);
+      });
+    }
+
+    /* =========================================================
+       Graph Rendering
+       ========================================================= */
+    function renderGraph() {
+      const currentDs = getCurrentDataset();
+      const cascades = currentDs.cascades || [];
+      const cascade = cascades.find(c => c.id === selectedCascade) || cascades[0];
+      if (!cascade) return;
+
+      const phase = cascade.phases[selectedPhase - 1];
+      const container = document.getElementById("graph");
+
+      if (typeof vis === "undefined" || !vis.Network) {
+        container.innerHTML = `<div class="error">Vis.js is loading or unavailable. Check connection.</div>`;
+        return;
+      }
+
+      const driverSet = new Set((cascade.driver_candidates || []).map(d => d.node));
+      const amplifierSet = new Set((cascade.amplifier_candidates || []).map(a => a.node));
+
+      const nodes = new vis.DataSet(
+        phase.nodes.map((node) => {
+          const isRoot = Boolean(node.is_root);
+          const isDriver = Boolean(node.is_driver || driverSet.has(node.id));
+          const isAmplifier = Boolean(node.is_amplifier || amplifierSet.has(node.id));
+          const isDualRole = isDriver && isAmplifier;
+
+          let color = "#38bdf8";
+          let shape = "dot";
+          let size = 13;
+          let borderWidth = 1.5;
+          let borderColor = "#ffffff";
+          let highlightBg = "#38bdf8";
+          let highlightBorder = "#ffffff";
+          let roleLabel = node.role || "Retweeter";
+
+          if (isRoot) {
+            color = "#fbbf24";
+            shape = "star";
+            size = 28;
+            borderWidth = 3;
+            borderColor = "#ffffff";
+            highlightBg = "#fbbf24";
+            highlightBorder = "#ffffff";
+            roleLabel = "News / Root Node";
+          } else if (isDualRole) {
+            color = "#f43f5e"; // Pink diamond body
+            shape = "diamond";
+            size = 23;
+            borderWidth = 3.5;
+            borderColor = "#fbbf24"; // Distinct yellow/gold outline for overlap
+            highlightBg = "#f43f5e";
+            highlightBorder = "#fbbf24";
+            roleLabel = "Driver & Amplifier (Dual Role)";
+          } else if (isDriver) {
+            color = "#fbbf24"; // Yellow diamond
+            shape = "diamond";
+            size = 21;
+            borderWidth = 2;
+            borderColor = "#ffffff";
+            highlightBg = "#fbbf24";
+            highlightBorder = "#ffffff";
+            roleLabel = "Propagation Driver Candidate";
+          } else if (isAmplifier) {
+            color = "#f43f5e"; // Pink diamond
+            shape = "diamond";
+            size = 20;
+            borderWidth = 2;
+            borderColor = "#ffffff";
+            highlightBg = "#f43f5e";
+            highlightBorder = "#ffffff";
+            roleLabel = "Propagation Amplifier (Heuristic)";
+          } else {
+            roleLabel = "Retweeter";
+          }
+
+          const timeTip = isRoot
+            ? "Not applicable (News root)"
+            : (node.datetime_utc || node.timestamp_label || "Unavailable");
+
+          return {
+            id: node.id,
+            label: isRoot ? "NEWS" : `U${node.id}`,
+            title: `
+              <strong>${roleLabel}</strong><br>
+              Observed Time: ${timeTip}<br>
+              Depth: ${node.depth}<br>
+              Out-degree: ${node.out_degree}<br>
+              Driver score: ${(Number(node.driver_score) * 100).toFixed(2)}%<br>
+              Anomaly score: ${(Number(node.anomaly_score) * 100).toFixed(2)}%
+            `,
+            shape: shape,
+            size: size,
+            color: {
+              background: color,
+              border: borderColor,
+              highlight: { background: highlightBg, border: highlightBorder }
+            },
+            font: {
+              color: "#ffffff",
+              size: isRoot ? 13 : 10,
+              face: "Arial"
+            },
+            borderWidth: borderWidth,
+          };
+        })
+      );
+
+      const edges = new vis.DataSet(
+        phase.edges.map((edge) => ({
+          from: edge.from,
+          to: edge.to,
+          arrows: "to",
+          color: "#475569",
+          width: 1.4,
+        }))
+      );
+
+      if (network) {
+        network.destroy();
+        network = null;
+      }
+
+      let options;
+      if (currentMode === "tree") {
+        options = {
+          layout: {
+            hierarchical: {
+              enabled: true,
+              direction: "UD",
+              sortMethod: "directed",
+              levelSeparation: 90,
+              nodeSpacing: 90,
+              treeSpacing: 110,
+            }
+          },
+          physics: { enabled: false },
+          interaction: { hover: true, zoomView: true, dragView: true, dragNodes: true }
+        };
+      } else {
+        options = {
+          physics: {
+            enabled: true,
+            stabilization: { iterations: 140 },
+            barnesHut: { gravitationalConstant: -3500, springLength: 100 }
+          },
+          interaction: { hover: true, zoomView: true, dragView: true, dragNodes: true }
+        };
+      }
+
+      network = new vis.Network(container, { nodes, edges }, options);
+
+      network.on("selectNode", (params) => {
+        if (params.nodes && params.nodes.length) {
+          selectNode(params.nodes[0]);
+        }
+      });
+
+      network.once("afterDrawing", () => {
+        network.fit();
+      });
+    }
+
+    /* =========================================================
+       Node Inspector
+       ========================================================= */
+    function resetNodeDetails() {
+      currentlySelectedNodeId = null;
+      document.getElementById("detail-node").textContent = "—";
+      document.getElementById("detail-role").textContent = "Click a graph node or candidate";
+      document.getElementById("detail-depth").textContent = "—";
+      document.getElementById("detail-degree").textContent = "—";
+      document.getElementById("detail-driver").textContent = "—";
+      document.getElementById("detail-anomaly").textContent = "—";
+      document.getElementById("detail-timestamp").textContent = "—";
+      const rootNote = document.getElementById("root-timestamp-note");
+      if (rootNote) rootNote.style.display = "none";
+    }
+
+    function selectNode(nodeId, focusGraph = true) {
+      currentlySelectedNodeId = nodeId;
+      const currentDs = getCurrentDataset();
+      const cascades = currentDs.cascades || [];
+      const cascade = cascades.find(c => c.id === selectedCascade) || cascades[0];
+      if (!cascade) return;
+
+      const phase = cascade.phases[selectedPhase - 1];
+      const node = phase.nodes.find(n => n.id === nodeId);
+
+      const rootNote = document.getElementById("root-timestamp-note");
+      const tsEl = document.getElementById("detail-timestamp");
+
+      if (!node) {
+        // Node not yet active in this phase
+        document.getElementById("detail-node").textContent = `Node ${nodeId}`;
+        document.getElementById("detail-role").textContent = "Inactive in current phase";
+        document.getElementById("detail-depth").textContent = "—";
+        document.getElementById("detail-degree").textContent = "—";
+        document.getElementById("detail-driver").textContent = "—";
+        document.getElementById("detail-anomaly").textContent = "—";
+        tsEl.textContent = "Not yet observed in current quantile";
+        tsEl.style.color = "var(--muted)";
+        if (rootNote) rootNote.style.display = "none";
+        return;
+      }
+
+      const driverSet = new Set((cascade.driver_candidates || []).map(d => d.node));
+      const amplifierSet = new Set((cascade.amplifier_candidates || []).map(a => a.node));
+      const isDriver = Boolean(node.is_driver || driverSet.has(node.id));
+      const isAmplifier = Boolean(node.is_amplifier || amplifierSet.has(node.id));
+
+      let roleDisplay = "Retweeter";
+      if (node.is_root) {
+        roleDisplay = "News / Root Node";
+      } else if (isDriver && isAmplifier) {
+        roleDisplay = "Driver & Amplifier (Dual Role)";
+      } else if (isDriver) {
+        roleDisplay = "Propagation Driver Candidate";
+      } else if (isAmplifier) {
+        roleDisplay = "Propagation Amplifier (Heuristic)";
+      }
+
+      document.getElementById("detail-node").textContent = node.is_root ? "NEWS / ROOT" : `Node ${node.id}`;
+      document.getElementById("detail-role").textContent = roleDisplay;
+      document.getElementById("detail-depth").textContent = node.depth;
+      document.getElementById("detail-degree").textContent = node.out_degree;
+      document.getElementById("detail-driver").textContent = node.is_root ? "— (Root)" : `${(Number(node.driver_score) * 100).toFixed(2)}%`;
+      document.getElementById("detail-anomaly").textContent = `${(Number(node.anomaly_score) * 100).toFixed(2)}%`;
+
+      if (node.is_root) {
+        tsEl.textContent = "Not applicable (News root)";
+        tsEl.style.color = "var(--muted)";
+        if (rootNote) rootNote.style.display = "block";
+      } else if (node.datetime_utc) {
+        tsEl.textContent = node.datetime_utc;
+        tsEl.style.color = "var(--accent)";
+        if (rootNote) rootNote.style.display = "none";
+      } else {
+        tsEl.textContent = "Timestamp unavailable";
+        tsEl.style.color = "var(--muted)";
+        if (rootNote) rootNote.style.display = "none";
+      }
+
+      if (focusGraph && network) {
+        try {
+          network.selectNodes([nodeId]);
+          network.focus(nodeId, {
+            scale: 1.25,
+            animation: { duration: 400 }
+          });
+        } catch (e) {}
+      }
+    }
+
+    // Launch
+    loadDashboard();
+  </script>
+
+</body>
+</html>

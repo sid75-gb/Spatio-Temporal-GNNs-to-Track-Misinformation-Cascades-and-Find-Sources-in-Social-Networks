@@ -1,0 +1,25 @@
+﻿# Python environments
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Large local datasets and model checkpoints
+data/UPFD/
+checkpoints/
+*.pt
+*.pth
+*.pkl
+
+# Temporary files
+*.log
+*.tmp
+
+# Local backups and temporary audit files
+*.bak*
+scratch/

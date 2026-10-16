@@ -1,0 +1,19 @@
+{
+  "model": "stgnn",
+  "dataset": "gossipcop",
+  "temporal_mode": "timestamp",
+  "seed": 42,
+  "metrics": {
+    "accuracy": 0.9660219550444328,
+    "precision_macro": 0.966048805815161,
+    "recall_macro": 0.96602842964728,
+    "f1_macro": 0.9660217229250421,
+    "f1_binary": 0.9659329140461216,
+    "roc_auc": 0.9837406682770604,
+    "tp": 1843.0,
+    "fp": 57.0,
+    "tn": 1853.0,
+    "fn": 73.0,
+    "loss": 0.15008429554984815
+  }
+}
