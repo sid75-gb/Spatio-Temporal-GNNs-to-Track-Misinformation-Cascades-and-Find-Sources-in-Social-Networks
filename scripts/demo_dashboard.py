@@ -118,6 +118,19 @@ EARLY_STAGE_PATHS = {
     ),
 }
 
+CALIBRATION_PATHS = {
+    "politifact": (
+        PROJECT_ROOT
+        / "outputs"
+        / "calibration_politifact.json"
+    ),
+    "gossipcop": (
+        PROJECT_ROOT
+        / "outputs"
+        / "calibration_gossipcop.json"
+    ),
+}
+
 
 
 # ---------------------------------------------------------------------
@@ -515,6 +528,17 @@ def process_dataset(
         except Exception as e:
             print(f"  [Warning] Failed to load early-stage metrics from {early_stage_path}: {e}")
 
+    # 5. Load probability calibration evaluation results
+    calib_path = CALIBRATION_PATHS.get(dataset_name)
+    calibration_data = None
+    if calib_path and calib_path.exists():
+        try:
+            with open(calib_path, "r", encoding="utf-8") as f:
+                calibration_data = json.load(f)
+            print(f"  Loaded calibration evaluation results from {calib_path.name}.")
+        except Exception as e:
+            print(f"  [Warning] Failed to load calibration results from {calib_path}: {e}")
+
     # 4. Process test cascades
     cascades = []
     total_test = len(test_ds)
@@ -726,6 +750,7 @@ def process_dataset(
         "benchmark": benchmark_data,
         "extended_results": extended_data,
         "early_stage": early_stage_data,
+        "calibration": calibration_data,
         "cascades": cascades,
     }
 
@@ -803,6 +828,10 @@ def generate_dashboard_data(
         "datasets": processed_datasets,
         "early_stage": {
             ds_name: processed_datasets[ds_name].get("early_stage")
+            for ds_name in processed_datasets
+        },
+        "calibration": {
+            ds_name: processed_datasets[ds_name].get("calibration")
             for ds_name in processed_datasets
         },
         # Backward compatibility for direct top-level access:

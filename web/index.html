@@ -551,6 +551,196 @@
       color: #fca5a5;
       font-size: 0.9rem;
     }
+
+    /* =========================================================
+       Probability Calibration Styles
+       ========================================================= */
+    .calib-card {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .calib-meta-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.3rem;
+      background: #080d17;
+      padding: 0.4rem;
+      border-radius: 6px;
+      border: 1px solid rgba(34, 48, 71, 0.6);
+      text-align: center;
+    }
+
+    .calib-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .calib-meta-label {
+      font-size: 0.52rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .calib-meta-val {
+      font-size: 0.72rem;
+      color: #fff;
+      font-family: monospace;
+    }
+
+    .calibration-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.62rem;
+    }
+
+    .calibration-table th {
+      color: var(--muted);
+      font-size: 0.55rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      text-align: right;
+      padding: 0.28rem 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .calibration-table th:first-child {
+      text-align: left;
+    }
+
+    .calibration-table td {
+      padding: 0.3rem 0.35rem;
+      text-align: right;
+      border-bottom: 1px solid rgba(34, 48, 71, 0.5);
+      font-family: monospace;
+      font-size: 0.64rem;
+    }
+
+    .calibration-table td:first-child {
+      text-align: left;
+      font-family: inherit;
+      font-size: 0.62rem;
+      color: #e2e8f0;
+    }
+
+    .delta-good {
+      color: var(--real);
+      font-weight: 700;
+    }
+
+    .delta-invariant {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .reliability-container {
+      background: #080d17;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem;
+    }
+
+    .reliability-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+
+    .reliability-toggle {
+      display: flex;
+      gap: 0.25rem;
+    }
+
+    .calib-toggle-btn {
+      background: #111c2d;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.55rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .calib-toggle-btn:hover {
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .calib-toggle-btn.active {
+      background: rgba(56, 189, 248, 0.18);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .reliability-svg-wrap {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      background: #060a12;
+      border: 1px solid rgba(34, 48, 71, 0.5);
+      border-radius: 5px;
+      padding: 0.3rem 0.1rem;
+    }
+
+    .reliability-legend {
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      font-size: 0.58rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .legend-swatch {
+      display: inline-block;
+      width: 12px;
+      height: 3px;
+      border-radius: 1px;
+    }
+
+    .swatch-perfect {
+      background: repeating-linear-gradient(to right, #64748b, #64748b 3px, transparent 3px, transparent 6px);
+      height: 2px;
+    }
+
+    .swatch-uncal {
+      background: #f43f5e;
+      height: 3px;
+    }
+
+    .swatch-cal {
+      background: #38bdf8;
+      height: 3px;
+    }
+
+    .calib-notice {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      padding: 0.45rem 0.55rem;
+      font-size: 0.58rem;
+      color: #94a3b8;
+      line-height: 1.4;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
   </style>
 </head>
 
@@ -795,6 +985,92 @@
         </div>
       </div>
 
+      <!-- Probability Calibration Analysis (100% Full Observation) -->
+      <div>
+        <div class="section-title">
+          <span>Calibration Analysis</span>
+          <span class="badge" id="calib-scope-badge" style="font-size:0.55rem; padding:0.1rem 0.4rem; border-color: rgba(56, 189, 248, 0.4); color: var(--accent);">100% Full Cascades Only</span>
+        </div>
+
+        <div style="font-size:0.62rem; color:var(--muted); margin-bottom:0.4rem; line-height:1.35;">
+          Post-hoc temperature scaling (<span id="calib-inline-temp" style="color:var(--accent); font-family:monospace; font-weight:700;">T*</span>) on held-out test predictions. Evaluates probability reliability without retraining model weights or altering classification accuracy:
+        </div>
+
+        <div class="calib-card" id="calibration-card">
+          <!-- Metadata Pill Bar -->
+          <div class="calib-meta-bar">
+            <div class="calib-meta-item">
+              <span class="calib-meta-label">Fitted Temp (T*)</span>
+              <strong class="calib-meta-val" id="calib-temp" style="color:var(--accent);">—</strong>
+            </div>
+            <div class="calib-meta-item">
+              <span class="calib-meta-label">Val Fit (N)</span>
+              <strong class="calib-meta-val" id="calib-val-count">—</strong>
+            </div>
+            <div class="calib-meta-item">
+              <span class="calib-meta-label">Test Eval (N)</span>
+              <strong class="calib-meta-val" id="calib-test-count">—</strong>
+            </div>
+            <div class="calib-meta-item">
+              <span class="calib-meta-label">Val NLL</span>
+              <strong class="calib-meta-val" id="calib-val-nll" style="color:var(--real);">—</strong>
+            </div>
+          </div>
+
+          <!-- Before / After Metrics Table -->
+          <table class="calibration-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Uncal (T=1.0)</th>
+                <th>Cal (T=T*)</th>
+                <th>Delta</th>
+              </tr>
+            </thead>
+            <tbody id="calibration-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+
+          <!-- Reliability Diagram Visualizer -->
+          <div class="reliability-container">
+            <div class="reliability-header">
+              <span style="font-size:0.65rem; font-weight:700; color:#dbeafe;">Reliability Diagram (10 Bins)</span>
+              <div class="reliability-toggle">
+                <button id="calib-btn-pos" class="calib-toggle-btn active" title="Marginal calibration for P(FAKE) over [0, 1]">P(FAKE)</button>
+                <button id="calib-btn-top" class="calib-toggle-btn" title="Confidence calibration for top predicted class over [0, 1]">Top-Label</button>
+              </div>
+            </div>
+
+            <!-- SVG Chart -->
+            <div class="reliability-svg-wrap">
+              <svg id="reliability-svg" viewBox="0 0 310 190" preserveAspectRatio="xMidYMid meet"></svg>
+            </div>
+
+            <!-- Reliability Legend -->
+            <div class="reliability-legend">
+              <div class="legend-item"><span class="legend-swatch swatch-perfect"></span> Perfect (y=x)</div>
+              <div class="legend-item"><span class="legend-swatch swatch-uncal"></span> Uncal (T=1.0)</div>
+              <div class="legend-item"><span class="legend-swatch swatch-cal"></span> Cal (T=T*)</div>
+            </div>
+
+            <div id="reliability-stats-caption" style="text-align:center; font-size:0.56rem; color:var(--muted); margin-top:0.3rem; font-family:monospace;">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+          <!-- Methodological & Scope Safeguards Notice -->
+          <div class="calib-notice">
+            <div style="margin-bottom:0.15rem;">
+              <strong style="color:#dbeafe;">⚠️ Scope & Evaluation Safeguards:</strong>
+            </div>
+            <div>• <strong>100% Full-Observation Scope:</strong> Calibration is fitted and evaluated strictly on complete 4-snapshot cascade observations. Fitted temperatures have <em>not</em> been validated for early-stage prefix horizons.</div>
+            <div>• <strong>Probability Adjustment Only:</strong> Temperature scaling adjusts confidence probabilities; discrete predicted classes and ROC-AUC are mathematically preserved ($T > 0$ monotonicity).</div>
+            <div>• <strong>No Source-Localization Claims:</strong> This is a probability calibration audit, not a new model architecture or evidence of improved patient-zero identification.</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Method Status & Research Safeguards -->
       <div>
         <div class="section-title">
@@ -922,6 +1198,7 @@
     let selectedCascade = 0;
     let selectedPhase = 4;
     let currentlySelectedNodeId = null;
+    let currentCalibStrategy = "positive_class";
 
     /* =========================================================
        Load data
@@ -1032,6 +1309,29 @@
         if (network) network.fit({ animation: { duration: 400 } });
       });
 
+      // Calibration strategy toggle buttons
+      const btnPos = document.getElementById("calib-btn-pos");
+      const btnTop = document.getElementById("calib-btn-top");
+      if (btnPos && btnTop) {
+        btnPos.addEventListener("click", () => {
+          currentCalibStrategy = "positive_class";
+          btnPos.classList.add("active");
+          btnTop.classList.remove("active");
+          const currentDs = getCurrentDataset();
+          const calib = currentDs.calibration || (dashboardData.calibration ? dashboardData.calibration[activeDataset] : null);
+          if (calib) renderReliabilityDiagram(calib, currentCalibStrategy);
+        });
+
+        btnTop.addEventListener("click", () => {
+          currentCalibStrategy = "top_label";
+          btnTop.classList.add("active");
+          btnPos.classList.remove("active");
+          const currentDs = getCurrentDataset();
+          const calib = currentDs.calibration || (dashboardData.calibration ? dashboardData.calibration[activeDataset] : null);
+          if (calib) renderReliabilityDiagram(calib, currentCalibStrategy);
+        });
+      }
+
       // Update UI
       switchDataset(activeDataset);
     }
@@ -1079,10 +1379,11 @@
         headerSplitBadge.textContent = `Held-Out Test Set: ${Number(testCount).toLocaleString()} Cascades`;
       }
 
-      // Update benchmark strip, early-stage table, and model comparison
+      // Update benchmark strip, early-stage table, model comparison, and calibration analysis
       updateBenchmark();
       updateEarlyStage();
       updateModelComparison();
+      updateCalibration();
 
       // Populate cascades for active dataset
       populateCascadeSelect();
@@ -1293,6 +1594,262 @@
         document.getElementById("ext-acc").textContent = "—";
         document.getElementById("ext-f1").textContent = "—";
         document.getElementById("ext-auc").textContent = "—";
+      }
+    }
+
+    /* =========================================================
+       Calibration Analysis
+       ========================================================= */
+    function updateCalibration() {
+      const currentDs = getCurrentDataset();
+      const calib = currentDs.calibration || (dashboardData.calibration ? dashboardData.calibration[activeDataset] : null);
+
+      const tbody = document.getElementById("calibration-tbody");
+      if (!tbody) return;
+
+      if (!calib || !calib.test_metrics_uncalibrated || !calib.test_metrics_calibrated) {
+        tbody.innerHTML = `<tr><td colspan="4" style="color:var(--muted); text-align:center;">Calibration evaluation data unavailable</td></tr>`;
+        document.getElementById("calib-temp").textContent = "—";
+        document.getElementById("calib-val-count").textContent = "—";
+        document.getElementById("calib-test-count").textContent = "—";
+        document.getElementById("calib-val-nll").textContent = "—";
+        return;
+      }
+
+      const tempVal = Number(calib.calibration_protocol ? calib.calibration_protocol.fitted_temperature : calib.fitted_temperature);
+      const valCount = calib.sample_counts ? calib.sample_counts.validation_total : (activeDataset === "politifact" ? 31 : 546);
+      const testCount = calib.sample_counts ? calib.sample_counts.test_total : (activeDataset === "politifact" ? 221 : 3826);
+      const valUncal = calib.validation_metrics ? Number(calib.validation_metrics.uncalibrated_nll) : null;
+      const valCal = calib.validation_metrics ? Number(calib.validation_metrics.calibrated_nll) : null;
+
+      document.getElementById("calib-temp").textContent = Number.isFinite(tempVal) ? tempVal.toFixed(4) : "—";
+      const inlineTemp = document.getElementById("calib-inline-temp");
+      if (inlineTemp) inlineTemp.textContent = Number.isFinite(tempVal) ? `T* = ${tempVal.toFixed(4)}` : "T*";
+      document.getElementById("calib-val-count").textContent = valCount.toLocaleString();
+      document.getElementById("calib-test-count").textContent = testCount.toLocaleString();
+
+      if (valUncal !== null && valCal !== null && Number.isFinite(valUncal) && Number.isFinite(valCal)) {
+        document.getElementById("calib-val-nll").textContent = `${valUncal.toFixed(3)} → ${valCal.toFixed(3)}`;
+      } else {
+        document.getElementById("calib-val-nll").textContent = "—";
+      }
+
+      const uncal = calib.test_metrics_uncalibrated;
+      const cal = calib.test_metrics_calibrated;
+
+      const rows = [
+        {
+          label: "Negative Log-Likelihood (NLL)",
+          uncal: Number(uncal.negative_log_likelihood),
+          cal: Number(cal.negative_log_likelihood),
+          deltaFormat: (d) => `${d > 0 ? "+" : ""}${d.toFixed(4)}`,
+          isLowerBetter: true,
+          isInvariant: false,
+        },
+        {
+          label: "Binary Brier Score (P(FAKE))",
+          uncal: Number(uncal.brier_score_binary),
+          cal: Number(cal.brier_score_binary),
+          deltaFormat: (d) => `${d > 0 ? "+" : ""}${d.toFixed(4)}`,
+          isLowerBetter: true,
+          isInvariant: false,
+        },
+        {
+          label: "Top-Label ECE",
+          uncal: Number(uncal.ece_top_label),
+          cal: Number(cal.ece_top_label),
+          deltaFormat: (d) => `${d > 0 ? "+" : ""}${d.toFixed(4)}`,
+          isLowerBetter: true,
+          isInvariant: false,
+        },
+        {
+          label: "Positive-Class ECE (P(FAKE))",
+          uncal: Number(uncal.ece_positive_class),
+          cal: Number(cal.ece_positive_class),
+          deltaFormat: (d) => `${d > 0 ? "+" : ""}${d.toFixed(4)}`,
+          isLowerBetter: true,
+          isInvariant: false,
+        },
+        {
+          label: "Test Accuracy",
+          uncal: Number(uncal.accuracy) * 100,
+          cal: Number(cal.accuracy) * 100,
+          uncalFormat: (v) => `${v.toFixed(2)}%`,
+          calFormat: (v) => `${v.toFixed(2)}%`,
+          deltaFormat: () => `0.00% (Invariant)`,
+          isInvariant: true,
+        },
+        {
+          label: "ROC-AUC",
+          uncal: Number(uncal.roc_auc),
+          cal: Number(cal.roc_auc),
+          deltaFormat: () => `0.0000 (Invariant)`,
+          isInvariant: true,
+        },
+      ];
+
+      tbody.innerHTML = "";
+      rows.forEach((r) => {
+        const tr = document.createElement("tr");
+        const uVal = r.uncalFormat ? r.uncalFormat(r.uncal) : (Number.isFinite(r.uncal) ? r.uncal.toFixed(4) : "—");
+        const cVal = r.calFormat ? r.calFormat(r.cal) : (Number.isFinite(r.cal) ? r.cal.toFixed(4) : "—");
+
+        let deltaHtml = "—";
+        if (r.isInvariant) {
+          deltaHtml = `<span class="delta-invariant">${r.deltaFormat(0)}</span>`;
+        } else if (Number.isFinite(r.uncal) && Number.isFinite(r.cal)) {
+          const diff = r.cal - r.uncal;
+          const isImprovement = r.isLowerBetter ? diff < 0 : diff > 0;
+          deltaHtml = `<span class="${isImprovement ? 'delta-good' : ''}">${r.deltaFormat(diff)}</span>`;
+        }
+
+        tr.innerHTML = `
+          <td>${r.label}</td>
+          <td>${uVal}</td>
+          <td><strong>${cVal}</strong></td>
+          <td>${deltaHtml}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      renderReliabilityDiagram(calib, currentCalibStrategy);
+    }
+
+    function renderReliabilityDiagram(calib, strategy) {
+      const svg = document.getElementById("reliability-svg");
+      if (!svg) return;
+
+      const uncalKey = strategy === "positive_class" ? "reliability_diagram_positive_class" : "reliability_diagram_top_label";
+      const calKey = strategy === "positive_class" ? "reliability_diagram_positive_class" : "reliability_diagram_top_label";
+
+      const diagUncal = calib.test_metrics_uncalibrated[uncalKey];
+      const diagCal = calib.test_metrics_calibrated[calKey];
+
+      if (!diagUncal || !diagCal) {
+        svg.innerHTML = `<text x="155" y="95" fill="#64748b" text-anchor="middle" font-size="11">Diagram data unavailable</text>`;
+        return;
+      }
+
+      // Coordinates setup
+      const w = 310, h = 190;
+      const margin = { left: 40, right: 18, top: 18, bottom: 32 };
+      const plotW = w - margin.left - margin.right; // 252
+      const plotH = h - margin.top - margin.bottom;  // 140
+
+      function toX(val) {
+        return margin.left + Math.max(0, Math.min(1, val)) * plotW;
+      }
+      function toY(val) {
+        return (margin.top + plotH) - Math.max(0, Math.min(1, val)) * plotH;
+      }
+
+      let svgContent = "";
+
+      // Background rect
+      svgContent += `<rect x="${margin.left}" y="${margin.top}" width="${plotW}" height="${plotH}" fill="#080d17" stroke="#223047" stroke-width="1"/>`;
+
+      // Grid lines & Axis ticks (at 0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
+      for (let t = 0; t <= 1.001; t += 0.2) {
+        const xPos = toX(t);
+        const yPos = toY(t);
+
+        // Vertical grid & tick
+        svgContent += `<line x1="${xPos}" y1="${margin.top}" x2="${xPos}" y2="${margin.top + plotH}" stroke="#162235" stroke-width="0.8"/>`;
+        svgContent += `<text x="${xPos}" y="${margin.top + plotH + 13}" fill="#64748b" font-size="8.5" text-anchor="middle" font-family="monospace">${t.toFixed(1)}</text>`;
+
+        // Horizontal grid & tick
+        svgContent += `<line x1="${margin.left}" y1="${yPos}" x2="${margin.left + plotW}" y2="${yPos}" stroke="#162235" stroke-width="0.8"/>`;
+        svgContent += `<text x="${margin.left - 5}" y="${yPos + 3}" fill="#64748b" font-size="8.5" text-anchor="end" font-family="monospace">${t.toFixed(1)}</text>`;
+      }
+
+      // Axis labels
+      const xLabel = strategy === "positive_class" ? "Mean Predicted P(FAKE)" : "Mean Top Confidence";
+      const yLabel = strategy === "positive_class" ? "Observed FAKE Rate" : "Observed Accuracy";
+
+      svgContent += `<text x="${margin.left + plotW / 2}" y="${h - 4}" fill="#94a3b8" font-size="9" text-anchor="middle" font-weight="600">${xLabel}</text>`;
+      svgContent += `<text x="11" y="${margin.top + plotH / 2}" fill="#94a3b8" font-size="9" text-anchor="middle" font-weight="600" transform="rotate(-90 11 ${margin.top + plotH / 2})">${yLabel}</text>`;
+
+      // Perfect calibration diagonal: (0, 0) to (1, 1)
+      svgContent += `<line x1="${toX(0)}" y1="${toY(0)}" x2="${toX(1)}" y2="${toY(1)}" stroke="#64748b" stroke-dasharray="3,3" stroke-width="1.3"/>`;
+
+      // Helper to extract valid points (skipping empty bins with null values)
+      function getValidPoints(diag) {
+        const pts = [];
+        const nBins = diag.num_bins || 10;
+        for (let i = 0; i < nBins; i++) {
+          const count = diag.sample_counts ? diag.sample_counts[i] : 0;
+          const conf = diag.bin_confidences ? diag.bin_confidences[i] : null;
+          const acc = diag.bin_accuracies ? diag.bin_accuracies[i] : null;
+          const gap = diag.bin_gaps ? diag.bin_gaps[i] : null;
+
+          if (count > 0 && conf !== null && acc !== null && Number.isFinite(conf) && Number.isFinite(acc)) {
+            const eLow = diag.bin_edges ? diag.bin_edges[i] : (i / nBins);
+            const eHigh = diag.bin_edges ? diag.bin_edges[i + 1] : ((i + 1) / nBins);
+            pts.push({
+              bin: i,
+              count: count,
+              conf: conf,
+              acc: acc,
+              gap: gap,
+              edgeLow: eLow,
+              edgeHigh: eHigh,
+              x: toX(conf),
+              y: toY(acc),
+            });
+          }
+        }
+        return pts;
+      }
+
+      const uncalPts = getValidPoints(diagUncal);
+      const calPts = getValidPoints(diagCal);
+
+      // Draw Uncalibrated line (red/pink: #f43f5e)
+      if (uncalPts.length > 1) {
+        let pathD = `M ${uncalPts[0].x} ${uncalPts[0].y}`;
+        for (let i = 1; i < uncalPts.length; i++) {
+          pathD += ` L ${uncalPts[i].x} ${uncalPts[i].y}`;
+        }
+        svgContent += `<path d="${pathD}" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>`;
+      }
+
+      // Draw Calibrated line (cyan/accent: #38bdf8)
+      if (calPts.length > 1) {
+        let pathD = `M ${calPts[0].x} ${calPts[0].y}`;
+        for (let i = 1; i < calPts.length; i++) {
+          pathD += ` L ${calPts[i].x} ${calPts[i].y}`;
+        }
+        svgContent += `<path d="${pathD}" fill="none" stroke="#38bdf8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+      }
+
+      // Draw Uncalibrated markers (pink circles)
+      uncalPts.forEach((p) => {
+        svgContent += `
+          <circle cx="${p.x}" cy="${p.y}" r="3.2" fill="#f43f5e" stroke="#080d17" stroke-width="1.2">
+            <title>Uncalibrated Bin [${p.edgeLow.toFixed(1)}-${p.edgeHigh.toFixed(1)}]: Conf=${p.conf.toFixed(3)}, Acc=${p.acc.toFixed(3)}, N=${p.count}, Gap=${p.gap !== null ? p.gap.toFixed(3) : '—'}</title>
+          </circle>
+        `;
+      });
+
+      // Draw Calibrated markers (cyan circles)
+      calPts.forEach((p) => {
+        svgContent += `
+          <circle cx="${p.x}" cy="${p.y}" r="3.6" fill="#38bdf8" stroke="#ffffff" stroke-width="1.2">
+            <title>Calibrated Bin [${p.edgeLow.toFixed(1)}-${p.edgeHigh.toFixed(1)}]: Conf=${p.conf.toFixed(3)}, Acc=${p.acc.toFixed(3)}, N=${p.count}, Gap=${p.gap !== null ? p.gap.toFixed(3) : '—'}</title>
+          </circle>
+        `;
+      });
+
+      svg.innerHTML = svgContent;
+
+      // Update caption with ECE scores and empty bins notification
+      const caption = document.getElementById("reliability-stats-caption");
+      if (caption) {
+        const uEce = Number.isFinite(diagUncal.ece) ? diagUncal.ece.toFixed(4) : "—";
+        const cEce = Number.isFinite(diagCal.ece) ? diagCal.ece.toFixed(4) : "—";
+        const emptyBinsCount = 10 - calPts.length;
+        const emptyNotice = emptyBinsCount > 0 ? ` • ${emptyBinsCount} empty bins excluded` : "";
+        caption.innerHTML = `ECE: <span style="color:#f43f5e;">${uEce}</span> (Uncal) → <span style="color:#38bdf8; font-weight:700;">${cEce}</span> (Cal)${emptyNotice}`;
       }
     }
 
