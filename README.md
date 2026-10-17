@@ -5,9 +5,6 @@
 [![PyG 2.5+](https://img.shields.io/badge/PyG-2.5+-3C2179.svg)](https://pyg.org/)
 [![Status: Research Prototype](https://img.shields.io/badge/Status-Research%20Prototype-success.svg)](#)
 
-> **MSc Data Science Research Project**
-> **Author:** Siddharth Gupta
-> **Repository:** [sid75-gb/Spatio-Temporal-GNNs-to-Track-Misinformation-Cascades-and-Find-Sources-in-Social-Networks](https://github.com/sid75-gb/Spatio-Temporal-GNNs-to-Track-Misinformation-Cascades-and-Find-Sources-in-Social-Networks)
 >
 > **Abstract:**
 > The diffusion of misinformation across online social platforms presents significant risks to public discourse, democratic processes, and public health. Classical detection approaches rely primarily on natural language processing (NLP) of post text, leaving them vulnerable to adversarial paraphrasing, stylistic variation, and context deprivation. This project investigates structural and temporal representations of information diffusion by modeling misinformation propagation as dynamic, timestamp-ordered cascade trees on Twitter interaction graphs.
