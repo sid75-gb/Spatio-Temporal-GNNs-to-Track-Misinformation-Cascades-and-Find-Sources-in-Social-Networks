@@ -49,6 +49,10 @@ from src.data.cascade_features import (
 )
 from src.algorithms.bot_detection import BotNetworkIsolator
 from src.data.temporal_builder import TemporalCascadeBuilder
+from src.evaluation.xai import (
+    compute_node_attribution,
+    compute_modality_attribution,
+)
 
 
 # ---------------------------------------------------------------------
@@ -128,6 +132,19 @@ CALIBRATION_PATHS = {
         PROJECT_ROOT
         / "outputs"
         / "calibration_gossipcop.json"
+    ),
+}
+
+XAI_FAITHFULNESS_PATHS = {
+    "politifact": (
+        PROJECT_ROOT
+        / "outputs"
+        / "xai_faithfulness_politifact.json"
+    ),
+    "gossipcop": (
+        PROJECT_ROOT
+        / "outputs"
+        / "xai_faithfulness_gossipcop.json"
     ),
 }
 
@@ -322,6 +339,7 @@ def build_node_records(
     suspicious_nodes: List[int],
     active_mask: torch.Tensor,
     driver_nodes: Optional[List[int]] = None,
+    node_influences: Optional[Dict[int, Dict[str, Any]]] = None,
 ):
     active_nodes = set(torch.where(active_mask)[0].tolist())
     suspicious_set = set(suspicious_nodes)
@@ -380,6 +398,33 @@ def build_node_records(
         else:
             ts_label = "Timestamp unavailable"
 
+        # Node prediction influence (Explainable AI - Feature Occlusion)
+        node_attr = node_influences.get(int(node)) if node_influences else None
+        if node_attr is not None:
+            raw_influence = node_attr.get("delta_probability")
+            if raw_influence is not None and np.isfinite(float(raw_influence)):
+                influence_val = float(raw_influence)
+                if is_root:
+                    influence_interp = "Root news claim embedding influence: directly occupies 50% of classifier input (root_embeds)."
+                    influence_sign = "root_support" if influence_val >= 0 else "root_countervailing"
+                elif influence_val > 0.0001:
+                    influence_interp = "Positive support: feature masking reduced confidence in predicted class."
+                    influence_sign = "positive_support"
+                elif influence_val < -0.0001:
+                    influence_interp = "Countervailing evidence: feature masking increased confidence in predicted class."
+                    influence_sign = "countervailing"
+                else:
+                    influence_interp = "Neutral / minimal direct sensitivity under fixed graph topology."
+                    influence_sign = "neutral"
+            else:
+                influence_val = None
+                influence_interp = "Not evaluated"
+                influence_sign = "not_evaluated"
+        else:
+            influence_val = None
+            influence_interp = "Not evaluated"
+            influence_sign = "not_evaluated"
+
         records.append({
             "id": int(node),
             "label": "NEWS" if is_root else f"U{node}",
@@ -394,6 +439,9 @@ def build_node_records(
             "timestamp": node_ts,
             "datetime_utc": node_dt,
             "timestamp_label": ts_label,
+            "prediction_influence": influence_val,
+            "prediction_influence_interp": influence_interp,
+            "prediction_influence_sign": influence_sign,
         })
 
     return records
@@ -450,6 +498,7 @@ def process_dataset(
     checkpoint_path: Path,
     num_cascades: int = 10,
     num_snapshots: int = 4,
+    compute_xai: bool = False,
 ) -> Dict[str, Any]:
     """
     Process test cascades and load benchmark results for a single UPFD dataset.
@@ -538,6 +587,22 @@ def process_dataset(
             print(f"  Loaded calibration evaluation results from {calib_path.name}.")
         except Exception as e:
             print(f"  [Warning] Failed to load calibration results from {calib_path}: {e}")
+
+    # 6. Load XAI faithfulness evaluation results
+    xai_faith_path = XAI_FAITHFULNESS_PATHS.get(dataset_name)
+    xai_faithfulness_data = None
+    xai_cache_by_cascade: Dict[int, Dict[str, Any]] = {}
+    if xai_faith_path and xai_faith_path.exists():
+        try:
+            with open(xai_faith_path, "r", encoding="utf-8") as f:
+                xai_faithfulness_data = json.load(f)
+            for item in xai_faithfulness_data.get("per_cascade_results", []):
+                cid = item.get("cascade_id")
+                if cid is not None:
+                    xai_cache_by_cascade[cid] = item
+            print(f"  Loaded XAI faithfulness evaluation from {xai_faith_path.name} ({len(xai_cache_by_cascade)} cached cascades).")
+        except Exception as e:
+            print(f"  [Warning] Failed to load XAI faithfulness from {xai_faith_path}: {e}")
 
     # 4. Process test cascades
     cascades = []
@@ -646,6 +711,98 @@ def process_dataset(
         # Build true timestamp snapshots
         snapshots = temporal_builder.build_snapshots(cascade)
 
+        # Explainable AI (XAI) Attribution & Sensitivity
+        cascade_modality_attr = None
+        cascade_root_attr = None
+        top_supporting_nodes = []
+        top_countervailing_nodes = []
+        node_influences_dict: Dict[int, Dict[str, Any]] = {}
+
+        cached_xai = xai_cache_by_cascade.get(cascade_id)
+
+        if compute_xai:
+            try:
+                # 1. Modality ablation across macro semantic blocks
+                cascade_modality_attr = compute_modality_attribution(
+                    model=model,
+                    snapshots=snapshots,
+                    target_class=None,  # defaults to predicted class
+                )
+                pred_target_class = cascade_modality_attr["predicted_class"]
+
+                # 2. Node feature occlusion for all active nodes (including root node 0)
+                node_attr_res = compute_node_attribution(
+                    model=model,
+                    snapshots=snapshots,
+                    target_class=pred_target_class,
+                    include_root=True,
+                    baseline_value=0.0,
+                )
+                cascade_root_attr = node_attr_res.get("root_attribution")
+                node_influences_dict = dict(node_attr_res.get("node_attributions", {}))
+                if cascade_root_attr and 0 not in node_influences_dict:
+                    node_influences_dict[0] = cascade_root_attr
+
+                user_nodes = [
+                    item for nid, item in node_influences_dict.items() if int(nid) > 0
+                ]
+                user_nodes_sorted = sorted(
+                    user_nodes,
+                    key=lambda x: x.get("delta_probability", 0.0),
+                    reverse=True,
+                )
+                top_supporting_nodes = [
+                    {"node_id": x["node_id"], "delta_probability": x["delta_probability"]}
+                    for x in user_nodes_sorted if x.get("delta_probability", 0.0) > 0
+                ][:5]
+                top_countervailing_nodes = [
+                    {"node_id": x["node_id"], "delta_probability": x["delta_probability"]}
+                    for x in reversed(user_nodes_sorted) if x.get("delta_probability", 0.0) < 0
+                ][:5]
+            except Exception as exc:
+                print(f"  [Warning] Live XAI computation failed for cascade {cascade_id}: {exc}")
+
+        # If compute_xai was not requested or failed, fall back to cached XAI faithfulness file
+        if cascade_modality_attr is None and cached_xai:
+            cascade_modality_attr = {
+                "target_class": cached_xai.get("predicted_class"),
+                "target_label": cached_xai.get("predicted_label"),
+                "predicted_class": cached_xai.get("predicted_class"),
+                "predicted_label": cached_xai.get("predicted_label"),
+                "baseline_probability": cached_xai.get("baseline_confidence"),
+                "baseline_logits": cached_xai.get("baseline_logits"),
+                "modality_attributions": cached_xai.get("modality_attributions"),
+                "sign_convention": "delta_probability = baseline_probability - perturbed_probability. Positive values (>0) indicate confidence drop after masking (positive support).",
+                "score_interpretation": "Feature-ablation sensitivity (raw non-additive probability shift under fixed graph structure, not causal importance)",
+            }
+            cascade_root_attr = cached_xai.get("root_attribution")
+            if cascade_root_attr:
+                node_influences_dict[0] = cascade_root_attr
+            for item in cached_xai.get("top_supporting_user_nodes", []):
+                nid = item.get("node_id")
+                if nid is not None:
+                    node_influences_dict[nid] = {
+                        "node_id": nid,
+                        "delta_probability": item.get("delta_p", 0.0),
+                        "role": "Propagating User / Retweeter",
+                    }
+            for item in cached_xai.get("top_countervailing_user_nodes", []):
+                nid = item.get("node_id")
+                if nid is not None:
+                    node_influences_dict[nid] = {
+                        "node_id": nid,
+                        "delta_probability": item.get("delta_p", 0.0),
+                        "role": "Propagating User / Retweeter",
+                    }
+            top_supporting_nodes = [
+                {"node_id": x.get("node_id"), "delta_probability": x.get("delta_p", 0.0)}
+                for x in cached_xai.get("top_supporting_user_nodes", [])
+            ]
+            top_countervailing_nodes = [
+                {"node_id": x.get("node_id"), "delta_probability": x.get("delta_p", 0.0)}
+                for x in cached_xai.get("top_countervailing_user_nodes", [])
+            ]
+
         phases = []
         for phase_idx, snapshot in enumerate(snapshots):
             active_mask = snapshot.active_mask
@@ -660,6 +817,7 @@ def process_dataset(
                 suspicious_nodes=suspicious_nodes,
                 active_mask=active_mask,
                 driver_nodes=[c["node"] for c in driver_candidates],
+                node_influences=node_influences_dict,
             )
 
             prediction = predict_at_phase(
@@ -734,6 +892,10 @@ def process_dataset(
             "duration_human": format_duration(duration_s),
             "driver_candidates": driver_candidates,
             "amplifier_candidates": amplifier_candidates,
+            "modality_attribution": cascade_modality_attr,
+            "root_attribution": cascade_root_attr,
+            "top_supporting_user_nodes": top_supporting_nodes,
+            "top_countervailing_user_nodes": top_countervailing_nodes,
             "phases": phases,
         })
 
@@ -751,6 +913,7 @@ def process_dataset(
         "extended_results": extended_data,
         "early_stage": early_stage_data,
         "calibration": calibration_data,
+        "xai_faithfulness": xai_faithfulness_data,
         "cascades": cascades,
     }
 
@@ -765,12 +928,15 @@ def generate_dashboard_data(
     num_snapshots: int = 4,
     politifact_checkpoint: Optional[Path] = None,
     gossipcop_checkpoint: Optional[Path] = None,
+    compute_xai: bool = False,
 ) -> Path:
     """
     Generate research dashboard data for Politifact, GossipCop, or both.
     """
     print("\n" + "=" * 60)
     print("  GENERATING MULTI-DATASET DASHBOARD DATA")
+    if compute_xai:
+        print("  XAI Mode: Precomputing full feature-modality and node attributions")
     print("=" * 60)
 
     ckpts = {
@@ -792,6 +958,7 @@ def generate_dashboard_data(
             checkpoint_path=ckpt_path,
             num_cascades=num_cascades,
             num_snapshots=num_snapshots,
+            compute_xai=compute_xai,
         )
 
     # Active dataset
@@ -823,6 +990,10 @@ def generate_dashboard_data(
                     "Chronological quantile cutoffs represent observed diffusion progress, "
                     "not fixed-duration real-time streaming windows."
                 ),
+                "explainable_ai": (
+                    "Feature-modality ablation and node-feature occlusion measure veracity prediction sensitivity. "
+                    "They do NOT prove real-world causality, bot status, or ground-truth source node identity."
+                ),
             },
         },
         "datasets": processed_datasets,
@@ -832,6 +1003,10 @@ def generate_dashboard_data(
         },
         "calibration": {
             ds_name: processed_datasets[ds_name].get("calibration")
+            for ds_name in processed_datasets
+        },
+        "xai_faithfulness": {
+            ds_name: processed_datasets[ds_name].get("xai_faithfulness")
             for ds_name in processed_datasets
         },
         # Backward compatibility for direct top-level access:
@@ -869,6 +1044,7 @@ def run_server(
     num_cascades: int = 10,
     politifact_checkpoint: Optional[str] = None,
     gossipcop_checkpoint: Optional[str] = None,
+    compute_xai: bool = False,
 ):
     pol_ckpt = (
         Path(politifact_checkpoint).resolve()
@@ -888,6 +1064,7 @@ def run_server(
         num_snapshots=4,
         politifact_checkpoint=pol_ckpt,
         gossipcop_checkpoint=gos_ckpt,
+        compute_xai=compute_xai,
     )
 
     web_dir = PROJECT_ROOT / "web"
@@ -960,7 +1137,11 @@ if __name__ == "__main__":
         default=str(DEFAULT_CHECKPOINTS["gossipcop"]),
         help="Path to GossipCop STGNN checkpoint.",
     )
-
+    parser.add_argument(
+        "--xai",
+        action="store_true",
+        help="Precompute post-hoc XAI modality ablation and node feature-occlusion influences for all nodes across loaded cascades.",
+    )
     parser.add_argument(
         "--generate_only",
         action="store_true",
@@ -978,6 +1159,7 @@ if __name__ == "__main__":
             num_snapshots=4,
             politifact_checkpoint=Path(args.politifact_checkpoint),
             gossipcop_checkpoint=Path(args.gossipcop_checkpoint),
+            compute_xai=args.xai,
         )
         print("Data generation complete. Exiting (--generate_only).")
         sys.exit(0)
@@ -989,4 +1171,5 @@ if __name__ == "__main__":
         num_cascades=cascade_count,
         politifact_checkpoint=args.politifact_checkpoint,
         gossipcop_checkpoint=args.gossipcop_checkpoint,
+        compute_xai=args.xai,
     )

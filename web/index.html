@@ -741,6 +741,104 @@
       flex-direction: column;
       gap: 0.25rem;
     }
+
+    /* Explainable AI (XAI) Styles */
+    .modality-item {
+      background: #09101d;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.42rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.22rem;
+      transition: border-color 0.15s ease;
+    }
+
+    .modality-item:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .modality-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.65rem;
+    }
+
+    .modality-name {
+      font-weight: 700;
+      color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .modality-dim {
+      font-size: 0.55rem;
+      color: var(--muted);
+      font-family: monospace;
+    }
+
+    .modality-score-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.63rem;
+    }
+
+    .modality-delta {
+      font-family: monospace;
+      font-weight: 800;
+      font-size: 0.72rem;
+    }
+
+    .modality-bar-bg {
+      width: 100%;
+      height: 4px;
+      background: #1e293b;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 0.15rem;
+    }
+
+    .modality-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    .xai-badge-pos {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--real);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      font-size: 0.52rem;
+      padding: 0.08rem 0.35rem;
+      border-radius: 3px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .xai-badge-neg {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--fake);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      font-size: 0.52rem;
+      padding: 0.08rem 0.35rem;
+      border-radius: 3px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .xai-badge-neu {
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--muted);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 0.52rem;
+      padding: 0.08rem 0.35rem;
+      border-radius: 3px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
   </style>
 </head>
 
@@ -873,6 +971,27 @@
 
           <div id="misclass-warning" style="display:none; margin-top:0.4rem; font-size:0.62rem; color:#fca5a5; line-height:1.3; background:rgba(239,68,68,0.1); padding:0.35rem 0.5rem; border-radius:5px; border:1px solid rgba(239,68,68,0.25); text-align:left;">
             ⚠️ <strong>Misclassification Note:</strong> Model predicted with high confidence despite disagreeing with ground truth label.
+          </div>
+
+          <!-- Feature-Modality Ablation Card -->
+          <div id="modality-ablation-card" style="margin-top:0.65rem; padding-top:0.55rem; border-top:1px dashed var(--border); text-align:left;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+              <span style="font-size:0.64rem; font-weight:800; color:#dbeafe; text-transform:uppercase; letter-spacing:0.04em;">
+                Modality Ablation Sensitivity
+              </span>
+              <span class="badge" id="modality-target-badge" style="font-size:0.55rem; padding:0.08rem 0.38rem; border-color:rgba(56,189,248,0.4); color:var(--accent);">Target: —</span>
+            </div>
+            <div style="font-size:0.58rem; color:var(--muted); line-height:1.35; margin-bottom:0.4rem;">
+              Target-class confidence shift (&Delta;p = p<sub>base</sub> &minus; p<sub>perturbed</sub>) when zero-masking feature groups across all active nodes:
+            </div>
+
+            <div id="modality-list" style="display:flex; flex-direction:column; gap:0.35rem;">
+              <!-- Populated via JS -->
+            </div>
+
+            <div style="font-size:0.55rem; color:var(--muted); line-height:1.3; margin-top:0.4rem; padding-top:0.35rem; border-top:1px dashed rgba(34, 48, 71, 0.6);">
+              ⚠️ Labeled as <strong>feature-ablation sensitivity</strong> under fixed graph structure, not percentages of causal importance.
+            </div>
           </div>
         </div>
       </div>
@@ -1071,6 +1190,62 @@
         </div>
       </div>
 
+      <!-- Explainable AI (XAI) Faithfulness Evaluation -->
+      <div>
+        <div class="section-title">
+          <span>XAI Faithfulness Evaluation</span>
+          <span class="badge" id="xai-faith-badge" style="font-size:0.55rem; padding:0.1rem 0.4rem; border-color: rgba(251, 191, 36, 0.4); color: var(--driver);">Exploratory • N = 10 Cascades</span>
+        </div>
+
+        <div style="font-size:0.62rem; color:var(--muted); margin-bottom:0.4rem; line-height:1.35;">
+          Attribution-guided node deletion (Fidelity- / Comprehensiveness) on first 10 held-out test cascades. Evaluates whether masking top-attributed user nodes causes steeper target confidence drop (&Delta;p) than random or structural degree baselines:
+        </div>
+
+        <div class="calib-card" id="xai-faithfulness-card">
+          <!-- Metadata Pill Bar -->
+          <div class="calib-meta-bar" style="margin-bottom:0.45rem;">
+            <div class="calib-meta-item">
+              <span class="calib-meta-label">Sample Size (N)</span>
+              <strong class="calib-meta-val" id="xai-meta-sample" style="color:var(--accent);">10 Cascades</strong>
+            </div>
+            <div class="calib-meta-item">
+              <span class="calib-meta-label">Beats Random</span>
+              <strong class="calib-meta-val" id="xai-meta-random" style="color:var(--real);">100% (10/10)</strong>
+            </div>
+            <div class="calib-meta-item">
+              <span class="calib-meta-label">Beats Degree</span>
+              <strong class="calib-meta-val" id="xai-meta-degree" style="color:var(--driver);">—</strong>
+            </div>
+          </div>
+
+          <!-- Progressive Deletion Table -->
+          <table class="calibration-table" style="width:100%; margin-bottom:0.45rem;">
+            <thead>
+              <tr>
+                <th style="text-align:left;">k Nodes Masked</th>
+                <th>Attr Drop (&Delta;p)</th>
+                <th>Random Drop</th>
+                <th>Degree Drop</th>
+                <th>Win Rate</th>
+              </tr>
+            </thead>
+            <tbody id="xai-faithfulness-tbody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+
+          <!-- Exploratory Scope Notice -->
+          <div class="calib-notice" style="border-color: rgba(251, 191, 36, 0.35);">
+            <div style="margin-bottom:0.15rem;">
+              <strong style="color:var(--driver);">⚠️ Exploratory Evaluation on First 10 Held-Out Test Cascades:</strong>
+            </div>
+            <div>• <strong>Preliminary Evidence Only:</strong> Evaluated on a deterministic sample of the first 10 held-out test cascades per dataset across 5 random seeds. This is an exploratory evaluation, not a comprehensive benchmark.</div>
+            <div>• <strong>Attribution vs Baselines:</strong> Attribution-guided deletion strictly outperforms random masking across all k (100% win rate), but does <em>not</em> consistently beat the structural degree baseline at every k value.</div>
+            <div>• <strong>Structural Degree Hub Effect:</strong> At higher k (e.g., k=10 on GossipCop), degree hubs route information to nearly the entire graph; masking 10 hubs causes massive structural disruption, beating attribution in 4/10 cascades.</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Method Status & Research Safeguards -->
       <div>
         <div class="section-title">
@@ -1175,6 +1350,20 @@
           </div>
           <div id="root-timestamp-note" style="display: none; font-size: 0.61rem; color: var(--muted); line-height: 1.35; margin-top: 0.35rem; padding-top: 0.35rem; border-top: 1px dashed rgba(34, 48, 71, 0.6);">
             ℹ️ News root node (Node 0) represents the initial published story/claim and does not possess an individual tweet/retweet timestamp in UPFD.
+          </div>
+          <div class="detail" style="margin-top:0.45rem; padding-top:0.45rem; border-top:1px dashed var(--border);">
+            <span>Prediction Influence (&Delta;p)</span>
+            <strong id="detail-xai-influence" style="font-family: monospace; font-size: 0.72rem;">—</strong>
+          </div>
+          <div class="detail" style="flex-direction:column; align-items:flex-start; gap:0.2rem;">
+            <span style="font-size:0.60rem; color:var(--muted); text-transform:uppercase; font-weight:700;">Influence Interpretation</span>
+            <span id="detail-xai-interpretation" style="font-size:0.62rem; color:#cbd5e1; line-height:1.35;">Click a graph node or candidate to inspect prediction influence.</span>
+          </div>
+          <div id="root-xai-note" style="display: none; font-size: 0.59rem; color: #bae6fd; background: rgba(56,189,248,0.08); padding: 0.35rem 0.5rem; border-radius: 5px; border: 1px solid rgba(56,189,248,0.25); line-height: 1.35; margin-top: 0.35rem;">
+            ℹ️ <strong>Root Item Influence:</strong> News root node (Node 0) directly supplies 50% of the STGNN classifier input vector (root_embeds). Kept separate from propagating retweeter rankings.
+          </div>
+          <div id="xai-node-disclaimer" style="font-size:0.56rem; color:var(--muted); line-height:1.3; margin-top:0.35rem; padding-top:0.35rem; border-top:1px dashed rgba(34, 48, 71, 0.6);">
+            ⚠️ <em>Research Safeguard:</em> Feature-occlusion &Delta;p measures classifier sensitivity under fixed graph topology. It does NOT indicate real-world source causality, authorship, bot status, or patient-zero origin.
           </div>
         </div>
       </div>
@@ -1379,11 +1568,12 @@
         headerSplitBadge.textContent = `Held-Out Test Set: ${Number(testCount).toLocaleString()} Cascades`;
       }
 
-      // Update benchmark strip, early-stage table, model comparison, and calibration analysis
+      // Update benchmark strip, early-stage table, model comparison, calibration analysis, and XAI faithfulness
       updateBenchmark();
       updateEarlyStage();
       updateModelComparison();
       updateCalibration();
+      updateXAIFaithfulness();
 
       // Populate cascades for active dataset
       populateCascadeSelect();
@@ -1957,6 +2147,9 @@
         warningEl.style.display = "none";
       }
 
+      // Feature-Modality Ablation Sensitivity
+      renderModalityAblation(cascade);
+
       // Topology Metrics
       document.getElementById("metric-nodes").textContent = phase.active_nodes;
       document.getElementById("metric-depth").textContent = cascade.max_depth;
@@ -2213,6 +2406,13 @@
       document.getElementById("detail-timestamp").textContent = "—";
       const rootNote = document.getElementById("root-timestamp-note");
       if (rootNote) rootNote.style.display = "none";
+
+      const influenceEl = document.getElementById("detail-xai-influence");
+      if (influenceEl) influenceEl.textContent = "—";
+      const interpEl = document.getElementById("detail-xai-interpretation");
+      if (interpEl) interpEl.textContent = "Click a graph node or candidate to inspect prediction influence.";
+      const rootXaiNote = document.getElementById("root-xai-note");
+      if (rootXaiNote) rootXaiNote.style.display = "none";
     }
 
     function selectNode(nodeId, focusGraph = true) {
@@ -2227,6 +2427,9 @@
 
       const rootNote = document.getElementById("root-timestamp-note");
       const tsEl = document.getElementById("detail-timestamp");
+      const influenceEl = document.getElementById("detail-xai-influence");
+      const interpEl = document.getElementById("detail-xai-interpretation");
+      const rootXaiNote = document.getElementById("root-xai-note");
 
       if (!node) {
         // Node not yet active in this phase
@@ -2239,6 +2442,9 @@
         tsEl.textContent = "Not yet observed in current quantile";
         tsEl.style.color = "var(--muted)";
         if (rootNote) rootNote.style.display = "none";
+        if (influenceEl) influenceEl.innerHTML = `<span style="color:var(--muted); font-style:italic;">Not evaluated (Inactive)</span>`;
+        if (interpEl) interpEl.textContent = "Node not active in current snapshot quantile.";
+        if (rootXaiNote) rootXaiNote.style.display = "none";
         return;
       }
 
@@ -2279,6 +2485,37 @@
         if (rootNote) rootNote.style.display = "none";
       }
 
+      // Prediction influence (XAI feature-occlusion Δp)
+      if (influenceEl) {
+        if (node.prediction_influence !== null && node.prediction_influence !== undefined) {
+          const deltaP = Number(node.prediction_influence);
+          const signStr = deltaP >= 0 ? "+" + deltaP.toFixed(4) : deltaP.toFixed(4);
+
+          if (node.is_root) {
+            influenceEl.innerHTML = `<span style="color:var(--accent); font-weight:700;">${signStr} <span class="xai-badge-pos" style="font-size:0.55rem; margin-left:0.25rem;">News Root</span></span>`;
+            if (rootXaiNote) rootXaiNote.style.display = "block";
+          } else {
+            if (rootXaiNote) rootXaiNote.style.display = "none";
+            if (deltaP > 0.0001) {
+              influenceEl.innerHTML = `<span style="color:var(--real); font-weight:700;">${signStr} <span class="xai-badge-pos" style="font-size:0.55rem; margin-left:0.25rem;">Positive Support</span></span>`;
+            } else if (deltaP < -0.0001) {
+              influenceEl.innerHTML = `<span style="color:var(--fake); font-weight:700;">${signStr} <span class="xai-badge-neg" style="font-size:0.55rem; margin-left:0.25rem;">Countervailing</span></span>`;
+            } else {
+              influenceEl.innerHTML = `<span style="color:var(--muted); font-weight:700;">${signStr} <span class="xai-badge-neu" style="font-size:0.55rem; margin-left:0.25rem;">Neutral</span></span>`;
+            }
+          }
+          if (interpEl) {
+            interpEl.textContent = node.prediction_influence_interp || "Evaluated feature occlusion score.";
+          }
+        } else {
+          influenceEl.innerHTML = `<span style="color:var(--muted); font-style:italic;">Not evaluated</span>`;
+          if (interpEl) {
+            interpEl.textContent = "Feature occlusion was not evaluated for this node/cascade.";
+          }
+          if (rootXaiNote) rootXaiNote.style.display = "none";
+        }
+      }
+
       if (focusGraph && network) {
         try {
           network.selectNodes([nodeId]);
@@ -2287,6 +2524,205 @@
             animation: { duration: 400 }
           });
         } catch (e) {}
+      }
+    }
+
+    /* =========================================================
+       XAI: Feature-Modality Ablation Renderer
+       ========================================================= */
+    function renderModalityAblation(cascade) {
+      const container = document.getElementById("modality-list");
+      const targetBadge = document.getElementById("modality-target-badge");
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      const xai = cascade ? cascade.modality_attribution : null;
+      if (!xai || !xai.modality_attributions) {
+        if (targetBadge) targetBadge.textContent = "Not evaluated";
+        container.innerHTML = `
+          <div style="font-size:0.62rem; color:var(--muted); font-style:italic; padding:0.35rem 0;">
+            Feature-modality ablation not evaluated for this cascade.
+          </div>
+        `;
+        return;
+      }
+
+      const targetLabel = xai.target_label || (xai.target_class === 1 ? "FAKE" : "REAL");
+      if (targetBadge) {
+        targetBadge.textContent = `Target: ${targetLabel}`;
+        targetBadge.style.color = targetLabel === "FAKE" ? "var(--fake)" : "var(--real)";
+        targetBadge.style.borderColor = targetLabel === "FAKE" ? "rgba(239, 68, 68, 0.4)" : "rgba(16, 185, 129, 0.4)";
+      }
+
+      const modalityDefs = [
+        {
+          key: "bert_content",
+          name: "BERT Content Features",
+          dims: "dims 0–767",
+          desc: "News claim & user tweet semantic text embeddings"
+        },
+        {
+          key: "user_profile",
+          name: "User-Profile Features",
+          dims: "dims 768–777",
+          desc: "Twitter account metadata normalized by training statistics"
+        },
+        {
+          key: "temporal_dynamics",
+          name: "Temporal / Structural",
+          dims: "dims 778–781",
+          desc: "Depth, out-degree, elapsed fraction, active flag"
+        },
+      ];
+
+      // Find max absolute delta for relative bar scaling
+      let maxAbsDelta = 0.001;
+      modalityDefs.forEach(mDef => {
+        const item = xai.modality_attributions[mDef.key];
+        if (item && Number.isFinite(item.delta_probability)) {
+          maxAbsDelta = Math.max(maxAbsDelta, Math.abs(item.delta_probability));
+        }
+      });
+
+      modalityDefs.forEach(mDef => {
+        const item = xai.modality_attributions[mDef.key];
+        if (!item) return;
+
+        const delta = Number(item.delta_probability);
+        const pertP = Number(item.perturbed_probability);
+
+        let badgeClass = "xai-badge-neu";
+        let badgeText = "Neutral";
+        let valColor = "var(--muted)";
+        let barColor = "var(--muted)";
+        let signPrefix = "";
+
+        if (delta > 0.0001) {
+          badgeClass = "xai-badge-pos";
+          badgeText = "Positive Support";
+          valColor = "var(--real)";
+          barColor = "var(--real)";
+          signPrefix = "+";
+        } else if (delta < -0.0001) {
+          badgeClass = "xai-badge-neg";
+          badgeText = "Countervailing";
+          valColor = "var(--fake)";
+          barColor = "var(--fake)";
+          signPrefix = "";
+        } else {
+          signPrefix = delta >= 0 ? "+" : "";
+        }
+
+        const barPct = Math.min(100, Math.max(5, Math.round((Math.abs(delta) / maxAbsDelta) * 100)));
+        const deltaStr = Number.isFinite(delta) ? `${signPrefix}${delta.toFixed(4)}` : "—";
+        const pertStr = Number.isFinite(pertP) ? `p'=${(pertP * 100).toFixed(1)}%` : "";
+
+        const div = document.createElement("div");
+        div.className = "modality-item";
+        div.title = item.description || mDef.desc;
+        div.innerHTML = `
+          <div class="modality-header">
+            <span class="modality-name">
+              ${mDef.name}
+              <span class="modality-dim">${mDef.dims}</span>
+            </span>
+            <span class="${badgeClass}">${badgeText}</span>
+          </div>
+          <div class="modality-score-row">
+            <span style="color:var(--muted); font-size:0.58rem;">&Delta;p shift: <strong class="modality-delta" style="color:${valColor};">${deltaStr}</strong></span>
+            <span style="color:var(--muted); font-size:0.58rem; font-family:monospace;">${pertStr}</span>
+          </div>
+          <div class="modality-bar-bg">
+            <div class="modality-bar-fill" style="width:${barPct}%; background:${barColor};"></div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    /* =========================================================
+       XAI: Faithfulness Evaluation Renderer
+       ========================================================= */
+    function updateXAIFaithfulness() {
+      const currentDs = getCurrentDataset();
+      const xaiData = currentDs.xai_faithfulness || (dashboardData.xai_faithfulness ? dashboardData.xai_faithfulness[activeDataset] : null);
+      const tbody = document.getElementById("xai-faithfulness-tbody");
+      const sampleEl = document.getElementById("xai-meta-sample");
+      const randomEl = document.getElementById("xai-meta-random");
+      const degreeEl = document.getElementById("xai-meta-degree");
+      const scopeBadge = document.getElementById("xai-faith-badge");
+
+      if (!tbody) return;
+      tbody.innerHTML = "";
+
+      if (!xaiData || !xaiData.aggregate_faithfulness || !xaiData.aggregate_faithfulness.overall) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--muted); text-align:center;">XAI faithfulness evaluation unavailable</td></tr>`;
+        if (randomEl) randomEl.textContent = "—";
+        if (degreeEl) degreeEl.textContent = "—";
+        return;
+      }
+
+      const overall = xaiData.aggregate_faithfulness.overall;
+      const kMetrics = overall.k_metrics || {};
+      const sampleCount = overall.num_cascades || 10;
+
+      if (sampleEl) sampleEl.textContent = `${sampleCount} Cascades`;
+      if (scopeBadge) scopeBadge.textContent = `Exploratory • N = ${sampleCount} Cascades`;
+
+      let totalAttrBeatsDegree = 0;
+      let totalDegreeEvaluations = 0;
+      let totalAttrBeatsRandom = 0;
+      let totalRandomEvaluations = 0;
+
+      const kKeys = [1, 2, 5, 10];
+      kKeys.forEach(k => {
+        const item = kMetrics[`k=${k}`];
+        if (!item) return;
+
+        const attrDrop = item.attribution_drop ? Number(item.attribution_drop.mean) : null;
+        const randDrop = item.random_drop ? Number(item.random_drop.mean) : null;
+        const degDrop = item.degree_drop ? Number(item.degree_drop.mean) : null;
+        const comp = item.comparative_outcomes || {};
+
+        const winRandCount = comp.attr_beats_random_count || 0;
+        const winDegCount = comp.attr_beats_degree_count || 0;
+        const evalCount = item.evaluated_cascades_count || sampleCount;
+
+        totalAttrBeatsDegree += winDegCount;
+        totalDegreeEvaluations += evalCount;
+        totalAttrBeatsRandom += winRandCount;
+        totalRandomEvaluations += evalCount;
+
+        const attrStr = (attrDrop !== null && Number.isFinite(attrDrop)) ? (attrDrop >= 0 ? "+" : "") + attrDrop.toFixed(4) : "—";
+        const randStr = (randDrop !== null && Number.isFinite(randDrop)) ? (randDrop >= 0 ? "+" : "") + randDrop.toFixed(4) : "—";
+        const degStr = (degDrop !== null && Number.isFinite(degDrop)) ? (degDrop >= 0 ? "+" : "") + degDrop.toFixed(4) : "—";
+
+        const degWinRatePct = Math.round((winDegCount / evalCount) * 100);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><strong>k = ${k}</strong></td>
+          <td style="color:var(--accent); font-weight:700;">${attrStr}</td>
+          <td style="color:var(--muted);">${randStr}</td>
+          <td style="color:var(--driver);">${degStr}</td>
+          <td>
+            <span style="color:${degWinRatePct >= 70 ? 'var(--real)' : 'var(--driver)'}; font-weight:700;">
+              ${winDegCount}/${evalCount} (${degWinRatePct}%)
+            </span>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      if (randomEl) {
+        const randPct = totalRandomEvaluations > 0 ? Math.round((totalAttrBeatsRandom / totalRandomEvaluations) * 100) : 100;
+        randomEl.textContent = `${randPct}% (${totalAttrBeatsRandom}/${totalRandomEvaluations})`;
+      }
+
+      if (degreeEl) {
+        const degPct = totalDegreeEvaluations > 0 ? ((totalAttrBeatsDegree / totalDegreeEvaluations) * 100).toFixed(1) : "—";
+        degreeEl.textContent = `${degPct}% (${totalAttrBeatsDegree}/${totalDegreeEvaluations})`;
       }
     }
 
