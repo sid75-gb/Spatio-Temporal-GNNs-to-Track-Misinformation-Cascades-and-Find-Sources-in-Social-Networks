@@ -25,12 +25,15 @@
    - [A. Early-Stage Milestone Evaluation](#a-early-stage-milestone-evaluation)
    - [B. Extended-Epoch Checkpoint Evaluation](#b-extended-epoch-checkpoint-evaluation)
    - [C. Standardized 10-Epoch Baseline Comparison](#c-standardized-10-epoch-baseline-comparison)
+   - [D. Post-Hoc Probability Calibration](#d-post-hoc-probability-calibration)
+   - [E. Explainable AI (XAI) Attribution & Faithfulness](#e-explainable-ai-xai-attribution--faithfulness)
 6. [Exploratory Source-Proxy Experiment](#6-exploratory-source-proxy-experiment)
 7. [Interactive Cascade Dashboard](#7-interactive-cascade-dashboard)
 8. [Installation & Usage](#8-installation--usage)
 9. [Repository Structure](#9-repository-structure)
 10. [Current Limitations & Planned Future Work](#10-current-limitations--planned-future-work)
 11. [References](#11-references)
+
 
 ---
 
@@ -231,7 +234,7 @@ All reported metrics are verified directly from saved evaluation artifacts in `o
 
 Evaluates whether misinformation cascades can be detected early in their lifecycle before full saturation. Snapshots correspond to chronological user arrival quantiles (variable-length prefix evaluation using `model.num_snapshots=0` with trained timestamp checkpoints):
 
-*Source artifacts: [`outputs/early_stage_politifact_stgnn.json`](file:///c:/Users/Sid/Desktop/GNN/outputs/early_stage_politifact_stgnn.json) and [`outputs/early_stage_gossipcop_stgnn.json`](file:///c:/Users/Sid/Desktop/GNN/outputs/early_stage_gossipcop_stgnn.json)*
+*Source artifacts: [`outputs/early_stage_politifact_stgnn.json`](outputs/early_stage_politifact_stgnn.json) and [`outputs/early_stage_gossipcop_stgnn.json`](outputs/early_stage_gossipcop_stgnn.json)*
 
 #### UPFD PolitiFact (Test Set: $N=221$ Cascades; Real: 108, Fake: 113)
 
@@ -259,7 +262,7 @@ Evaluates whether misinformation cascades can be detected early in their lifecyc
 
 Evaluates the best saved timestamp-trained STGNN model checkpoints saved under early stopping (epoch 20, learning rate 0.001, early stopping patience 8, seed 42):
 
-*Source artifacts: [`outputs/stgnn_politifact_timestamp_lr001_es8.json`](file:///c:/Users/Sid/Desktop/GNN/outputs/stgnn_politifact_timestamp_lr001_es8.json) and [`outputs/stgnn_gossipcop_timestamp_lr001_es8.json`](file:///c:/Users/Sid/Desktop/GNN/outputs/stgnn_gossipcop_timestamp_lr001_es8.json)*
+*Source artifacts: [`outputs/stgnn_politifact_timestamp_lr001_es8.json`](outputs/stgnn_politifact_timestamp_lr001_es8.json) and [`outputs/stgnn_gossipcop_timestamp_lr001_es8.json`](outputs/stgnn_gossipcop_timestamp_lr001_es8.json)*
 
 | Dataset | Test Size ($N$) | Accuracy | Macro-Precision | Macro-Recall | Macro-F1 | Binary-F1 | ROC-AUC | Test Loss |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -275,7 +278,7 @@ To ensure fair comparison across architectural paradigms, a separate standardize
 - **Static GAT Baseline:** Static 2-layer Graph Attention Network with attention pooling operating on the full propagation tree without temporal decomposition (`src/models/static_gnn.py`).
 - **STGNN (Ours):** Spatio-Temporal GNN with 4 timestamp snapshots (`src/models/stgnn.py`).
 
-*Source artifacts: [`outputs/benchmark_politifact.json`](file:///c:/Users/Sid/Desktop/GNN/outputs/benchmark_politifact.json) and [`outputs/benchmark_gossipcop.json`](file:///c:/Users/Sid/Desktop/GNN/outputs/benchmark_gossipcop.json)*
+*Source artifacts: [`outputs/benchmark_politifact.json`](outputs/benchmark_politifact.json) and [`outputs/benchmark_gossipcop.json`](outputs/benchmark_gossipcop.json)*
 
 #### UPFD PolitiFact Benchmark (10 Epochs, Held-Out Test $N=221$)
 
@@ -300,6 +303,76 @@ In this standardized 10-epoch regime on GossipCop, the Static GAT model achieves
 
 ---
 
+### D. Post-Hoc Probability Calibration
+
+To address model overconfidence and enable trustworthy probability outputs, we implemented post-hoc temperature scaling ([Guo et al., 2017](https://arxiv.org/abs/1706.04599)) across the best trained STGNN checkpoints (`src/models/temperature_scaling.py`, `src/evaluation/calibration.py`).
+
+**Protocol & Methodological Isolation:**
+- **Zero Test Leakage:** The scalar temperature $T$ was fitted exclusively by minimizing Negative Log-Likelihood (NLL) on the **validation split logits** using bounded Brent scalar search ($T \in [0.05, 10.0]$).
+- **Fitted Temperatures:** $T^* = 1.9678$ on PolitiFact ($N_{\text{val}} = 31$); $T^* = 1.4255$ on GossipCop ($N_{\text{val}} = 546$).
+- **Held-Out Evaluation:** Uncalibrated and calibrated probabilities were evaluated exclusively on the official held-out test splits (PolitiFact: $N=221$; GossipCop: $N=3,826$).
+- **Mathematical Invariance:** Under positive scaling ($T > 0$), argmax class predictions, classification accuracy, and ROC-AUC are preserved exactly.
+
+*Source artifacts: [`outputs/calibration_politifact.json`](outputs/calibration_politifact.json) and [`outputs/calibration_gossipcop.json`](outputs/calibration_gossipcop.json)*
+
+#### Calibration Performance on Held-Out Test Splits
+
+| Dataset | Metric | Uncalibrated ($T=1.0$) | Calibrated ($T=T^*$) | Relative Change | Theoretical Status |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **PolitiFact** | Negative Log-Likelihood (NLL) | 0.5544 | **0.4111** | -25.8% | Improved |
+| ($N=221$, $T^*=1.9678$) | Binary Brier Score ($P(\text{FAKE})$) | 0.1419 | **0.1252** | -11.8% | Improved |
+| | Top-Label ECE | 0.1276 | **0.0271** | **-78.7%** | Improved |
+| | Positive-Class ECE ($P(\text{FAKE})$) | 0.1309 | **0.0416** | **-68.2%** | Improved |
+| | Test Accuracy | 83.71% | 83.71% | 0.00% | Invariant |
+| | Test ROC-AUC | 0.8818 | 0.8818 | 0.0000 | Invariant |
+| **GossipCop** | Negative Log-Likelihood (NLL) | 0.1501 | **0.1270** | -15.4% | Improved |
+| ($N=3,826$, $T^*=1.4255$) | Binary Brier Score ($P(\text{FAKE})$) | 0.0306 | **0.0295** | -3.6% | Improved |
+| | Top-Label ECE | 0.0241 | **0.0064** | **-73.4%** | Improved |
+| | Positive-Class ECE ($P(\text{FAKE})$) | 0.0245 | **0.0157** | **-36.2%** | Improved |
+| | Test Accuracy | 96.60% | 96.60% | 0.00% | Invariant |
+| | Test ROC-AUC | 0.9837 | 0.9837 | 0.0000 | Invariant |
+
+*Key Calibration Findings & Limitations:*
+1. Temperature scaling substantially reduces both Top-Label ECE and Positive-Class ECE without affecting accuracy or discrimination.
+2. In UPFD PolitiFact, the official validation split contains only $N=31$ cascades (13 Real, 18 Fake). While validation-only fitting prevents test leakage, scalar fitting on 31 samples carries higher sample variance than on GossipCop ($N_{\text{val}}=546$).
+
+---
+
+### E. Explainable AI (XAI) Attribution & Faithfulness
+
+To understand what factors drive STGNN predictions and assess model interpretability, we developed post-hoc explanation utilities (`src/evaluation/xai.py`) combining macro-level feature-modality ablation, node-level feature occlusion, and empirical progressive-deletion faithfulness evaluation (`scripts/evaluate_xai_faithfulness.py`).
+
+**Attribution Approaches Implemented:**
+1. **Feature-Modality Ablation:** Evaluates target-class probability shift ($\Delta p = p_{\text{base}} - p_{\text{pert}}$) when zero-masking entire feature modalities across all active nodes:
+   - *BERT Content Features* (dims 0–767): News claim text embedding and user tweet history.
+   - *User-Profile Features* (dims 768–777): Follower counts, friend counts, account age, verified status.
+   - *Temporal-Structural Dynamics* (dims 778–781): Snapshot depth, out-degree, elapsed observation fraction.
+2. **Node-Feature Occlusion:** Computes sensitivity scores for individual nodes by masking their node features while preserving graph topology. Root news node 0 is tracked separately because it supplies the root embedding ($Z_0$) occupying 50% of the final classifier input.
+3. **Exploratory Faithfulness Evaluation:** Evaluates progressive node deletion curves on a deterministic sample of the first 10 held-out test cascades per dataset across 5 random seeds (milestones $k \in \{1, 2, 5, 10\}$), comparing attribution-ranked deletion against random deletion and degree-hub deletion baselines.
+
+*Source artifacts: [`outputs/xai_faithfulness_politifact.json`](outputs/xai_faithfulness_politifact.json) and [`outputs/xai_faithfulness_gossipcop.json`](outputs/xai_faithfulness_gossipcop.json)*
+
+#### Exploratory Faithfulness Outcomes ($N=10$ Cascades per Dataset, 5 Seeds)
+
+| Dataset | Deletion Milestone ($k$) | Attribution Drop ($\Delta p$) | Random Drop (5-seed avg) | Out-Degree Drop | Attribution vs. Random | Attribution vs. Degree |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **PolitiFact** | $k=1$ | **+0.0011** | -0.0002 | -0.0061 | **10/10 (100%)** | **7/10 (70%)** |
+| ($N=10$ test cascades) | $k=2$ | **+0.0016** | -0.0003 | -0.0106 | **10/10 (100%)** | **8/10 (80%)** |
+| | $k=5$ | **+0.0025** | -0.0026 | -0.0113 | **10/10 (100%)** | **9/10 (90%)** |
+| | $k=10$ | **+0.0037** | -0.0044 | -0.0126 | **10/10 (100%)** | **7/10 (70%)** |
+| **GossipCop** | $k=1$ | **+0.0263** | +0.0015 | -0.0002 | **10/10 (100%)** | **8/10 (80%)** |
+| ($N=10$ test cascades) | $k=2$ | **+0.0624** | +0.0015 | +0.0001 | **10/10 (100%)** | **9/10 (90%)** |
+| | $k=5$ | **+0.1877** | +0.0074 | +0.0009 | **10/10 (100%)** | **9/10 (90%)** |
+| | $k=10$ | **+0.1918** | +0.0320 | +0.1003 | **10/10 (100%)** | 6/10 (60%) |
+
+*Key XAI Insights & Scope Limitations:*
+1. **Attribution Beats Random:** Attribution-guided node occlusion strictly outperforms random deletion in 100% of evaluated cascades across both datasets, verifying that post-hoc attribution captures genuine model sensitivity.
+2. **Degree Hub Disruption Effect:** On large GossipCop cascades at $k=10$, deleting top out-degree hubs routes information away from large portions of the cascade tree; this structural disruption causes severe probability drops that surpass feature attribution in 4/10 cascades.
+3. **Exploratory Scope:** Faithfulness was evaluated on the first 10 held-out test cascades per dataset. This provides preliminary empirical evidence rather than a complete whole-benchmark evaluation.
+4. **Scope of Explanations:** The current implementation uses feature-modality ablation, node-feature occlusion, and progressive deletion faithfulness. It does not implement subgraph extraction methods such as GNNExplainer or SubgraphX. Furthermore, sensitivity scores measure classifier dependence under fixed graph topology and do not indicate real-world causal authorship, bot status, or patient-zero origin.
+
+---
+
 ## 6. Exploratory Source-Proxy Experiment
 
 ### Problem Formulation & Target Definition
@@ -317,7 +390,7 @@ To evaluate source identification objectively without making unsupported scienti
    $$R(v, G) = N! \prod_{u \in V} \frac{1}{|T_u(v)|}$$
 4. **Sanity-Check Oracle:** Sorts candidate users directly by their observed timestamp. This is an **upper-bound sanity check** confirming metric pipeline correctness; it is **not** a discovery method.
 
-*Source artifacts: [`outputs/source_proxy_politifact.json`](file:///c:/Users/Sid/Desktop/GNN/outputs/source_proxy_politifact.json) and [`outputs/source_proxy_gossipcop.json`](file:///c:/Users/Sid/Desktop/GNN/outputs/source_proxy_gossipcop.json)*
+*Source artifacts: [`outputs/source_proxy_politifact.json`](outputs/source_proxy_politifact.json) and [`outputs/source_proxy_gossipcop.json`](outputs/source_proxy_gossipcop.json)*
 
 ### Experimental Results on Held-Out Test Splits
 
@@ -362,6 +435,9 @@ web/
   - **Propagation Driver Candidates (Gold):** Ranked by Shah & Zaman Rumor Centrality.
   - **Propagation Amplifiers (Red):** Identified via heuristic fan-out and burst velocity thresholds.
   - **Standard Retweeters (Slate):** Downstream retweeting users.
+- **Probability Calibration View:** Before-and-after comparison of Negative Log-Likelihood, Brier score, and Expected Calibration Error (ECE), with interactive reliability diagrams supporting both Positive-Class ECE and Top-Label ECE binning.
+- **Explainable AI (XAI) Sensitivity:** Macro feature-modality ablation breakdown (BERT text vs. user profile attributes vs. temporal-structural dynamics) and node-level prediction influence ($\Delta p$).
+- **XAI Faithfulness Evaluation Summary:** Progressive node deletion summary comparing attribution against random and degree-hub masking across 10 held-out test cascades.
 - **Benchmark Summary Tables:** Integrated presentation of 10-epoch baselines, extended-epoch checkpoints, and early-stage evaluation results.
 
 > [!NOTE]
@@ -429,14 +505,37 @@ python scripts/evaluate_early_stage.py --dataset politifact --device cpu
 ```
 Results are saved to `outputs/early_stage_politifact_stgnn.json` and `outputs/early_stage_gossipcop_stgnn.json`.
 
-### 5. Running the Source-Proxy Experiment
+### 5. Running Probability Calibration Evaluation
+To evaluate temperature scaling on validation and held-out test splits:
+```powershell
+# Evaluate both PolitiFact and GossipCop (writing to a separate test directory)
+python scripts/evaluate_calibration.py --dataset all --output_dir ./outputs_test
+
+# Evaluate PolitiFact only
+python scripts/evaluate_calibration.py --dataset politifact --output_dir ./outputs_test
+```
+> [!NOTE]
+> `scripts/evaluate_calibration.py` enforces a safety constraint that prevents overwriting existing `outputs/calibration_{dataset}.json` evaluation files. To run fresh evaluations, specify an alternate output directory using `--output_dir` (e.g. `./outputs_test`).
+
+### 6. Running Explainable AI (XAI) Faithfulness Evaluation
+To evaluate post-hoc feature-modality ablation, node-feature occlusion, and multi-seed progressive deletion faithfulness across 10 held-out test cascades per dataset:
+```powershell
+# Evaluate both PolitiFact and GossipCop
+python scripts/evaluate_xai_faithfulness.py --dataset all --sample_size 10 --device cpu
+
+# Evaluate PolitiFact only
+python scripts/evaluate_xai_faithfulness.py --dataset politifact --sample_size 10 --device cpu
+```
+Results are saved to `outputs/xai_faithfulness_politifact.json` and `outputs/xai_faithfulness_gossipcop.json`.
+
+### 7. Running the Source-Proxy Experiment
 To evaluate the heuristic ranking algorithms against the earliest-observed retweeter proxy:
 ```powershell
 python scripts/evaluate_source_proxy.py --dataset all --seed 42
 ```
 Results are saved to `outputs/source_proxy_politifact.json` and `outputs/source_proxy_gossipcop.json`.
 
-### 6. Training Models (Optional)
+### 8. Training Models (Optional)
 To retrain models from scratch using official timestamp mappings:
 ```powershell
 # Train STGNN on PolitiFact with timestamps
@@ -449,16 +548,20 @@ python scripts/train.py --model static_gnn --dataset politifact --epochs 10 --lr
 python scripts/train.py --model nlp --dataset politifact --epochs 10 --lr 0.001
 ```
 
-### 7. Automated Test Suite & Known Status
-The repository includes unit tests in `tests/test_pipeline.py`.
+### 9. Automated Test Suite
+The repository includes comprehensive unit and integration tests covering data pipelines, temporal builders, model architectures, rumor centrality, bot isolation, probability calibration, temperature scaling, and explainable AI:
 
 ```powershell
+# Run the complete test suite across all modules (35 tests)
 python -m unittest discover -s tests -p "test_*.py" -v
-```
 
-> [!WARNING]
-> **Test Suite Notice:**
-> The current `tests/test_pipeline.py` suite contains legacy tests created prior to the timestamp-integrity refactoring. Because `TemporalCascadeBuilder` now strictly requires real timestamp metadata (refusing to invent synthetic timestamps), and `source_identifier.py` explicitly rejects `true_source=0` (enforcing that news root 0 is not a user source), running the unit test file directly results in 3 expected failures. Tests covering cascade feature computation, static GNN, NLP baseline, rumor centrality, and bot isolation pass successfully.
+# Run calibration and temperature scaling tests
+python -m unittest -v tests.test_calibration tests.test_temperature_scaling
+
+# Run explainable AI tests
+python -m unittest -v tests.test_xai
+```
+All 35 tests pass with 0 failures and 0 errors.
 
 ---
 
@@ -481,21 +584,26 @@ GNN/
 |   |   \-- temporal_builder.py         # Chronological quantile snapshot builder
 |   |-- evaluation/
 |   |   |-- __init__.py
-|   |   \-- metrics.py                  # Classification and ranking evaluation metrics
+|   |   |-- calibration.py              # Brier score, NLL, Top-Label ECE, Pos-Class ECE, reliability diagrams
+|   |   |-- metrics.py                  # Classification and ranking evaluation metrics
+|   |   \-- xai.py                      # Modality ablation, node occlusion, progressive deletion faithfulness
 |   |-- models/
 |   |   |-- __init__.py
 |   |   |-- nlp_baseline.py             # Root text content MLP classifier
 |   |   |-- source_identifier.py        # Structural candidate ranker (excluding node 0)
 |   |   |-- static_gnn.py               # Static GAT / GCN / GraphSAGE baselines
-|   |   \-- stgnn.py                    # Spatio-Temporal GNN (Bidirectional GAT + GRU)
+|   |   |-- stgnn.py                    # Spatio-Temporal GNN (Bidirectional GAT + GRU)
+|   |   \-- temperature_scaling.py      # Post-hoc temperature scaling utility
 |   \-- visualization/
 |       |-- __init__.py
 |       \-- cascade_visualizer.py       # Static cascade visualization utilities
 |-- scripts/
 |   |-- demo_dashboard.py               # Dashboard data generator & local HTTP server
 |   |-- evaluate.py                     # Standardized 10-epoch comparative benchmark
+|   |-- evaluate_calibration.py         # Standalone probability calibration evaluation script
 |   |-- evaluate_early_stage.py         # Variable-length early-stage milestone evaluation
 |   |-- evaluate_source_proxy.py        # Earliest-observed retweeter proxy evaluation
+|   |-- evaluate_xai_faithfulness.py    # Exploratory deletion-based XAI faithfulness evaluation
 |   |-- identify_sources.py             # Propagation driver analysis demo script
 |   \-- train.py                        # Model training pipeline with early stopping
 |-- web/
@@ -503,16 +611,23 @@ GNN/
 |   |-- dashboard_data.json             # Precomputed test evaluation dataset for dashboard
 |   \-- vis-network.min.js              # Visualization library bundle
 |-- tests/
-|   \-- test_pipeline.py                # Pipeline unit & integration tests
+|   |-- test_calibration.py             # Unit tests for calibration metrics & binning
+|   |-- test_pipeline.py                # Pipeline, architecture & heuristic unit tests
+|   |-- test_temperature_scaling.py     # Unit tests for bounded TemperatureScaler
+|   \-- test_xai.py                     # Unit tests for modality ablation & occlusion
 |-- outputs/                            # Verified evaluation result artifacts (.json)
 |   |-- benchmark_politifact.json       # 10-epoch standardized benchmark (PolitiFact)
 |   |-- benchmark_gossipcop.json        # 10-epoch standardized benchmark (GossipCop)
+|   |-- calibration_politifact.json     # Temperature scaling evaluation (PolitiFact)
+|   |-- calibration_gossipcop.json      # Temperature scaling evaluation (GossipCop)
 |   |-- early_stage_politifact_stgnn.json  # 25/50/75/100% early-stage evaluation
 |   |-- early_stage_gossipcop_stgnn.json   # 25/50/75/100% early-stage evaluation
 |   |-- source_proxy_politifact.json    # PolitiFact proxy evaluation results
 |   |-- source_proxy_gossipcop.json     # GossipCop proxy evaluation results
 |   |-- stgnn_politifact_timestamp_lr001_es8.json  # Extended checkpoint evaluation
-|   \-- stgnn_gossipcop_timestamp_lr001_es8.json   # Extended checkpoint evaluation
+|   |-- stgnn_gossipcop_timestamp_lr001_es8.json   # Extended checkpoint evaluation
+|   |-- xai_faithfulness_politifact.json # 10-cascade XAI faithfulness evaluation
+|   \-- xai_faithfulness_gossipcop.json  # 10-cascade XAI faithfulness evaluation
 |-- requirements.txt                    # Project Python package dependencies
 |-- .gitignore                          # Excludes large data, checkpoints, and scratch files
 \-- README.md                           # Research documentation and user guide
@@ -529,17 +644,24 @@ To maintain research integrity, we explicitly delineate verified current capabil
    The UPFD benchmark lacks ground-truth annotations identifying the initial human creator or publisher accounts. The source-proxy experiment evaluates an observational heuristic (the earliest retweeter in the crawl), which may reflect platform crawl latency or missing historical tweets rather than true authorship.
 2. **Untrained Auxiliary Source Head:**
    The node-level scoring head in `SpatioTemporalGNN` is not trained with a supervised objective. Real-world source identification requires dedicated ground-truth datasets with confirmed author labels.
-3. **Discrete Quantile Snapshots vs. Continuous Streaming:**
+3. **Small PolitiFact Validation Split ($N=31$):**
+   The UPFD PolitiFact validation split contains only 31 cascades (13 Real, 18 Fake). While validation-only temperature fitting strictly eliminates test leakage, scalar fitting on 31 samples carries higher sample variance than on GossipCop ($N_{\text{val}}=546$).
+4. **Exploratory XAI Faithfulness Sample:**
+   Faithfulness was evaluated on the first 10 held-out test cascades per dataset across 5 random seeds. While attribution strictly outperforms random deletion, this serves as an exploratory empirical evaluation rather than a whole-benchmark verification.
+5. **Discrete Quantile Snapshots vs. Continuous Streaming:**
    Snapshots represent discrete quantiles of total observed users (25%, 50%, 75%, 100%), rather than fixed real-time continuous streaming windows (e.g., 1 hour, 6 hours, 24 hours).
-4. **Heuristic Propagation Indicators vs. Supervised Bot Detection:**
+6. **Heuristic Propagation Indicators vs. Supervised Bot Detection:**
    The amplifier identification module relies on structural fan-out and burst velocity heuristics. It has not been trained or validated against external annotated bot benchmarks (such as Botometer or TwiBot-22).
 
+### Completed Research Extensions
+- [x] **Post-Hoc Probability Calibration & Reliability Analysis:** Implemented temperature scaling (`src/models/temperature_scaling.py`, `src/evaluation/calibration.py`), fitted exclusively on validation logits with bounded optimization, with dual ECE analysis (top-label and positive-class ECE) and interactive reliability diagrams in the dashboard. (Evaluated in Section 5.D).
+- [x] **Explainable AI (XAI) Attribution & Faithfulness:** Implemented feature-modality ablation, node-feature occlusion sensitivity, and exploratory progressive-deletion faithfulness evaluation across 10 held-out test cascades per dataset. (Evaluated in Section 5.E).
+
 ### Planned Future Work (Not Implemented in Current Codebase)
-- [ ] **Probability Calibration & Reliability Analysis:** Implement temperature scaling and Expected Calibration Error (ECE) analysis to quantify model prediction confidence under distribution shifts.
-- [ ] **Explainable AI (XAI) for Cascades:** Integrate GNNExplainer and SubgraphX to identify which specific propagation sub-trees and user attributes drive veracity predictions.
+- [ ] **Subgraph Extraction (GNNExplainer / SubgraphX):** Extend node-level occlusion to search for compact, connected explanatory subgraphs and motif structures.
 - [ ] **Interactive Cascade Perturbation Simulations:** Enable dashboard users to simulate edge removals and node ablations to test cascade resilience against moderation interventions.
 - [ ] **Validated New-Cascade Streaming Inference Workflow:** Develop end-to-end ingestion and real-time inference pipelines for previously unobserved live cascades.
-- [ ] **Supervised Source-Node Learning:** Formulate source localization on synthetic or annotated diffusion benchmarks with verified origin ground truth.
+- [ ] **Supervised Source-Node Learning:** Formulate source localization on synthetic or annotated diffusion benchmarks with verified human creator ground truth.
 - [ ] **Cross-Platform Domain Generalisation:** Validate models on social platforms beyond Twitter/X, such as Reddit (threaded discussions) and Telegram (forwarding channels).
 
 ---

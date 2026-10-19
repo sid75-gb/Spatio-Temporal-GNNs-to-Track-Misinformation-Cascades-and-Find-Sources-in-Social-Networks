@@ -36,10 +36,12 @@ from src.evaluation.metrics import compute_classification_metrics, aggregate_sou
 class TestDataAndTemporalPipeline(unittest.TestCase):
     def setUp(self):
         # Create a small tree graph: 0 -> 1, 0 -> 2, 1 -> 3, 1 -> 4
+        # Node 0 is the news claim (timestamp NaN); nodes 1..4 have valid chronological timestamps
         edge_index = torch.tensor([[0, 0, 1, 1], [1, 2, 3, 4]], dtype=torch.long)
         x = torch.randn(5, 32)
         y = torch.tensor([1], dtype=torch.long)
-        self.sample_data = Data(x=x, edge_index=edge_index, y=y)
+        node_timestamps = torch.tensor([float("nan"), 100.0, 200.0, 300.0, 400.0], dtype=torch.float64)
+        self.sample_data = Data(x=x, edge_index=edge_index, y=y, node_timestamps=node_timestamps)
 
     def test_cascade_features(self):
         metrics = compute_cascade_metrics(self.sample_data.edge_index, num_nodes=5)
@@ -69,9 +71,19 @@ class TestDataAndTemporalPipeline(unittest.TestCase):
 
 class TestModelArchitectures(unittest.TestCase):
     def setUp(self):
-        # 2 cascades in a batch
-        g1 = Data(x=torch.randn(6, 64), edge_index=torch.tensor([[0, 0, 1, 2, 2], [1, 2, 3, 4, 5]]), y=torch.tensor([1]))
-        g2 = Data(x=torch.randn(4, 64), edge_index=torch.tensor([[0, 0, 1], [1, 2, 3]]), y=torch.tensor([0]))
+        # 2 cascades in a batch with valid UPFD timestamp metadata
+        g1 = Data(
+            x=torch.randn(6, 64),
+            edge_index=torch.tensor([[0, 0, 1, 2, 2], [1, 2, 3, 4, 5]]),
+            y=torch.tensor([1]),
+            node_timestamps=torch.tensor([float("nan"), 100.0, 200.0, 300.0, 400.0, 500.0], dtype=torch.float64),
+        )
+        g2 = Data(
+            x=torch.randn(4, 64),
+            edge_index=torch.tensor([[0, 0, 1], [1, 2, 3]]),
+            y=torch.tensor([0]),
+            node_timestamps=torch.tensor([float("nan"), 100.0, 200.0, 300.0], dtype=torch.float64),
+        )
         self.batch = Batch.from_data_list([g1, g2])
         self.single_graph = g1
 
@@ -113,7 +125,8 @@ class TestAlgorithmsAndSourceIdentification(unittest.TestCase):
     def setUp(self):
         # Tree: 0 is center/root: 0->1, 0->2, 0->3, 1->4
         edge_index = torch.tensor([[0, 0, 0, 1], [1, 2, 3, 4]], dtype=torch.long)
-        self.data = Data(x=torch.randn(5, 16), edge_index=edge_index, y=torch.tensor([1]))
+        node_timestamps = torch.tensor([float("nan"), 100.0, 200.0, 300.0, 400.0], dtype=torch.float64)
+        self.data = Data(x=torch.randn(5, 16), edge_index=edge_index, y=torch.tensor([1]), node_timestamps=node_timestamps)
 
     def test_rumor_centrality(self):
         G = build_networkx_tree(self.data.edge_index, 5)
@@ -125,7 +138,9 @@ class TestAlgorithmsAndSourceIdentification(unittest.TestCase):
 
     def test_source_identifier_evaluation(self):
         identifier = CascadeSourceIdentifier(hybrid_weight=0.5)
-        res = identifier.evaluate_cascade_source(self.data, true_source=0, method="rumor_centrality")
+        # In UPFD, node 0 is the news claim and cannot be a user source target.
+        # User node 1 has the highest rumor centrality among candidate users (nodes 1..4).
+        res = identifier.evaluate_cascade_source(self.data, true_source=1, method="rumor_centrality")
         self.assertEqual(res["true_rank"], 1)
         self.assertEqual(res["hit@1"], 1.0)
         self.assertEqual(res["error_distance"], 0.0)
@@ -143,3 +158,4 @@ class TestAlgorithmsAndSourceIdentification(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
