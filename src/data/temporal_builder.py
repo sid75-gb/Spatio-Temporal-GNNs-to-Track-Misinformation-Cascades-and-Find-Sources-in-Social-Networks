@@ -7,7 +7,10 @@ from graph depth or node index.
 It uses the official UPFD node timestamps attached by dataset_loader.py.
 
 Each snapshot contains only propagation information that was observable
-by that timestamp.
+by that timestamp cutoff. The temporal progression feature represents the
+known observation fraction (e.g., 0.25, 0.50, 0.75, 1.00) rather than
+elapsed wall-clock time normalized by the unobserved future cascade duration,
+strictly preventing future-information leakage.
 """
 
 from __future__ import annotations
@@ -36,6 +39,10 @@ class TemporalCascadeBuilder:
 
     Root node 0 is always active because it represents the news item and
     does not normally have a timestamp in UPFD.
+
+    The temporal progression feature reflects the predefined observation
+    fraction for the current snapshot, strictly avoiding any dependence
+    on future timestamps or total cascade duration.
     """
 
     def __init__(
@@ -246,7 +253,8 @@ class TemporalCascadeBuilder:
         edge_index: torch.Tensor,
         active_mask: torch.Tensor,
         num_nodes: int,
-        elapsed_fraction: float,
+        observation_fraction: float = 1.0,
+        elapsed_fraction: Optional[float] = None,
     ) -> torch.Tensor:
         """
         Compute structural-temporal features using ONLY the currently
@@ -255,9 +263,14 @@ class TemporalCascadeBuilder:
         Features:
             1. current normalized cascade depth
             2. current normalized out-degree
-            3. elapsed temporal fraction
-            4. active-node indicator
+            3. observation fraction (known requested fraction, e.g. 0.25, 0.50,
+               0.75, 1.00; strictly independent of future cascade duration)
+            4. active-node indicator (1.0 for active nodes, 0.0 for inactive nodes)
         """
+        if elapsed_fraction is not None:
+            progression_val = float(elapsed_fraction)
+        else:
+            progression_val = float(observation_fraction)
 
         graph = build_networkx_tree(
             edge_index,
@@ -350,7 +363,7 @@ class TemporalCascadeBuilder:
                 [
                     normalized_depth,
                     normalized_out_degree,
-                    elapsed_fraction,
+                    progression_val,
                     1.0,
                 ],
                 dtype=torch.float32,
@@ -379,23 +392,6 @@ class TemporalCascadeBuilder:
         )
 
         user_timestamps = timestamps[1:]
-
-        valid_user_times = user_timestamps[
-            torch.isfinite(user_timestamps)
-        ]
-
-        first_time = float(
-            valid_user_times.min().item()
-        )
-
-        last_time = float(
-            valid_user_times.max().item()
-        )
-
-        duration = max(
-            last_time - first_time,
-            1.0,
-        )
 
         snapshots: List[Data] = []
 
@@ -448,20 +444,13 @@ class TemporalCascadeBuilder:
                 )
 
             # ---------------------------------------------------------
-            # Temporal progression
+            # Temporal progression / observation fraction
             # ---------------------------------------------------------
-            elapsed_fraction = (
-                (cutoff - first_time)
-                / duration
-            )
-
-            elapsed_fraction = float(
-                np.clip(
-                    elapsed_fraction,
-                    0.0,
-                    1.0,
-                )
-            )
+            # The progression feature represents the predefined snapshot
+            # observation fraction (e.g. 0.25, 0.50, 0.75, 1.00), strictly
+            # avoiding any dependence on the total duration or final arrival
+            # timestamp of future, unobserved cascade participants.
+            observation_fraction = float(fraction)
 
             # ---------------------------------------------------------
             # Current-only structural features
@@ -471,7 +460,7 @@ class TemporalCascadeBuilder:
                     edge_index=snapshot_edge_index,
                     active_mask=active_mask,
                     num_nodes=num_nodes,
-                    elapsed_fraction=elapsed_fraction,
+                    observation_fraction=observation_fraction,
                 )
             )
 
@@ -514,7 +503,11 @@ class TemporalCascadeBuilder:
                     dtype=torch.float64,
                 ),
                 elapsed_fraction=torch.tensor(
-                    elapsed_fraction,
+                    observation_fraction,
+                    dtype=torch.float32,
+                ),
+                observation_fraction=torch.tensor(
+                    observation_fraction,
                     dtype=torch.float32,
                 ),
                 node_timestamps=timestamps.clone(),
