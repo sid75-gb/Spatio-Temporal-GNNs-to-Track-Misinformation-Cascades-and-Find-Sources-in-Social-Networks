@@ -575,6 +575,26 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="./outputs",
+        help="Directory to save training result JSON (default: ./outputs).",
+    )
+
+    parser.add_argument(
+        "--output_file",
+        type=str,
+        default=None,
+        help="Custom output filename for training result JSON.",
+    )
+
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Allow replacing existing checkpoint or output result files.",
+    )
+
+    parser.add_argument(
         "--seed",
         type=int,
         default=42,
@@ -969,6 +989,41 @@ def main():
 
     args = parse_args()
 
+    # Determine intended best-checkpoint path and result JSON path before training
+    checkpoint_path = os.path.join(
+        args.save_dir,
+        f"{args.model}_{args.dataset}_best.pt",
+    )
+
+    if args.output_file:
+        result_path = os.path.join(
+            args.output_dir,
+            args.output_file,
+        )
+    else:
+        result_path = os.path.join(
+            args.output_dir,
+            f"{args.model}_{args.dataset}_results.json",
+        )
+
+    # Abort before training starts if either destination already exists and --overwrite is not supplied
+    if not args.overwrite:
+        conflicts = []
+        if os.path.exists(checkpoint_path):
+            conflicts.append(f"Checkpoint: {checkpoint_path}")
+        if os.path.exists(result_path):
+            conflicts.append(f"Result JSON: {result_path}")
+
+        if conflicts:
+            print("\n" + "=" * 65)
+            print("  [ABORTED] Destination artifact(s) already exist:")
+            for conflict in conflicts:
+                print(f"    - {conflict}")
+            print("  Safety constraint: Existing artifacts cannot be overwritten by default.")
+            print("  Use --overwrite to explicitly permit replacing existing files.")
+            print("=" * 65 + "\n")
+            sys.exit(1)
+
     set_seed(
         args.seed
     )
@@ -1321,14 +1376,20 @@ def main():
     # -------------------------------------------------------------
 
     os.makedirs(
-        "./outputs",
+        args.output_dir,
         exist_ok=True,
     )
 
-    result_path = (
-        "./outputs/"
-        f"{args.model}_{args.dataset}_results.json"
-    )
+    if args.output_file:
+        result_path = os.path.join(
+            args.output_dir,
+            args.output_file,
+        )
+    else:
+        result_path = os.path.join(
+            args.output_dir,
+            f"{args.model}_{args.dataset}_results.json",
+        )
 
     result_payload = {
         "model": args.model,

@@ -1,0 +1,3102 @@
+{
+  "dataset": "gossipcop",
+  "model": "stgnn",
+  "checkpoint": "checkpoints\\gossipcop_temporal_corrected\\stgnn_gossipcop_best.pt",
+  "checkpoint_metadata": {
+    "epoch": 14,
+    "val_loss": null,
+    "val_f1": 0.97250672225747,
+    "val_acc": null
+  },
+  "evaluation_timestamp_utc": "2026-10-23 19:12:13 UTC",
+  "evaluation_duration_seconds": 7.945899486541748,
+  "protocol": {
+    "num_cascades_sampled": 10,
+    "selection_rule": "Sequential first 10 held-out test cascades with complete timestamps (indices 0..9)",
+    "target_k_values": [
+      1,
+      2,
+      5,
+      10
+    ],
+    "random_seeds": [
+      42,
+      43,
+      44,
+      45,
+      46
+    ],
+    "baseline_intervention": "Zero-masking active node features with fixed graph topology",
+    "sign_convention": "delta_p = baseline_probability - perturbed_probability. Positive values (>0) indicate confidence drop after masking (positive support)."
+  },
+  "invariance_verification": {
+    "all_cascades_invariant": true,
+    "max_logits_absolute_diff": 0.0,
+    "max_probs_absolute_diff": 0.0
+  },
+  "sample_classification_metrics": {
+    "total_sampled": 10,
+    "num_correct": 10,
+    "num_incorrect": 0,
+    "accuracy": 1.0,
+    "true_positives": 4,
+    "true_negatives": 6,
+    "false_positives": 0,
+    "false_negatives": 0
+  },
+  "aggregate_faithfulness": {
+    "overall": {
+      "num_cascades": 10,
+      "k_metrics": {
+        "k=1": {
+          "evaluated_cascades_count": 10,
+          "attribution_drop": {
+            "mean": 0.0015697717666625977,
+            "median": 0.0002301633358001709,
+            "std": 0.0022112651266250893,
+            "min": 3.838539123535156e-05,
+            "max": 0.005937099456787109
+          },
+          "random_drop": {
+            "mean": 0.0001580178737640381,
+            "median": 0.00011376738548278808,
+            "std": 0.0001817654057914013,
+            "min": -4.330873489379883e-05,
+            "max": 0.000503087043762207
+          },
+          "degree_drop": {
+            "mean": 0.0007125616073608398,
+            "median": 4.83095645904541e-05,
+            "std": 0.001756713597786618,
+            "min": -0.00012087821960449219,
+            "max": 0.005937099456787109
+          },
+          "comparative_outcomes": {
+            "attr_beats_random_count": 10,
+            "attr_beats_random_rate": 1.0,
+            "attr_beats_degree_count": 7,
+            "attr_beats_degree_rate": 0.7,
+            "attr_beats_both_count": 7,
+            "attr_beats_both_rate": 0.7
+          }
+        },
+        "k=2": {
+          "evaluated_cascades_count": 10,
+          "attribution_drop": {
+            "mean": 0.007764941453933716,
+            "median": 0.0005484819412231445,
+            "std": 0.016275952608292062,
+            "min": 7.897615432739258e-05,
+            "max": 0.05572611093521118
+          },
+          "random_drop": {
+            "mean": 0.000742490291595459,
+            "median": 0.00016415715217590331,
+            "std": 0.0012528257295420515,
+            "min": -3.1113624572753906e-05,
+            "max": 0.003624296188354492
+          },
+          "degree_drop": {
+            "mean": 0.0022162079811096193,
+            "median": 0.0001842975616455078,
+            "std": 0.004557451853666017,
+            "min": -0.00016742944717407227,
+            "max": 0.014711081981658936
+          },
+          "comparative_outcomes": {
+            "attr_beats_random_count": 10,
+            "attr_beats_random_rate": 1.0,
+            "attr_beats_degree_count": 9,
+            "attr_beats_degree_rate": 0.9,
+            "attr_beats_both_count": 9,
+            "attr_beats_both_rate": 0.9
+          }
+        },
+        "k=5": {
+          "evaluated_cascades_count": 10,
+          "attribution_drop": {
+            "mean": 0.19979606457054616,
+            "median": 0.00170174241065979,
+            "std": 0.3762783711603989,
+            "min": 0.0002098679542541504,
+            "max": 0.9638335928320885
+          },
+          "random_drop": {
+            "mean": 0.0028231525421142578,
+            "median": 0.0004722237586975098,
+            "std": 0.005691118324948102,
+            "min": -7.13348388671875e-05,
+            "max": 0.019008851051330565
+          },
+          "degree_drop": {
+            "mean": 0.08733687400817872,
+            "median": 0.0008887648582458496,
+            "std": 0.25190727615268504,
+            "min": 3.075599670410156e-05,
+            "max": 0.8428003191947937
+          },
+          "comparative_outcomes": {
+            "attr_beats_random_count": 10,
+            "attr_beats_random_rate": 1.0,
+            "attr_beats_degree_count": 9,
+            "attr_beats_degree_rate": 0.9,
+            "attr_beats_both_count": 9,
+            "attr_beats_both_rate": 0.9
+          }
+        },
+        "k=10": {
+          "evaluated_cascades_count": 10,
+          "attribution_drop": {
+            "mean": 0.28737988956272603,
+            "median": 0.0047318339347839355,
+            "std": 0.4277312750289838,
+            "min": 0.0004799962043762207,
+            "max": 0.9661894664168358
+          },
+          "random_drop": {
+            "mean": 0.010834006071090698,
+            "median": 0.0012720763683319093,
+            "std": 0.02111791285952928,
+            "min": -0.0001344919204711914,
+            "max": 0.06747223138809204
+          },
+          "degree_drop": {
+            "mean": 0.19851166363805534,
+            "median": 0.0031208395957946777,
+            "std": 0.3789977976374,
+            "min": 0.0003864765167236328,
+            "max": 0.9563396815210581
+          },
+          "comparative_outcomes": {
+            "attr_beats_random_count": 10,
+            "attr_beats_random_rate": 1.0,
+            "attr_beats_degree_count": 7,
+            "attr_beats_degree_rate": 0.7,
+            "attr_beats_both_count": 7,
+            "attr_beats_both_rate": 0.7
+          }
+        }
+      }
+    },
+    "correct_predictions": {
+      "num_cascades": 10,
+      "k_metrics": {
+        "k=1": {
+          "evaluated_cascades_count": 10,
+          "attribution_drop": {
+            "mean": 0.0015697717666625977,
+            "median": 0.0002301633358001709,
+            "std": 0.0022112651266250893,
+            "min": 3.838539123535156e-05,
+            "max": 0.005937099456787109
+          },
+          "random_drop": {
+            "mean": 0.0001580178737640381,
+            "median": 0.00011376738548278808,
+            "std": 0.0001817654057914013,
+            "min": -4.330873489379883e-05,
+            "max": 0.000503087043762207
+          },
+          "degree_drop": {
+            "mean": 0.0007125616073608398,
+            "median": 4.83095645904541e-05,
+            "std": 0.001756713597786618,
+            "min": -0.00012087821960449219,
+            "max": 0.005937099456787109
+          },
+          "comparative_outcomes": {
+            "attr_beats_random_count": 10,
+            "attr_beats_random_rate": 1.0,
+            "attr_beats_degree_count": 7,
+            "attr_beats_degree_rate": 0.7,
+            "attr_beats_both_count": 7,
+            "attr_beats_both_rate": 0.7
+          }
+        },
+        "k=2": {
+          "evaluated_cascades_count": 10,
+          "attribution_drop": {
+            "mean": 0.007764941453933716,
+            "median": 0.0005484819412231445,
+            "std": 0.016275952608292062,
+            "min": 7.897615432739258e-05,
+            "max": 0.05572611093521118
+          },
+          "random_drop": {
+            "mean": 0.000742490291595459,
+            "median": 0.00016415715217590331,
+            "std": 0.0012528257295420515,
+            "min": -3.1113624572753906e-05,
+            "max": 0.003624296188354492
+          },
+          "degree_drop": {
+            "mean": 0.0022162079811096193,
+            "median": 0.0001842975616455078,
+            "std": 0.004557451853666017,
+            "min": -0.00016742944717407227,
+            "max": 0.014711081981658936
+          },
+          "comparative_outcomes": {
+            "attr_beats_random_count": 10,
+            "attr_beats_random_rate": 1.0,
+            "attr_beats_degree_count": 9,
+            "attr_beats_degree_rate": 0.9,
+            "attr_beats_both_count": 9,
+            "attr_beats_both_rate": 0.9
+          }
+        },
+        "k=5": {
+          "evaluated_cascades_count": 10,
+          "attribution_drop": {
+            "mean": 0.19979606457054616,
+            "median": 0.00170174241065979,
+            "std": 0.3762783711603989,
+            "min": 0.0002098679542541504,
+            "max": 0.9638335928320885
+          },
+          "random_drop": {
+            "mean": 0.0028231525421142578,
+            "median": 0.0004722237586975098,
+            "std": 0.005691118324948102,
+            "min": -7.13348388671875e-05,
+            "max": 0.019008851051330565
+          },
+          "degree_drop": {
+            "mean": 0.08733687400817872,
+            "median": 0.0008887648582458496,
+            "std": 0.25190727615268504,
+            "min": 3.075599670410156e-05,
+            "max": 0.8428003191947937
+          },
+          "comparative_outcomes": {
+            "attr_beats_random_count": 10,
+            "attr_beats_random_rate": 1.0,
+            "attr_beats_degree_count": 9,
+            "attr_beats_degree_rate": 0.9,
+            "attr_beats_both_count": 9,
+            "attr_beats_both_rate": 0.9
+          }
+        },
+        "k=10": {
+          "evaluated_cascades_count": 10,
+          "attribution_drop": {
+            "mean": 0.28737988956272603,
+            "median": 0.0047318339347839355,
+            "std": 0.4277312750289838,
+            "min": 0.0004799962043762207,
+            "max": 0.9661894664168358
+          },
+          "random_drop": {
+            "mean": 0.010834006071090698,
+            "median": 0.0012720763683319093,
+            "std": 0.02111791285952928,
+            "min": -0.0001344919204711914,
+            "max": 0.06747223138809204
+          },
+          "degree_drop": {
+            "mean": 0.19851166363805534,
+            "median": 0.0031208395957946777,
+            "std": 0.3789977976374,
+            "min": 0.0003864765167236328,
+            "max": 0.9563396815210581
+          },
+          "comparative_outcomes": {
+            "attr_beats_random_count": 10,
+            "attr_beats_random_rate": 1.0,
+            "attr_beats_degree_count": 7,
+            "attr_beats_degree_rate": 0.7,
+            "attr_beats_both_count": 7,
+            "attr_beats_both_rate": 0.7
+          }
+        }
+      }
+    },
+    "incorrect_predictions": {
+      "num_cascades": 0,
+      "k_metrics": {}
+    },
+    "by_error_type": {
+      "true_positive": {
+        "num_cascades": 4,
+        "k_metrics": {
+          "k=1": {
+            "evaluated_cascades_count": 4,
+            "attribution_drop": {
+              "mean": 0.0016271770000457764,
+              "median": 0.0002301633358001709,
+              "std": 0.002488809773428705,
+              "min": 0.0001112818717956543,
+              "max": 0.005937099456787109
+            },
+            "random_drop": {
+              "mean": 0.00016557574272155762,
+              "median": 8.701682090759278e-05,
+              "std": 0.00019667438852594553,
+              "min": -3.7670135498046877e-06,
+              "max": 0.0004920363426208496
+            },
+            "degree_drop": {
+              "mean": 0.0015619099140167236,
+              "median": 0.0001507401466369629,
+              "std": 0.002527241440275013,
+              "min": 9.059906005859375e-06,
+              "max": 0.005937099456787109
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 4,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 2,
+              "attr_beats_degree_rate": 0.5,
+              "attr_beats_both_count": 2,
+              "attr_beats_both_rate": 0.5
+            }
+          },
+          "k=2": {
+            "evaluated_cascades_count": 4,
+            "attribution_drop": {
+              "mean": 0.0030622929334640503,
+              "median": 0.00202140212059021,
+              "std": 0.003098858123435609,
+              "min": 0.0002524256706237793,
+              "max": 0.007953941822052002
+            },
+            "random_drop": {
+              "mean": 0.0009912371635437012,
+              "median": 0.00017273426055908203,
+              "std": 0.0015244578514601527,
+              "min": -4.816055297851562e-06,
+              "max": 0.003624296188354492
+            },
+            "degree_drop": {
+              "mean": 0.003824010491371155,
+              "median": 0.00028273463249206543,
+              "std": 0.006286712323901135,
+              "min": 1.9490718841552734e-05,
+              "max": 0.014711081981658936
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 4,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 3,
+              "attr_beats_degree_rate": 0.75,
+              "attr_beats_both_count": 3,
+              "attr_beats_both_rate": 0.75
+            }
+          },
+          "k=5": {
+            "evaluated_cascades_count": 4,
+            "attribution_drop": {
+              "mean": 0.24620244465768337,
+              "median": 0.01017838716506958,
+              "std": 0.4143851559421007,
+              "min": 0.0006194114685058594,
+              "max": 0.9638335928320885
+            },
+            "random_drop": {
+              "mean": 0.0018128275871276856,
+              "median": 0.00042470097541809083,
+              "std": 0.0026365832200973497,
+              "min": 4.786252975463867e-05,
+              "max": 0.006354045867919922
+            },
+            "degree_drop": {
+              "mean": 0.007101878523826599,
+              "median": 0.0026023387908935547,
+              "std": 0.00913742230031235,
+              "min": 0.00039958953857421875,
+              "max": 0.02280324697494507
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 4,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 3,
+              "attr_beats_degree_rate": 0.75,
+              "attr_beats_both_count": 3,
+              "attr_beats_both_rate": 0.75
+            }
+          },
+          "k=10": {
+            "evaluated_cascades_count": 4,
+            "attribution_drop": {
+              "mean": 0.2529646214097738,
+              "median": 0.02237042784690857,
+              "std": 0.4120483607864315,
+              "min": 0.0009281635284423828,
+              "max": 0.9661894664168358
+            },
+            "random_drop": {
+              "mean": 0.008797338604927062,
+              "median": 0.0012471139430999755,
+              "std": 0.013777263473625598,
+              "min": 8.404254913330078e-05,
+              "max": 0.032611083984375
+            },
+            "degree_drop": {
+              "mean": 0.2548511205241084,
+              "median": 0.03165483474731445,
+              "std": 0.40497981408056,
+              "min": 0.0008864402770996094,
+              "max": 0.9552083723247051
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 4,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 3,
+              "attr_beats_degree_rate": 0.75,
+              "attr_beats_both_count": 3,
+              "attr_beats_both_rate": 0.75
+            }
+          }
+        }
+      },
+      "true_negative": {
+        "num_cascades": 6,
+        "k_metrics": {
+          "k=1": {
+            "evaluated_cascades_count": 6,
+            "attribution_drop": {
+              "mean": 0.0015315016110738118,
+              "median": 0.00022733211517333984,
+              "std": 0.0020040903662632047,
+              "min": 3.838539123535156e-05,
+              "max": 0.005093514919281006
+            },
+            "random_drop": {
+              "mean": 0.00015297929445902503,
+              "median": 0.00011376738548278808,
+              "std": 0.00017092033124417735,
+              "min": -4.330873489379883e-05,
+              "max": 0.000503087043762207
+            },
+            "degree_drop": {
+              "mean": 0.00014632940292358398,
+              "median": 1.3738870620727539e-05,
+              "std": 0.0002896393782454955,
+              "min": -0.00012087821960449219,
+              "max": 0.0007458925247192383
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 6,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 5,
+              "attr_beats_degree_rate": 0.8333333333333334,
+              "attr_beats_both_count": 5,
+              "attr_beats_both_rate": 0.8333333333333334
+            }
+          },
+          "k=2": {
+            "evaluated_cascades_count": 6,
+            "attribution_drop": {
+              "mean": 0.01090004046758016,
+              "median": 0.0004893839359283447,
+              "std": 0.020261712493503833,
+              "min": 7.897615432739258e-05,
+              "max": 0.05572611093521118
+            },
+            "random_drop": {
+              "mean": 0.0005766590436299642,
+              "median": 0.00016415715217590331,
+              "std": 0.0009989441159281478,
+              "min": -3.1113624572753906e-05,
+              "max": 0.0028003811836242675
+            },
+            "degree_drop": {
+              "mean": 0.001144339640935262,
+              "median": 9.509921073913574e-05,
+              "std": 0.0023230418467623626,
+              "min": -0.00016742944717407227,
+              "max": 0.006320953369140625
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 6,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 6,
+              "attr_beats_degree_rate": 1.0,
+              "attr_beats_both_count": 6,
+              "attr_beats_both_rate": 1.0
+            }
+          },
+          "k=5": {
+            "evaluated_cascades_count": 6,
+            "attribution_drop": {
+              "mean": 0.168858477845788,
+              "median": 0.0013020634651184082,
+              "std": 0.3451175843306436,
+              "min": 0.0002098679542541504,
+              "max": 0.9384142719209194
+            },
+            "random_drop": {
+              "mean": 0.0034967025121053056,
+              "median": 0.0004722237586975098,
+              "std": 0.0069435455658292365,
+              "min": -7.13348388671875e-05,
+              "max": 0.019008851051330565
+            },
+            "degree_drop": {
+              "mean": 0.1408268709977468,
+              "median": 0.00034353137016296387,
+              "std": 0.3139323417480042,
+              "min": 3.075599670410156e-05,
+              "max": 0.8428003191947937
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 6,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 6,
+              "attr_beats_degree_rate": 1.0,
+              "attr_beats_both_count": 6,
+              "attr_beats_both_rate": 1.0
+            }
+          },
+          "k=10": {
+            "evaluated_cascades_count": 6,
+            "attribution_drop": {
+              "mean": 0.31032340166469413,
+              "median": 0.0029465854167938232,
+              "std": 0.43636929288895954,
+              "min": 0.0004799962043762207,
+              "max": 0.9487237147986889
+            },
+            "random_drop": {
+              "mean": 0.012191784381866458,
+              "median": 0.0012720763683319093,
+              "std": 0.024741183786761066,
+              "min": -0.0001344919204711914,
+              "max": 0.06747223138809204
+            },
+            "degree_drop": {
+              "mean": 0.16095202571401993,
+              "median": 0.000979393720626831,
+              "std": 0.35571472907240487,
+              "min": 0.0003864765167236328,
+              "max": 0.9563396815210581
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 6,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 4,
+              "attr_beats_degree_rate": 0.6666666666666666,
+              "attr_beats_both_count": 4,
+              "attr_beats_both_rate": 0.6666666666666666
+            }
+          }
+        }
+      },
+      "false_positive": {
+        "num_cascades": 0,
+        "k_metrics": {}
+      },
+      "false_negative": {
+        "num_cascades": 0,
+        "k_metrics": {}
+      }
+    },
+    "by_actual_label": {
+      "real": {
+        "num_cascades": 6,
+        "k_metrics": {
+          "k=1": {
+            "evaluated_cascades_count": 6,
+            "attribution_drop": {
+              "mean": 0.0015315016110738118,
+              "median": 0.00022733211517333984,
+              "std": 0.0020040903662632047,
+              "min": 3.838539123535156e-05,
+              "max": 0.005093514919281006
+            },
+            "random_drop": {
+              "mean": 0.00015297929445902503,
+              "median": 0.00011376738548278808,
+              "std": 0.00017092033124417735,
+              "min": -4.330873489379883e-05,
+              "max": 0.000503087043762207
+            },
+            "degree_drop": {
+              "mean": 0.00014632940292358398,
+              "median": 1.3738870620727539e-05,
+              "std": 0.0002896393782454955,
+              "min": -0.00012087821960449219,
+              "max": 0.0007458925247192383
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 6,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 5,
+              "attr_beats_degree_rate": 0.8333333333333334,
+              "attr_beats_both_count": 5,
+              "attr_beats_both_rate": 0.8333333333333334
+            }
+          },
+          "k=2": {
+            "evaluated_cascades_count": 6,
+            "attribution_drop": {
+              "mean": 0.01090004046758016,
+              "median": 0.0004893839359283447,
+              "std": 0.020261712493503833,
+              "min": 7.897615432739258e-05,
+              "max": 0.05572611093521118
+            },
+            "random_drop": {
+              "mean": 0.0005766590436299642,
+              "median": 0.00016415715217590331,
+              "std": 0.0009989441159281478,
+              "min": -3.1113624572753906e-05,
+              "max": 0.0028003811836242675
+            },
+            "degree_drop": {
+              "mean": 0.001144339640935262,
+              "median": 9.509921073913574e-05,
+              "std": 0.0023230418467623626,
+              "min": -0.00016742944717407227,
+              "max": 0.006320953369140625
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 6,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 6,
+              "attr_beats_degree_rate": 1.0,
+              "attr_beats_both_count": 6,
+              "attr_beats_both_rate": 1.0
+            }
+          },
+          "k=5": {
+            "evaluated_cascades_count": 6,
+            "attribution_drop": {
+              "mean": 0.168858477845788,
+              "median": 0.0013020634651184082,
+              "std": 0.3451175843306436,
+              "min": 0.0002098679542541504,
+              "max": 0.9384142719209194
+            },
+            "random_drop": {
+              "mean": 0.0034967025121053056,
+              "median": 0.0004722237586975098,
+              "std": 0.0069435455658292365,
+              "min": -7.13348388671875e-05,
+              "max": 0.019008851051330565
+            },
+            "degree_drop": {
+              "mean": 0.1408268709977468,
+              "median": 0.00034353137016296387,
+              "std": 0.3139323417480042,
+              "min": 3.075599670410156e-05,
+              "max": 0.8428003191947937
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 6,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 6,
+              "attr_beats_degree_rate": 1.0,
+              "attr_beats_both_count": 6,
+              "attr_beats_both_rate": 1.0
+            }
+          },
+          "k=10": {
+            "evaluated_cascades_count": 6,
+            "attribution_drop": {
+              "mean": 0.31032340166469413,
+              "median": 0.0029465854167938232,
+              "std": 0.43636929288895954,
+              "min": 0.0004799962043762207,
+              "max": 0.9487237147986889
+            },
+            "random_drop": {
+              "mean": 0.012191784381866458,
+              "median": 0.0012720763683319093,
+              "std": 0.024741183786761066,
+              "min": -0.0001344919204711914,
+              "max": 0.06747223138809204
+            },
+            "degree_drop": {
+              "mean": 0.16095202571401993,
+              "median": 0.000979393720626831,
+              "std": 0.35571472907240487,
+              "min": 0.0003864765167236328,
+              "max": 0.9563396815210581
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 6,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 4,
+              "attr_beats_degree_rate": 0.6666666666666666,
+              "attr_beats_both_count": 4,
+              "attr_beats_both_rate": 0.6666666666666666
+            }
+          }
+        }
+      },
+      "fake": {
+        "num_cascades": 4,
+        "k_metrics": {
+          "k=1": {
+            "evaluated_cascades_count": 4,
+            "attribution_drop": {
+              "mean": 0.0016271770000457764,
+              "median": 0.0002301633358001709,
+              "std": 0.002488809773428705,
+              "min": 0.0001112818717956543,
+              "max": 0.005937099456787109
+            },
+            "random_drop": {
+              "mean": 0.00016557574272155762,
+              "median": 8.701682090759278e-05,
+              "std": 0.00019667438852594553,
+              "min": -3.7670135498046877e-06,
+              "max": 0.0004920363426208496
+            },
+            "degree_drop": {
+              "mean": 0.0015619099140167236,
+              "median": 0.0001507401466369629,
+              "std": 0.002527241440275013,
+              "min": 9.059906005859375e-06,
+              "max": 0.005937099456787109
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 4,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 2,
+              "attr_beats_degree_rate": 0.5,
+              "attr_beats_both_count": 2,
+              "attr_beats_both_rate": 0.5
+            }
+          },
+          "k=2": {
+            "evaluated_cascades_count": 4,
+            "attribution_drop": {
+              "mean": 0.0030622929334640503,
+              "median": 0.00202140212059021,
+              "std": 0.003098858123435609,
+              "min": 0.0002524256706237793,
+              "max": 0.007953941822052002
+            },
+            "random_drop": {
+              "mean": 0.0009912371635437012,
+              "median": 0.00017273426055908203,
+              "std": 0.0015244578514601527,
+              "min": -4.816055297851562e-06,
+              "max": 0.003624296188354492
+            },
+            "degree_drop": {
+              "mean": 0.003824010491371155,
+              "median": 0.00028273463249206543,
+              "std": 0.006286712323901135,
+              "min": 1.9490718841552734e-05,
+              "max": 0.014711081981658936
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 4,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 3,
+              "attr_beats_degree_rate": 0.75,
+              "attr_beats_both_count": 3,
+              "attr_beats_both_rate": 0.75
+            }
+          },
+          "k=5": {
+            "evaluated_cascades_count": 4,
+            "attribution_drop": {
+              "mean": 0.24620244465768337,
+              "median": 0.01017838716506958,
+              "std": 0.4143851559421007,
+              "min": 0.0006194114685058594,
+              "max": 0.9638335928320885
+            },
+            "random_drop": {
+              "mean": 0.0018128275871276856,
+              "median": 0.00042470097541809083,
+              "std": 0.0026365832200973497,
+              "min": 4.786252975463867e-05,
+              "max": 0.006354045867919922
+            },
+            "degree_drop": {
+              "mean": 0.007101878523826599,
+              "median": 0.0026023387908935547,
+              "std": 0.00913742230031235,
+              "min": 0.00039958953857421875,
+              "max": 0.02280324697494507
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 4,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 3,
+              "attr_beats_degree_rate": 0.75,
+              "attr_beats_both_count": 3,
+              "attr_beats_both_rate": 0.75
+            }
+          },
+          "k=10": {
+            "evaluated_cascades_count": 4,
+            "attribution_drop": {
+              "mean": 0.2529646214097738,
+              "median": 0.02237042784690857,
+              "std": 0.4120483607864315,
+              "min": 0.0009281635284423828,
+              "max": 0.9661894664168358
+            },
+            "random_drop": {
+              "mean": 0.008797338604927062,
+              "median": 0.0012471139430999755,
+              "std": 0.013777263473625598,
+              "min": 8.404254913330078e-05,
+              "max": 0.032611083984375
+            },
+            "degree_drop": {
+              "mean": 0.2548511205241084,
+              "median": 0.03165483474731445,
+              "std": 0.40497981408056,
+              "min": 0.0008864402770996094,
+              "max": 0.9552083723247051
+            },
+            "comparative_outcomes": {
+              "attr_beats_random_count": 4,
+              "attr_beats_random_rate": 1.0,
+              "attr_beats_degree_count": 3,
+              "attr_beats_degree_rate": 0.75,
+              "attr_beats_both_count": 3,
+              "attr_beats_both_rate": 0.75
+            }
+          }
+        }
+      }
+    }
+  },
+  "per_cascade_results": [
+    {
+      "cascade_id": 0,
+      "num_nodes": 116,
+      "num_eligible_user_nodes": 115,
+      "actual_label": "FAKE",
+      "actual_class": 1,
+      "predicted_label": "FAKE",
+      "predicted_class": 1,
+      "is_correct": true,
+      "error_type": "true_positive",
+      "baseline_confidence": 0.9983417987823486,
+      "baseline_logits": [
+        -3.4212236404418945,
+        2.979133367538452
+      ],
+      "baseline_probabilities": [
+        0.001658209483139217,
+        0.9983417987823486
+      ],
+      "modality_attributions": {
+        "bert_content": {
+          "delta_probability": 0.0001709461212158203,
+          "perturbed_probability": 0.9981708526611328,
+          "feature_slice": [
+            0,
+            768
+          ],
+          "description": "Textual semantic representation of news claim or user tweet history (dims 0..767)"
+        },
+        "user_profile": {
+          "delta_probability": 0.4949823021888733,
+          "perturbed_probability": 0.5033594965934753,
+          "feature_slice": [
+            768,
+            778
+          ],
+          "description": "Twitter account metadata normalized by training-set statistics (dims 768..777)"
+        },
+        "temporal_dynamics": {
+          "delta_probability": -8.344650268554688e-06,
+          "perturbed_probability": 0.9983501434326172,
+          "feature_slice": [
+            778,
+            782
+          ],
+          "description": "Snapshot structural-temporal metrics: depth, degree, elapsed time, active flag (dims 778..781)"
+        }
+      },
+      "root_attribution": {
+        "node_id": 0,
+        "delta_probability": -6.467103958129883e-05,
+        "perturbed_probability": 0.9984064698219299,
+        "active_snapshots_count": 4,
+        "role": "Root News Item / Published Claim",
+        "note": "Node 0 directly supplies root_embeds (50% of classifier input) in STGNN."
+      },
+      "top_supporting_user_nodes": [
+        {
+          "node_id": 1,
+          "delta_p": 0.00022614002227783203,
+          "snaps": 4
+        },
+        {
+          "node_id": 15,
+          "delta_p": 8.541345596313477e-05,
+          "snaps": 3
+        },
+        {
+          "node_id": 38,
+          "delta_p": 8.124113082885742e-05,
+          "snaps": 1
+        }
+      ],
+      "top_countervailing_user_nodes": [
+        {
+          "node_id": 3,
+          "delta_p": -1.4603137969970703e-05,
+          "snaps": 4
+        },
+        {
+          "node_id": 9,
+          "delta_p": -8.702278137207031e-06,
+          "snaps": 4
+        },
+        {
+          "node_id": 92,
+          "delta_p": -5.9604644775390625e-06,
+          "snaps": 3
+        }
+      ],
+      "evaluated_k_values": [
+        1,
+        2,
+        5,
+        10
+      ],
+      "k_comparisons": [
+        {
+          "k": 1,
+          "attribution_masked_nodes": [
+            1
+          ],
+          "attribution_drop": 0.00022614002227783203,
+          "attribution_perturbed_p": 0.9981156587600708,
+          "degree_masked_nodes": [
+            1
+          ],
+          "degree_drop": 0.00022614002227783203,
+          "degree_perturbed_p": 0.9981156587600708,
+          "random_mean_drop": -3.7670135498046877e-06,
+          "random_std_drop": 9.847582067519847e-07,
+          "random_seed_drops": [
+            -2.86102294921875e-06,
+            -5.364418029785156e-06,
+            -4.172325134277344e-06,
+            -2.6226043701171875e-06,
+            -3.814697265625e-06
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": false,
+          "attr_beats_both": false
+        },
+        {
+          "k": 2,
+          "attribution_masked_nodes": [
+            1,
+            15
+          ],
+          "attribution_drop": 0.0035082101821899414,
+          "attribution_perturbed_p": 0.9948335886001587,
+          "degree_masked_nodes": [
+            1,
+            42
+          ],
+          "degree_drop": 0.00022339820861816406,
+          "degree_perturbed_p": 0.9981184005737305,
+          "random_mean_drop": -4.816055297851562e-06,
+          "random_std_drop": 3.886734747374502e-06,
+          "random_seed_drops": [
+            -2.384185791015625e-06,
+            -8.58306884765625e-06,
+            -7.62939453125e-06,
+            1.6689300537109375e-06,
+            -7.152557373046875e-06
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 5,
+          "attribution_masked_nodes": [
+            1,
+            15,
+            38,
+            6,
+            2
+          ],
+          "attribution_drop": 0.9638335928320885,
+          "attribution_perturbed_p": 0.03450820595026016,
+          "degree_masked_nodes": [
+            1,
+            42,
+            15,
+            41,
+            47
+          ],
+          "degree_drop": 0.0036084651947021484,
+          "degree_perturbed_p": 0.9947333335876465,
+          "random_mean_drop": 4.786252975463867e-05,
+          "random_std_drop": 0.00010313028446599535,
+          "random_seed_drops": [
+            -1.1920928955078125e-06,
+            -5.841255187988281e-06,
+            -2.5033950805664062e-06,
+            0.00025409460067749023,
+            -5.245208740234375e-06
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 10,
+          "attribution_masked_nodes": [
+            1,
+            15,
+            38,
+            6,
+            2,
+            68,
+            8,
+            4,
+            45,
+            18
+          ],
+          "attribution_drop": 0.9661894664168358,
+          "attribution_perturbed_p": 0.03215233236551285,
+          "degree_masked_nodes": [
+            1,
+            42,
+            15,
+            41,
+            47,
+            7,
+            38,
+            6,
+            2,
+            68
+          ],
+          "degree_drop": 0.9552083723247051,
+          "degree_perturbed_p": 0.04313342645764351,
+          "random_mean_drop": 8.404254913330078e-05,
+          "random_std_drop": 0.00012260201655494077,
+          "random_seed_drops": [
+            2.7179718017578125e-05,
+            8.046627044677734e-06,
+            3.3855438232421875e-05,
+            0.0003286600112915039,
+            2.2470951080322266e-05
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        }
+      ],
+      "invariance_verified": true,
+      "max_logits_diff": 0.0,
+      "max_probs_diff": 0.0
+    },
+    {
+      "cascade_id": 1,
+      "num_nodes": 17,
+      "num_eligible_user_nodes": 16,
+      "actual_label": "FAKE",
+      "actual_class": 1,
+      "predicted_label": "FAKE",
+      "predicted_class": 1,
+      "is_correct": true,
+      "error_type": "true_positive",
+      "baseline_confidence": 0.9979841709136963,
+      "baseline_logits": [
+        -3.2160887718200684,
+        2.988640069961548
+      ],
+      "baseline_probabilities": [
+        0.0020157841499894857,
+        0.9979841709136963
+      ],
+      "modality_attributions": {
+        "bert_content": {
+          "delta_probability": -5.525350570678711e-05,
+          "perturbed_probability": 0.9980394244194031,
+          "feature_slice": [
+            0,
+            768
+          ],
+          "description": "Textual semantic representation of news claim or user tweet history (dims 0..767)"
+        },
+        "user_profile": {
+          "delta_probability": 5.054473876953125e-05,
+          "perturbed_probability": 0.9979336261749268,
+          "feature_slice": [
+            768,
+            778
+          ],
+          "description": "Twitter account metadata normalized by training-set statistics (dims 768..777)"
+        },
+        "temporal_dynamics": {
+          "delta_probability": 5.14984130859375e-05,
+          "perturbed_probability": 0.9979326725006104,
+          "feature_slice": [
+            778,
+            782
+          ],
+          "description": "Snapshot structural-temporal metrics: depth, degree, elapsed time, active flag (dims 778..781)"
+        }
+      },
+      "root_attribution": {
+        "node_id": 0,
+        "delta_probability": 0.0019088387489318848,
+        "perturbed_probability": 0.9960753321647644,
+        "active_snapshots_count": 4,
+        "role": "Root News Item / Published Claim",
+        "note": "Node 0 directly supplies root_embeds (50% of classifier input) in STGNN."
+      },
+      "top_supporting_user_nodes": [
+        {
+          "node_id": 4,
+          "delta_p": 0.00023418664932250977,
+          "snaps": 4
+        },
+        {
+          "node_id": 1,
+          "delta_p": 0.0002238750457763672,
+          "snaps": 4
+        },
+        {
+          "node_id": 6,
+          "delta_p": 0.00021767616271972656,
+          "snaps": 3
+        }
+      ],
+      "top_countervailing_user_nodes": [
+        {
+          "node_id": 16,
+          "delta_p": -1.5676021575927734e-05,
+          "snaps": 1
+        }
+      ],
+      "evaluated_k_values": [
+        1,
+        2,
+        5,
+        10
+      ],
+      "k_comparisons": [
+        {
+          "k": 1,
+          "attribution_masked_nodes": [
+            4
+          ],
+          "attribution_drop": 0.00023418664932250977,
+          "attribution_perturbed_p": 0.9977499842643738,
+          "degree_masked_nodes": [
+            9
+          ],
+          "degree_drop": 7.534027099609375e-05,
+          "degree_perturbed_p": 0.9979088306427002,
+          "random_mean_drop": 0.0001467108726501465,
+          "random_std_drop": 8.715888054084253e-05,
+          "random_seed_drops": [
+            0.0002238750457763672,
+            -1.5676021575927734e-05,
+            0.00021767616271972656,
+            0.00013768672943115234,
+            0.00016999244689941406
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 2,
+          "attribution_masked_nodes": [
+            4,
+            1
+          ],
+          "attribution_drop": 0.0005345940589904785,
+          "attribution_perturbed_p": 0.9974495768547058,
+          "degree_masked_nodes": [
+            9,
+            4
+          ],
+          "degree_drop": 0.0003420710563659668,
+          "degree_perturbed_p": 0.9976420998573303,
+          "random_mean_drop": 0.00029697418212890623,
+          "random_std_drop": 0.00010882333000594065,
+          "random_seed_drops": [
+            0.0004515647888183594,
+            0.00014126300811767578,
+            0.00037801265716552734,
+            0.0002314448356628418,
+            0.00028258562088012695
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 5,
+          "attribution_masked_nodes": [
+            4,
+            1,
+            6,
+            3,
+            8
+          ],
+          "attribution_drop": 0.0018109679222106934,
+          "attribution_perturbed_p": 0.9961732029914856,
+          "degree_masked_nodes": [
+            9,
+            4,
+            1,
+            6,
+            3
+          ],
+          "degree_drop": 0.001596212387084961,
+          "degree_perturbed_p": 0.9963879585266113,
+          "random_mean_drop": 0.0007523655891418457,
+          "random_std_drop": 0.00018238917908344296,
+          "random_seed_drops": [
+            0.0010483264923095703,
+            0.0005037188529968262,
+            0.0007331967353820801,
+            0.0008281469345092773,
+            0.0006484389305114746
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 10,
+          "attribution_masked_nodes": [
+            4,
+            1,
+            6,
+            3,
+            8,
+            2,
+            11,
+            5,
+            10,
+            12
+          ],
+          "attribution_drop": 0.00540006160736084,
+          "attribution_perturbed_p": 0.9925841093063354,
+          "degree_masked_nodes": [
+            9,
+            4,
+            1,
+            6,
+            3,
+            8,
+            2,
+            11,
+            5,
+            10
+          ],
+          "degree_drop": 0.0051680803298950195,
+          "degree_perturbed_p": 0.9928160905838013,
+          "random_mean_drop": 0.002301669120788574,
+          "random_std_drop": 0.0001554509366450863,
+          "random_seed_drops": [
+            0.002504587173461914,
+            0.0023193955421447754,
+            0.00220644474029541,
+            0.002415597438812256,
+            0.0020623207092285156
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        }
+      ],
+      "invariance_verified": true,
+      "max_logits_diff": 0.0,
+      "max_probs_diff": 0.0
+    },
+    {
+      "cascade_id": 2,
+      "num_nodes": 98,
+      "num_eligible_user_nodes": 97,
+      "actual_label": "REAL",
+      "actual_class": 0,
+      "predicted_label": "REAL",
+      "predicted_class": 0,
+      "is_correct": true,
+      "error_type": "true_negative",
+      "baseline_confidence": 0.9901973009109497,
+      "baseline_logits": [
+        2.456300735473633,
+        -2.1589434146881104
+      ],
+      "baseline_probabilities": [
+        0.9901973009109497,
+        0.009802724234759808
+      ],
+      "modality_attributions": {
+        "bert_content": {
+          "delta_probability": 0.05438590049743652,
+          "perturbed_probability": 0.9358114004135132,
+          "feature_slice": [
+            0,
+            768
+          ],
+          "description": "Textual semantic representation of news claim or user tweet history (dims 0..767)"
+        },
+        "user_profile": {
+          "delta_probability": 6.300210952758789e-05,
+          "perturbed_probability": 0.9901342988014221,
+          "feature_slice": [
+            768,
+            778
+          ],
+          "description": "Twitter account metadata normalized by training-set statistics (dims 768..777)"
+        },
+        "temporal_dynamics": {
+          "delta_probability": 0.00012165307998657227,
+          "perturbed_probability": 0.9900756478309631,
+          "feature_slice": [
+            778,
+            782
+          ],
+          "description": "Snapshot structural-temporal metrics: depth, degree, elapsed time, active flag (dims 778..781)"
+        }
+      },
+      "root_attribution": {
+        "node_id": 0,
+        "delta_probability": -0.000495612621307373,
+        "perturbed_probability": 0.9906929135322571,
+        "active_snapshots_count": 4,
+        "role": "Root News Item / Published Claim",
+        "note": "Node 0 directly supplies root_embeds (50% of classifier input) in STGNN."
+      },
+      "top_supporting_user_nodes": [
+        {
+          "node_id": 21,
+          "delta_p": 0.0002097487449645996,
+          "snaps": 4
+        },
+        {
+          "node_id": 8,
+          "delta_p": 0.0001564621925354004,
+          "snaps": 4
+        },
+        {
+          "node_id": 2,
+          "delta_p": 0.0001391768455505371,
+          "snaps": 4
+        }
+      ],
+      "top_countervailing_user_nodes": [
+        {
+          "node_id": 22,
+          "delta_p": -0.00041615962982177734,
+          "snaps": 4
+        },
+        {
+          "node_id": 14,
+          "delta_p": -0.00041615962982177734,
+          "snaps": 4
+        },
+        {
+          "node_id": 30,
+          "delta_p": -0.00023323297500610352,
+          "snaps": 3
+        }
+      ],
+      "evaluated_k_values": [
+        1,
+        2,
+        5,
+        10
+      ],
+      "k_comparisons": [
+        {
+          "k": 1,
+          "attribution_masked_nodes": [
+            21
+          ],
+          "attribution_drop": 0.0002097487449645996,
+          "attribution_perturbed_p": 0.9899875521659851,
+          "degree_masked_nodes": [
+            7
+          ],
+          "degree_drop": -0.00012087821960449219,
+          "degree_perturbed_p": 0.9903181791305542,
+          "random_mean_drop": 9.949207305908203e-05,
+          "random_std_drop": 6.329571444506715e-05,
+          "random_seed_drops": [
+            3.516674041748047e-05,
+            0.0002097487449645996,
+            8.720159530639648e-05,
+            0.00012153387069702148,
+            4.380941390991211e-05
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 2,
+          "attribution_masked_nodes": [
+            21,
+            8
+          ],
+          "attribution_drop": 0.0004163980484008789,
+          "attribution_perturbed_p": 0.9897809028625488,
+          "degree_masked_nodes": [
+            7,
+            45
+          ],
+          "degree_drop": -0.00016742944717407227,
+          "degree_perturbed_p": 0.9903647303581238,
+          "random_mean_drop": 0.00011717081069946289,
+          "random_std_drop": 0.00016397498164090674,
+          "random_seed_drops": [
+            0.00012224912643432617,
+            0.00023490190505981445,
+            0.00014865398406982422,
+            0.0002720355987548828,
+            -0.0001919865608215332
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 5,
+          "attribution_masked_nodes": [
+            21,
+            8,
+            2,
+            1,
+            13
+          ],
+          "attribution_drop": 0.0010116100311279297,
+          "attribution_perturbed_p": 0.9891856908798218,
+          "degree_masked_nodes": [
+            7,
+            45,
+            68,
+            73,
+            21
+          ],
+          "degree_drop": 3.075599670410156e-05,
+          "degree_perturbed_p": 0.9901665449142456,
+          "random_mean_drop": 0.0002797245979309082,
+          "random_std_drop": 0.00018080776370443891,
+          "random_seed_drops": [
+            0.0002511143684387207,
+            0.0004445314407348633,
+            0.00034618377685546875,
+            0.00041347742080688477,
+            -5.6684017181396484e-05
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 10,
+          "attribution_masked_nodes": [
+            21,
+            8,
+            2,
+            1,
+            13,
+            16,
+            17,
+            6,
+            15,
+            4
+          ],
+          "attribution_drop": 0.0018295645713806152,
+          "attribution_perturbed_p": 0.9883677363395691,
+          "degree_masked_nodes": [
+            7,
+            45,
+            68,
+            73,
+            21,
+            8,
+            2,
+            1,
+            13,
+            16
+          ],
+          "degree_drop": 0.0008851885795593262,
+          "degree_perturbed_p": 0.9893121123313904,
+          "random_mean_drop": 0.0004955410957336425,
+          "random_std_drop": 0.0003455524539246606,
+          "random_seed_drops": [
+            0.0005558133125305176,
+            0.0006481409072875977,
+            0.000774085521697998,
+            0.0006809830665588379,
+            -0.00018131732940673828
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        }
+      ],
+      "invariance_verified": true,
+      "max_logits_diff": 0.0,
+      "max_probs_diff": 0.0
+    },
+    {
+      "cascade_id": 3,
+      "num_nodes": 71,
+      "num_eligible_user_nodes": 70,
+      "actual_label": "FAKE",
+      "actual_class": 1,
+      "predicted_label": "FAKE",
+      "predicted_class": 1,
+      "is_correct": true,
+      "error_type": "true_positive",
+      "baseline_confidence": 0.9980854988098145,
+      "baseline_logits": [
+        -3.3144853115081787,
+        2.941910743713379
+      ],
+      "baseline_probabilities": [
+        0.001914473483338952,
+        0.9980854988098145
+      ],
+      "modality_attributions": {
+        "bert_content": {
+          "delta_probability": -0.0003159642219543457,
+          "perturbed_probability": 0.9984014630317688,
+          "feature_slice": [
+            0,
+            768
+          ],
+          "description": "Textual semantic representation of news claim or user tweet history (dims 0..767)"
+        },
+        "user_profile": {
+          "delta_probability": 0.00035649538040161133,
+          "perturbed_probability": 0.9977290034294128,
+          "feature_slice": [
+            768,
+            778
+          ],
+          "description": "Twitter account metadata normalized by training-set statistics (dims 768..777)"
+        },
+        "temporal_dynamics": {
+          "delta_probability": 2.7239322662353516e-05,
+          "perturbed_probability": 0.9980582594871521,
+          "feature_slice": [
+            778,
+            782
+          ],
+          "description": "Snapshot structural-temporal metrics: depth, degree, elapsed time, active flag (dims 778..781)"
+        }
+      },
+      "root_attribution": {
+        "node_id": 0,
+        "delta_probability": -0.000249326229095459,
+        "perturbed_probability": 0.9983348250389099,
+        "active_snapshots_count": 4,
+        "role": "Root News Item / Published Claim",
+        "note": "Node 0 directly supplies root_embeds (50% of classifier input) in STGNN."
+      },
+      "top_supporting_user_nodes": [
+        {
+          "node_id": 3,
+          "delta_p": 0.0001112818717956543,
+          "snaps": 4
+        },
+        {
+          "node_id": 18,
+          "delta_p": 0.00010830163955688477,
+          "snaps": 4
+        },
+        {
+          "node_id": 32,
+          "delta_p": 7.092952728271484e-05,
+          "snaps": 3
+        }
+      ],
+      "top_countervailing_user_nodes": [
+        {
+          "node_id": 68,
+          "delta_p": -3.6776065826416016e-05,
+          "snaps": 1
+        },
+        {
+          "node_id": 69,
+          "delta_p": -3.039836883544922e-05,
+          "snaps": 1
+        },
+        {
+          "node_id": 70,
+          "delta_p": -1.6033649444580078e-05,
+          "snaps": 1
+        }
+      ],
+      "evaluated_k_values": [
+        1,
+        2,
+        5,
+        10
+      ],
+      "k_comparisons": [
+        {
+          "k": 1,
+          "attribution_masked_nodes": [
+            3
+          ],
+          "attribution_drop": 0.0001112818717956543,
+          "attribution_perturbed_p": 0.9979742169380188,
+          "degree_masked_nodes": [
+            37
+          ],
+          "degree_drop": 9.059906005859375e-06,
+          "degree_perturbed_p": 0.9980764389038086,
+          "random_mean_drop": 2.732276916503906e-05,
+          "random_std_drop": 2.1593096999458035e-05,
+          "random_seed_drops": [
+            1.1324882507324219e-05,
+            1.1563301086425781e-05,
+            2.378225326538086e-05,
+            2.0563602447509766e-05,
+            6.937980651855469e-05
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 2,
+          "attribution_masked_nodes": [
+            3,
+            18
+          ],
+          "attribution_drop": 0.0002524256706237793,
+          "attribution_perturbed_p": 0.9978330731391907,
+          "degree_masked_nodes": [
+            37,
+            67
+          ],
+          "degree_drop": 1.9490718841552734e-05,
+          "degree_perturbed_p": 0.9980660080909729,
+          "random_mean_drop": 4.8494338989257814e-05,
+          "random_std_drop": 2.459471679972289e-05,
+          "random_seed_drops": [
+            3.600120544433594e-05,
+            1.6868114471435547e-05,
+            7.271766662597656e-05,
+            3.516674041748047e-05,
+            8.171796798706055e-05
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 5,
+          "attribution_masked_nodes": [
+            3,
+            18,
+            32,
+            11,
+            5
+          ],
+          "attribution_drop": 0.0006194114685058594,
+          "attribution_perturbed_p": 0.9974660873413086,
+          "degree_masked_nodes": [
+            37,
+            67,
+            3,
+            18,
+            32
+          ],
+          "degree_drop": 0.00039958953857421875,
+          "degree_perturbed_p": 0.9976859092712402,
+          "random_mean_drop": 9.703636169433594e-05,
+          "random_std_drop": 2.8786636927230957e-05,
+          "random_seed_drops": [
+            0.00012886524200439453,
+            5.513429641723633e-05,
+            0.00010508298873901367,
+            7.2479248046875e-05,
+            0.00012362003326416016
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 10,
+          "attribution_masked_nodes": [
+            3,
+            18,
+            32,
+            11,
+            5,
+            58,
+            2,
+            1,
+            9,
+            47
+          ],
+          "attribution_drop": 0.0009281635284423828,
+          "attribution_perturbed_p": 0.9971573352813721,
+          "degree_masked_nodes": [
+            37,
+            67,
+            3,
+            18,
+            32,
+            11,
+            5,
+            58,
+            2,
+            1
+          ],
+          "degree_drop": 0.0008864402770996094,
+          "degree_perturbed_p": 0.9971990585327148,
+          "random_mean_drop": 0.00019255876541137695,
+          "random_std_drop": 6.042974632760294e-05,
+          "random_seed_drops": [
+            0.00027638673782348633,
+            0.00019782781600952148,
+            0.00019699335098266602,
+            8.744001388549805e-05,
+            0.0002041459083557129
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        }
+      ],
+      "invariance_verified": true,
+      "max_logits_diff": 0.0,
+      "max_probs_diff": 0.0
+    },
+    {
+      "cascade_id": 4,
+      "num_nodes": 78,
+      "num_eligible_user_nodes": 77,
+      "actual_label": "REAL",
+      "actual_class": 0,
+      "predicted_label": "REAL",
+      "predicted_class": 0,
+      "is_correct": true,
+      "error_type": "true_negative",
+      "baseline_confidence": 0.9903069734573364,
+      "baseline_logits": [
+        2.4955220222473145,
+        -2.1310882568359375
+      ],
+      "baseline_probabilities": [
+        0.9903069734573364,
+        0.009693006984889507
+      ],
+      "modality_attributions": {
+        "bert_content": {
+          "delta_probability": -0.0021196603775024414,
+          "perturbed_probability": 0.9924266338348389,
+          "feature_slice": [
+            0,
+            768
+          ],
+          "description": "Textual semantic representation of news claim or user tweet history (dims 0..767)"
+        },
+        "user_profile": {
+          "delta_probability": 0.00047141313552856445,
+          "perturbed_probability": 0.9898355603218079,
+          "feature_slice": [
+            768,
+            778
+          ],
+          "description": "Twitter account metadata normalized by training-set statistics (dims 768..777)"
+        },
+        "temporal_dynamics": {
+          "delta_probability": 0.00029653310775756836,
+          "perturbed_probability": 0.9900104403495789,
+          "feature_slice": [
+            778,
+            782
+          ],
+          "description": "Snapshot structural-temporal metrics: depth, degree, elapsed time, active flag (dims 778..781)"
+        }
+      },
+      "root_attribution": {
+        "node_id": 0,
+        "delta_probability": -0.0023519396781921387,
+        "perturbed_probability": 0.9926589131355286,
+        "active_snapshots_count": 4,
+        "role": "Root News Item / Published Claim",
+        "note": "Node 0 directly supplies root_embeds (50% of classifier input) in STGNN."
+      },
+      "top_supporting_user_nodes": [
+        {
+          "node_id": 13,
+          "delta_p": 0.00012296438217163086,
+          "snaps": 4
+        },
+        {
+          "node_id": 17,
+          "delta_p": 0.00011622905731201172,
+          "snaps": 4
+        },
+        {
+          "node_id": 5,
+          "delta_p": 0.00010883808135986328,
+          "snaps": 4
+        }
+      ],
+      "top_countervailing_user_nodes": [],
+      "evaluated_k_values": [
+        1,
+        2,
+        5,
+        10
+      ],
+      "k_comparisons": [
+        {
+          "k": 1,
+          "attribution_masked_nodes": [
+            13
+          ],
+          "attribution_drop": 0.00012296438217163086,
+          "attribution_perturbed_p": 0.9901840090751648,
+          "degree_masked_nodes": [
+            55
+          ],
+          "degree_drop": 2.1278858184814453e-05,
+          "degree_perturbed_p": 0.9902856945991516,
+          "random_mean_drop": 5.261898040771484e-05,
+          "random_std_drop": 3.3097089049213626e-05,
+          "random_seed_drops": [
+            0.00010883808135986328,
+            6.759166717529297e-05,
+            1.823902130126953e-05,
+            4.500150680541992e-05,
+            2.3424625396728516e-05
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 2,
+          "attribution_masked_nodes": [
+            13,
+            17
+          ],
+          "attribution_drop": 0.00024181604385375977,
+          "attribution_perturbed_p": 0.9900651574134827,
+          "degree_masked_nodes": [
+            55,
+            13
+          ],
+          "degree_drop": 0.00014519691467285156,
+          "degree_perturbed_p": 0.9901617765426636,
+          "random_mean_drop": 9.320974349975586e-05,
+          "random_std_drop": 4.2107336707213714e-05,
+          "random_seed_drops": [
+            0.0001595616340637207,
+            0.00011795759201049805,
+            3.975629806518555e-05,
+            8.630752563476562e-05,
+            6.246566772460938e-05
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 5,
+          "attribution_masked_nodes": [
+            13,
+            17,
+            5,
+            9,
+            2
+          ],
+          "attribution_drop": 0.0005733370780944824,
+          "attribution_perturbed_p": 0.9897336363792419,
+          "degree_masked_nodes": [
+            55,
+            13,
+            17,
+            5,
+            9
+          ],
+          "degree_drop": 0.0004918575286865234,
+          "degree_perturbed_p": 0.9898151159286499,
+          "random_mean_drop": 0.00025430917739868166,
+          "random_std_drop": 6.345818072476058e-05,
+          "random_seed_drops": [
+            0.00035005807876586914,
+            0.00029981136322021484,
+            0.0002167224884033203,
+            0.00023496150970458984,
+            0.00016999244689941406
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 10,
+          "attribution_masked_nodes": [
+            13,
+            17,
+            5,
+            9,
+            2,
+            12,
+            8,
+            20,
+            18,
+            14
+          ],
+          "attribution_drop": 0.0011866092681884766,
+          "attribution_perturbed_p": 0.989120364189148,
+          "degree_masked_nodes": [
+            55,
+            13,
+            17,
+            5,
+            9,
+            2,
+            12,
+            8,
+            20,
+            18
+          ],
+          "degree_drop": 0.001073598861694336,
+          "degree_perturbed_p": 0.9892333745956421,
+          "random_mean_drop": 0.0006006479263305664,
+          "random_std_drop": 7.390966723036388e-05,
+          "random_seed_drops": [
+            0.0005800127983093262,
+            0.0007211565971374512,
+            0.0005121827125549316,
+            0.000642240047454834,
+            0.0005476474761962891
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        }
+      ],
+      "invariance_verified": true,
+      "max_logits_diff": 0.0,
+      "max_probs_diff": 0.0
+    },
+    {
+      "cascade_id": 5,
+      "num_nodes": 34,
+      "num_eligible_user_nodes": 33,
+      "actual_label": "REAL",
+      "actual_class": 0,
+      "predicted_label": "REAL",
+      "predicted_class": 0,
+      "is_correct": true,
+      "error_type": "true_negative",
+      "baseline_confidence": 0.9819466471672058,
+      "baseline_logits": [
+        1.9612247943878174,
+        -2.034980297088623
+      ],
+      "baseline_probabilities": [
+        0.9819466471672058,
+        0.018053360283374786
+      ],
+      "modality_attributions": {
+        "bert_content": {
+          "delta_probability": -0.008393645286560059,
+          "perturbed_probability": 0.9903402924537659,
+          "feature_slice": [
+            0,
+            768
+          ],
+          "description": "Textual semantic representation of news claim or user tweet history (dims 0..767)"
+        },
+        "user_profile": {
+          "delta_probability": 0.007927894592285156,
+          "perturbed_probability": 0.9740187525749207,
+          "feature_slice": [
+            768,
+            778
+          ],
+          "description": "Twitter account metadata normalized by training-set statistics (dims 768..777)"
+        },
+        "temporal_dynamics": {
+          "delta_probability": 0.0027373433113098145,
+          "perturbed_probability": 0.979209303855896,
+          "feature_slice": [
+            778,
+            782
+          ],
+          "description": "Snapshot structural-temporal metrics: depth, degree, elapsed time, active flag (dims 778..781)"
+        }
+      },
+      "root_attribution": {
+        "node_id": 0,
+        "delta_probability": -0.009155213832855225,
+        "perturbed_probability": 0.991101861000061,
+        "active_snapshots_count": 4,
+        "role": "Root News Item / Published Claim",
+        "note": "Node 0 directly supplies root_embeds (50% of classifier input) in STGNN."
+      },
+      "top_supporting_user_nodes": [
+        {
+          "node_id": 7,
+          "delta_p": 0.005093514919281006,
+          "snaps": 4
+        },
+        {
+          "node_id": 12,
+          "delta_p": 0.00430607795715332,
+          "snaps": 3
+        },
+        {
+          "node_id": 19,
+          "delta_p": 0.004185855388641357,
+          "snaps": 2
+        }
+      ],
+      "top_countervailing_user_nodes": [],
+      "evaluated_k_values": [
+        1,
+        2,
+        5,
+        10
+      ],
+      "k_comparisons": [
+        {
+          "k": 1,
+          "attribution_masked_nodes": [
+            7
+          ],
+          "attribution_drop": 0.005093514919281006,
+          "attribution_perturbed_p": 0.9768531322479248,
+          "degree_masked_nodes": [
+            31
+          ],
+          "degree_drop": 0.0007458925247192383,
+          "degree_perturbed_p": 0.9812007546424866,
+          "random_mean_drop": 0.000503087043762207,
+          "random_std_drop": 0.00014532301133836811,
+          "random_seed_drops": [
+            0.00043141841888427734,
+            0.0005455613136291504,
+            0.0007458925247192383,
+            0.0003044009208679199,
+            0.0004881620407104492
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 2,
+          "attribution_masked_nodes": [
+            7,
+            12
+          ],
+          "attribution_drop": 0.05572611093521118,
+          "attribution_perturbed_p": 0.9262205362319946,
+          "degree_masked_nodes": [
+            31,
+            7
+          ],
+          "degree_drop": 0.006320953369140625,
+          "degree_perturbed_p": 0.9756256937980652,
+          "random_mean_drop": 0.0028003811836242675,
+          "random_std_drop": 0.002448241268023289,
+          "random_seed_drops": [
+            0.0008667111396789551,
+            0.0031667351722717285,
+            0.007400095462799072,
+            0.0008712410926818848,
+            0.0016971230506896973
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 5,
+          "attribution_masked_nodes": [
+            7,
+            12,
+            19,
+            3,
+            5
+          ],
+          "attribution_drop": 0.9384142719209194,
+          "attribution_perturbed_p": 0.04353237524628639,
+          "degree_masked_nodes": [
+            31,
+            7,
+            12,
+            19,
+            3
+          ],
+          "degree_drop": 0.8428003191947937,
+          "degree_perturbed_p": 0.1391463279724121,
+          "random_mean_drop": 0.019008851051330565,
+          "random_std_drop": 0.02130479616716519,
+          "random_seed_drops": [
+            0.005862236022949219,
+            0.015078961849212646,
+            0.0609627366065979,
+            0.004159390926361084,
+            0.008980929851531982
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 10,
+          "attribution_masked_nodes": [
+            7,
+            12,
+            19,
+            3,
+            5,
+            14,
+            18,
+            23,
+            2,
+            4
+          ],
+          "attribution_drop": 0.9487237147986889,
+          "attribution_perturbed_p": 0.03322293236851692,
+          "degree_masked_nodes": [
+            31,
+            7,
+            12,
+            19,
+            3,
+            5,
+            14,
+            18,
+            23,
+            2
+          ],
+          "degree_drop": 0.9563396815210581,
+          "degree_perturbed_p": 0.025606965646147728,
+          "random_mean_drop": 0.06747223138809204,
+          "random_std_drop": 0.09710981238159425,
+          "random_seed_drops": [
+            0.01394110918045044,
+            0.030313074588775635,
+            0.2612820267677307,
+            0.012297213077545166,
+            0.019527733325958252
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": false,
+          "attr_beats_both": false
+        }
+      ],
+      "invariance_verified": true,
+      "max_logits_diff": 0.0,
+      "max_probs_diff": 0.0
+    },
+    {
+      "cascade_id": 6,
+      "num_nodes": 36,
+      "num_eligible_user_nodes": 35,
+      "actual_label": "REAL",
+      "actual_class": 0,
+      "predicted_label": "REAL",
+      "predicted_class": 0,
+      "is_correct": true,
+      "error_type": "true_negative",
+      "baseline_confidence": 0.9927749633789062,
+      "baseline_logits": [
+        2.526082992553711,
+        -2.3968708515167236
+      ],
+      "baseline_probabilities": [
+        0.9927749633789062,
+        0.007225022651255131
+      ],
+      "modality_attributions": {
+        "bert_content": {
+          "delta_probability": 0.0006384849548339844,
+          "perturbed_probability": 0.9921364784240723,
+          "feature_slice": [
+            0,
+            768
+          ],
+          "description": "Textual semantic representation of news claim or user tweet history (dims 0..767)"
+        },
+        "user_profile": {
+          "delta_probability": 0.0006313323974609375,
+          "perturbed_probability": 0.9921436309814453,
+          "feature_slice": [
+            768,
+            778
+          ],
+          "description": "Twitter account metadata normalized by training-set statistics (dims 768..777)"
+        },
+        "temporal_dynamics": {
+          "delta_probability": 0.00016373395919799805,
+          "perturbed_probability": 0.9926112294197083,
+          "feature_slice": [
+            778,
+            782
+          ],
+          "description": "Snapshot structural-temporal metrics: depth, degree, elapsed time, active flag (dims 778..781)"
+        }
+      },
+      "root_attribution": {
+        "node_id": 0,
+        "delta_probability": -0.000513613224029541,
+        "perturbed_probability": 0.9932885766029358,
+        "active_snapshots_count": 4,
+        "role": "Root News Item / Published Claim",
+        "note": "Node 0 directly supplies root_embeds (50% of classifier input) in STGNN."
+      },
+      "top_supporting_user_nodes": [
+        {
+          "node_id": 9,
+          "delta_p": 0.0002449154853820801,
+          "snaps": 4
+        },
+        {
+          "node_id": 1,
+          "delta_p": 0.00022363662719726562,
+          "snaps": 4
+        },
+        {
+          "node_id": 7,
+          "delta_p": 0.000202178955078125,
+          "snaps": 4
+        }
+      ],
+      "top_countervailing_user_nodes": [
+        {
+          "node_id": 32,
+          "delta_p": -1.6450881958007812e-05,
+          "snaps": 1
+        }
+      ],
+      "evaluated_k_values": [
+        1,
+        2,
+        5,
+        10
+      ],
+      "k_comparisons": [
+        {
+          "k": 1,
+          "attribution_masked_nodes": [
+            9
+          ],
+          "attribution_drop": 0.0002449154853820801,
+          "attribution_perturbed_p": 0.9925300478935242,
+          "degree_masked_nodes": [
+            9
+          ],
+          "degree_drop": 0.0002449154853820801,
+          "degree_perturbed_p": 0.9925300478935242,
+          "random_mean_drop": 0.00012804269790649413,
+          "random_std_drop": 6.157549733114929e-05,
+          "random_seed_drops": [
+            1.52587890625e-05,
+            0.00013428926467895508,
+            0.0001348257064819336,
+            0.00015366077423095703,
+            0.000202178955078125
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": false,
+          "attr_beats_both": false
+        },
+        {
+          "k": 2,
+          "attribution_masked_nodes": [
+            9,
+            1
+          ],
+          "attribution_drop": 0.0005623698234558105,
+          "attribution_perturbed_p": 0.9922125935554504,
+          "degree_masked_nodes": [
+            9,
+            2
+          ],
+          "degree_drop": 0.000478208065032959,
+          "degree_perturbed_p": 0.9922967553138733,
+          "random_mean_drop": 0.00021114349365234376,
+          "random_std_drop": 7.1344151485062e-05,
+          "random_seed_drops": [
+            0.0001017451286315918,
+            0.0002567768096923828,
+            0.00019979476928710938,
+            0.0001837015151977539,
+            0.00031369924545288086
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 5,
+          "attribution_masked_nodes": [
+            9,
+            1,
+            7,
+            15,
+            3
+          ],
+          "attribution_drop": 0.0015925168991088867,
+          "attribution_perturbed_p": 0.9911824464797974,
+          "degree_masked_nodes": [
+            9,
+            2,
+            8,
+            10,
+            13
+          ],
+          "degree_drop": 0.0012856721878051758,
+          "degree_perturbed_p": 0.9914892911911011,
+          "random_mean_drop": 0.0006647229194641114,
+          "random_std_drop": 0.00010468619767219897,
+          "random_seed_drops": [
+            0.0005310177803039551,
+            0.000792086124420166,
+            0.0006395578384399414,
+            0.0005815625190734863,
+            0.0007793903350830078
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 10,
+          "attribution_masked_nodes": [
+            9,
+            1,
+            7,
+            15,
+            3,
+            4,
+            16,
+            18,
+            12,
+            17
+          ],
+          "attribution_drop": 0.004063606262207031,
+          "attribution_perturbed_p": 0.9887113571166992,
+          "degree_masked_nodes": [
+            9,
+            2,
+            8,
+            10,
+            13,
+            1,
+            7,
+            15,
+            3,
+            4
+          ],
+          "degree_drop": 0.006577551364898682,
+          "degree_perturbed_p": 0.9861974120140076,
+          "random_mean_drop": 0.0019435048103332519,
+          "random_std_drop": 0.00026939376882721255,
+          "random_seed_drops": [
+            0.0018721222877502441,
+            0.0019611716270446777,
+            0.002059459686279297,
+            0.0014988183975219727,
+            0.0023259520530700684
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": false,
+          "attr_beats_both": false
+        }
+      ],
+      "invariance_verified": true,
+      "max_logits_diff": 0.0,
+      "max_probs_diff": 0.0
+    },
+    {
+      "cascade_id": 7,
+      "num_nodes": 16,
+      "num_eligible_user_nodes": 15,
+      "actual_label": "FAKE",
+      "actual_class": 1,
+      "predicted_label": "FAKE",
+      "predicted_class": 1,
+      "is_correct": true,
+      "error_type": "true_positive",
+      "baseline_confidence": 0.997092604637146,
+      "baseline_logits": [
+        -2.9981889724731445,
+        2.839404344558716
+      ],
+      "baseline_probabilities": [
+        0.0029073746409267187,
+        0.997092604637146
+      ],
+      "modality_attributions": {
+        "bert_content": {
+          "delta_probability": -0.0005083680152893066,
+          "perturbed_probability": 0.9976009726524353,
+          "feature_slice": [
+            0,
+            768
+          ],
+          "description": "Textual semantic representation of news claim or user tweet history (dims 0..767)"
+        },
+        "user_profile": {
+          "delta_probability": 0.03138226270675659,
+          "perturbed_probability": 0.9657103419303894,
+          "feature_slice": [
+            768,
+            778
+          ],
+          "description": "Twitter account metadata normalized by training-set statistics (dims 768..777)"
+        },
+        "temporal_dynamics": {
+          "delta_probability": 7.653236389160156e-05,
+          "perturbed_probability": 0.9970160722732544,
+          "feature_slice": [
+            778,
+            782
+          ],
+          "description": "Snapshot structural-temporal metrics: depth, degree, elapsed time, active flag (dims 778..781)"
+        }
+      },
+      "root_attribution": {
+        "node_id": 0,
+        "delta_probability": -0.0009588003158569336,
+        "perturbed_probability": 0.9980514049530029,
+        "active_snapshots_count": 4,
+        "role": "Root News Item / Published Claim",
+        "note": "Node 0 directly supplies root_embeds (50% of classifier input) in STGNN."
+      },
+      "top_supporting_user_nodes": [
+        {
+          "node_id": 9,
+          "delta_p": 0.005937099456787109,
+          "snaps": 2
+        },
+        {
+          "node_id": 2,
+          "delta_p": 0.0006113052368164062,
+          "snaps": 4
+        },
+        {
+          "node_id": 10,
+          "delta_p": 0.0005139708518981934,
+          "snaps": 2
+        }
+      ],
+      "top_countervailing_user_nodes": [],
+      "evaluated_k_values": [
+        1,
+        2,
+        5,
+        10
+      ],
+      "k_comparisons": [
+        {
+          "k": 1,
+          "attribution_masked_nodes": [
+            9
+          ],
+          "attribution_drop": 0.005937099456787109,
+          "attribution_perturbed_p": 0.9911555051803589,
+          "degree_masked_nodes": [
+            9
+          ],
+          "degree_drop": 0.005937099456787109,
+          "degree_perturbed_p": 0.9911555051803589,
+          "random_mean_drop": 0.0004920363426208496,
+          "random_std_drop": 9.99202067747081e-05,
+          "random_seed_drops": [
+            0.0005139708518981934,
+            0.0005139708518981934,
+            0.0003069639205932617,
+            0.0005139708518981934,
+            0.0006113052368164062
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": false,
+          "attr_beats_both": false
+        },
+        {
+          "k": 2,
+          "attribution_masked_nodes": [
+            9,
+            2
+          ],
+          "attribution_drop": 0.007953941822052002,
+          "attribution_perturbed_p": 0.989138662815094,
+          "degree_masked_nodes": [
+            9,
+            12
+          ],
+          "degree_drop": 0.014711081981658936,
+          "degree_perturbed_p": 0.9823815226554871,
+          "random_mean_drop": 0.003624296188354492,
+          "random_std_drop": 0.003486155010316222,
+          "random_seed_drops": [
+            0.0004978775978088379,
+            0.0008161664009094238,
+            0.007843613624572754,
+            0.00793391466140747,
+            0.0010299086570739746
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": false,
+          "attr_beats_both": false
+        },
+        {
+          "k": 5,
+          "attribution_masked_nodes": [
+            9,
+            2,
+            10,
+            6,
+            7
+          ],
+          "attribution_drop": 0.018545806407928467,
+          "attribution_perturbed_p": 0.9785467982292175,
+          "degree_masked_nodes": [
+            9,
+            12,
+            3,
+            2,
+            10
+          ],
+          "degree_drop": 0.02280324697494507,
+          "degree_perturbed_p": 0.9742893576622009,
+          "random_mean_drop": 0.006354045867919922,
+          "random_std_drop": 0.005965846500190671,
+          "random_seed_drops": [
+            0.001164257526397705,
+            0.001455843448638916,
+            0.013443231582641602,
+            0.013864994049072266,
+            0.001841902732849121
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": false,
+          "attr_beats_both": false
+        },
+        {
+          "k": 10,
+          "attribution_masked_nodes": [
+            9,
+            2,
+            10,
+            6,
+            7,
+            4,
+            5,
+            8,
+            11,
+            1
+          ],
+          "attribution_drop": 0.0393407940864563,
+          "attribution_perturbed_p": 0.9577518105506897,
+          "degree_masked_nodes": [
+            9,
+            12,
+            3,
+            2,
+            10,
+            6,
+            7,
+            4,
+            5,
+            8
+          ],
+          "degree_drop": 0.05814158916473389,
+          "degree_perturbed_p": 0.9389510154724121,
+          "random_mean_drop": 0.032611083984375,
+          "random_std_drop": 0.01640825468673344,
+          "random_seed_drops": [
+            0.05048513412475586,
+            0.04950439929962158,
+            0.027206599712371826,
+            0.02978271245956421,
+            0.0060765743255615234
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": false,
+          "attr_beats_both": false
+        }
+      ],
+      "invariance_verified": true,
+      "max_logits_diff": 0.0,
+      "max_probs_diff": 0.0
+    },
+    {
+      "cascade_id": 8,
+      "num_nodes": 66,
+      "num_eligible_user_nodes": 65,
+      "actual_label": "REAL",
+      "actual_class": 0,
+      "predicted_label": "REAL",
+      "predicted_class": 0,
+      "is_correct": true,
+      "error_type": "true_negative",
+      "baseline_confidence": 0.992064893245697,
+      "baseline_logits": [
+        2.5810787677764893,
+        -2.2474119663238525
+      ],
+      "baseline_probabilities": [
+        0.992064893245697,
+        0.007935114204883575
+      ],
+      "modality_attributions": {
+        "bert_content": {
+          "delta_probability": -0.0008051395416259766,
+          "perturbed_probability": 0.992870032787323,
+          "feature_slice": [
+            0,
+            768
+          ],
+          "description": "Textual semantic representation of news claim or user tweet history (dims 0..767)"
+        },
+        "user_profile": {
+          "delta_probability": 1.5974044799804688e-05,
+          "perturbed_probability": 0.9920489192008972,
+          "feature_slice": [
+            768,
+            778
+          ],
+          "description": "Twitter account metadata normalized by training-set statistics (dims 768..777)"
+        },
+        "temporal_dynamics": {
+          "delta_probability": 6.699562072753906e-05,
+          "perturbed_probability": 0.9919978976249695,
+          "feature_slice": [
+            778,
+            782
+          ],
+          "description": "Snapshot structural-temporal metrics: depth, degree, elapsed time, active flag (dims 778..781)"
+        }
+      },
+      "root_attribution": {
+        "node_id": 0,
+        "delta_probability": 0.0021401047706604004,
+        "perturbed_probability": 0.9899247884750366,
+        "active_snapshots_count": 4,
+        "role": "Root News Item / Published Claim",
+        "note": "Node 0 directly supplies root_embeds (50% of classifier input) in STGNN."
+      },
+      "top_supporting_user_nodes": [
+        {
+          "node_id": 17,
+          "delta_p": 3.838539123535156e-05,
+          "snaps": 4
+        },
+        {
+          "node_id": 1,
+          "delta_p": 3.707408905029297e-05,
+          "snaps": 4
+        },
+        {
+          "node_id": 12,
+          "delta_p": 2.568960189819336e-05,
+          "snaps": 4
+        }
+      ],
+      "top_countervailing_user_nodes": [
+        {
+          "node_id": 15,
+          "delta_p": -0.00018471479415893555,
+          "snaps": 4
+        },
+        {
+          "node_id": 14,
+          "delta_p": -0.00018471479415893555,
+          "snaps": 4
+        },
+        {
+          "node_id": 13,
+          "delta_p": -0.00018471479415893555,
+          "snaps": 4
+        }
+      ],
+      "evaluated_k_values": [
+        1,
+        2,
+        5,
+        10
+      ],
+      "k_comparisons": [
+        {
+          "k": 1,
+          "attribution_masked_nodes": [
+            17
+          ],
+          "attribution_drop": 3.838539123535156e-05,
+          "attribution_perturbed_p": 0.9920265078544617,
+          "degree_masked_nodes": [
+            62
+          ],
+          "degree_drop": 6.198883056640625e-06,
+          "degree_perturbed_p": 0.9920586943626404,
+          "random_mean_drop": -4.330873489379883e-05,
+          "random_std_drop": 7.203179866535754e-05,
+          "random_seed_drops": [
+            -3.11732292175293e-05,
+            -7.3909759521484375e-06,
+            1.2099742889404297e-05,
+            -5.364418029785156e-06,
+            -0.00018471479415893555
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 2,
+          "attribution_masked_nodes": [
+            17,
+            1
+          ],
+          "attribution_drop": 7.897615432739258e-05,
+          "attribution_perturbed_p": 0.9919859170913696,
+          "degree_masked_nodes": [
+            62,
+            17
+          ],
+          "degree_drop": 4.410743713378906e-05,
+          "degree_perturbed_p": 0.9920207858085632,
+          "random_mean_drop": -3.1113624572753906e-05,
+          "random_std_drop": 8.183633073867643e-05,
+          "random_seed_drops": [
+            -1.2755393981933594e-05,
+            1.9252300262451172e-05,
+            2.9802322387695312e-05,
+            2.384185791015625e-07,
+            -0.00019210577011108398
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 5,
+          "attribution_masked_nodes": [
+            17,
+            1,
+            12,
+            6,
+            8
+          ],
+          "attribution_drop": 0.0002098679542541504,
+          "attribution_perturbed_p": 0.9918550252914429,
+          "degree_masked_nodes": [
+            62,
+            17,
+            1,
+            12,
+            6
+          ],
+          "degree_drop": 0.00015741586685180664,
+          "degree_perturbed_p": 0.9919074773788452,
+          "random_mean_drop": -7.13348388671875e-05,
+          "random_std_drop": 0.0002273555569997251,
+          "random_seed_drops": [
+            6.383657455444336e-05,
+            2.7239322662353516e-05,
+            3.987550735473633e-05,
+            3.7789344787597656e-05,
+            -0.0005254149436950684
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 10,
+          "attribution_masked_nodes": [
+            17,
+            1,
+            12,
+            6,
+            8,
+            4,
+            53,
+            2,
+            61,
+            55
+          ],
+          "attribution_drop": 0.0004799962043762207,
+          "attribution_perturbed_p": 0.9915848970413208,
+          "degree_masked_nodes": [
+            62,
+            17,
+            1,
+            12,
+            6,
+            8,
+            4,
+            53,
+            2,
+            61
+          ],
+          "degree_drop": 0.0004496574401855469,
+          "degree_perturbed_p": 0.9916152358055115,
+          "random_mean_drop": -0.0001344919204711914,
+          "random_std_drop": 0.0002423485645599947,
+          "random_seed_drops": [
+            -4.2319297790527344e-05,
+            -0.0002707242965698242,
+            0.00013583898544311523,
+            4.214048385620117e-05,
+            -0.0005373954772949219
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        }
+      ],
+      "invariance_verified": true,
+      "max_logits_diff": 0.0,
+      "max_probs_diff": 0.0
+    },
+    {
+      "cascade_id": 9,
+      "num_nodes": 121,
+      "num_eligible_user_nodes": 120,
+      "actual_label": "REAL",
+      "actual_class": 0,
+      "predicted_label": "REAL",
+      "predicted_class": 0,
+      "is_correct": true,
+      "error_type": "true_negative",
+      "baseline_confidence": 0.9879394769668579,
+      "baseline_logits": [
+        2.151458978652954,
+        -2.254223585128784
+      ],
+      "baseline_probabilities": [
+        0.9879394769668579,
+        0.012060538865625858
+      ],
+      "modality_attributions": {
+        "bert_content": {
+          "delta_probability": -0.0046732425689697266,
+          "perturbed_probability": 0.9926127195358276,
+          "feature_slice": [
+            0,
+            768
+          ],
+          "description": "Textual semantic representation of news claim or user tweet history (dims 0..767)"
+        },
+        "user_profile": {
+          "delta_probability": 0.0061182379722595215,
+          "perturbed_probability": 0.9818212389945984,
+          "feature_slice": [
+            768,
+            778
+          ],
+          "description": "Twitter account metadata normalized by training-set statistics (dims 768..777)"
+        },
+        "temporal_dynamics": {
+          "delta_probability": 0.0007140040397644043,
+          "perturbed_probability": 0.9872254729270935,
+          "feature_slice": [
+            778,
+            782
+          ],
+          "description": "Snapshot structural-temporal metrics: depth, degree, elapsed time, active flag (dims 778..781)"
+        }
+      },
+      "root_attribution": {
+        "node_id": 0,
+        "delta_probability": -0.003323197364807129,
+        "perturbed_probability": 0.991262674331665,
+        "active_snapshots_count": 4,
+        "role": "Root News Item / Published Claim",
+        "note": "Node 0 directly supplies root_embeds (50% of classifier input) in STGNN."
+      },
+      "top_supporting_user_nodes": [
+        {
+          "node_id": 87,
+          "delta_p": 0.003479480743408203,
+          "snaps": 1
+        },
+        {
+          "node_id": 45,
+          "delta_p": 0.0006347298622131348,
+          "snaps": 3
+        },
+        {
+          "node_id": 16,
+          "delta_p": 0.0004914402961730957,
+          "snaps": 4
+        }
+      ],
+      "top_countervailing_user_nodes": [
+        {
+          "node_id": 110,
+          "delta_p": -4.118680953979492e-05,
+          "snaps": 2
+        },
+        {
+          "node_id": 88,
+          "delta_p": -1.9431114196777344e-05,
+          "snaps": 1
+        },
+        {
+          "node_id": 111,
+          "delta_p": -5.4836273193359375e-06,
+          "snaps": 2
+        }
+      ],
+      "evaluated_k_values": [
+        1,
+        2,
+        5,
+        10
+      ],
+      "k_comparisons": [
+        {
+          "k": 1,
+          "attribution_masked_nodes": [
+            87
+          ],
+          "attribution_drop": 0.003479480743408203,
+          "attribution_perturbed_p": 0.9844599962234497,
+          "degree_masked_nodes": [
+            88
+          ],
+          "degree_drop": -1.9431114196777344e-05,
+          "degree_perturbed_p": 0.9879589080810547,
+          "random_mean_drop": 0.00017794370651245118,
+          "random_std_drop": 0.00023388171343742157,
+          "random_seed_drops": [
+            0.0006347298622131348,
+            9.328126907348633e-05,
+            0.00014019012451171875,
+            2.4080276489257812e-05,
+            -2.562999725341797e-06
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 2,
+          "attribution_masked_nodes": [
+            87,
+            45
+          ],
+          "attribution_drop": 0.008374571800231934,
+          "attribution_perturbed_p": 0.979564905166626,
+          "degree_masked_nodes": [
+            88,
+            62
+          ],
+          "degree_drop": 4.500150680541992e-05,
+          "degree_perturbed_p": 0.9878944754600525,
+          "random_mean_drop": 0.000269162654876709,
+          "random_std_drop": 0.00029587593508566615,
+          "random_seed_drops": [
+            0.000844120979309082,
+            8.71419906616211e-05,
+            0.0002295970916748047,
+            2.1755695343017578e-05,
+            0.00016319751739501953
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 5,
+          "attribution_masked_nodes": [
+            87,
+            45,
+            16,
+            11,
+            56
+          ],
+          "attribution_drop": 0.07134926319122314,
+          "attribution_perturbed_p": 0.9165902137756348,
+          "degree_masked_nodes": [
+            88,
+            62,
+            69,
+            65,
+            67
+          ],
+          "degree_drop": 0.0001952052116394043,
+          "degree_perturbed_p": 0.9877442717552185,
+          "random_mean_drop": 0.0008439421653747559,
+          "random_std_drop": 0.0007081183528639236,
+          "random_seed_drops": [
+            0.0021347403526306152,
+            0.00103837251663208,
+            0.0002881288528442383,
+            0.00020265579223632812,
+            0.0005558133125305176
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        },
+        {
+          "k": 10,
+          "attribution_masked_nodes": [
+            87,
+            45,
+            16,
+            11,
+            56,
+            14,
+            3,
+            7,
+            20,
+            9
+          ],
+          "attribution_drop": 0.9056569188833237,
+          "attribution_perturbed_p": 0.08228255808353424,
+          "degree_masked_nodes": [
+            88,
+            62,
+            69,
+            65,
+            67,
+            70,
+            71,
+            73,
+            74,
+            72
+          ],
+          "degree_drop": 0.0003864765167236328,
+          "degree_perturbed_p": 0.9875530004501343,
+          "random_mean_drop": 0.00277327299118042,
+          "random_std_drop": 0.0014232672241682905,
+          "random_seed_drops": [
+            0.0039206743240356445,
+            0.002181529998779297,
+            0.004914760589599609,
+            0.0010793805122375488,
+            0.00177001953125
+          ],
+          "attr_beats_random": true,
+          "attr_beats_degree": true,
+          "attr_beats_both": true
+        }
+      ],
+      "invariance_verified": true,
+      "max_logits_diff": 0.0,
+      "max_probs_diff": 0.0
+    }
+  ],
+  "methodological_guardrails": {
+    "causality_disclaimer": "Attribution scores quantify model prediction sensitivity under feature occlusion. They do NOT establish real-world causal responsibility or patient-zero identity.",
+    "untrained_head_disclaimer": "The STGNN auxiliary source_head was never trained and was not used in any calculation.",
+    "sample_limitation": "Evaluated on a deterministic 10-cascade sample from the held-out test split. Serves as an exploratory empirical investigation rather than a definitive whole-benchmark claim."
+  }
+}

@@ -1,0 +1,168 @@
+{
+  "dataset": "politifact",
+  "model": "stgnn",
+  "checkpoint": "checkpoints\\politifact_temporal_corrected\\stgnn_politifact_best.pt",
+  "checkpoint_epoch": 17,
+  "temporal_mode": "timestamp",
+  "snapshot_configuration": "variable_length_prefix (model.num_snapshots=0)",
+  "total_test_cascades": 221,
+  "evaluated_test_cascades": 221,
+  "skipped_test_cascades": 0,
+  "skip_reasons": {},
+  "invariants_verified": {
+    "root_active_all_phases": true,
+    "nested_active_masks": true,
+    "inactive_node_features_zeroed": true,
+    "future_edges_excluded": true,
+    "exact_100_percent_baseline_match": true
+  },
+  "evaluation_duration_seconds": 7.74,
+  "stages": {
+    "25%": {
+      "stage": "25%",
+      "observation_fraction": 0.25,
+      "prefix_snapshots": 1,
+      "num_cascades_evaluated": 221,
+      "num_real": 108,
+      "num_fake": 113,
+      "metrics": {
+        "accuracy": 0.8416289592760181,
+        "precision_macro": 0.8473535755765721,
+        "recall_macro": 0.843084234677155,
+        "f1_macro": 0.8413040356168318,
+        "f1_binary": 0.8341232227488151,
+        "roc_auc": 0.86758439855785,
+        "tp": 88.0,
+        "fp": 10.0,
+        "tn": 98.0,
+        "fn": 25.0
+      }
+    },
+    "50%": {
+      "stage": "50%",
+      "observation_fraction": 0.5,
+      "prefix_snapshots": 2,
+      "num_cascades_evaluated": 221,
+      "num_real": 108,
+      "num_fake": 113,
+      "metrics": {
+        "accuracy": 0.8416289592760181,
+        "precision_macro": 0.8473535755765721,
+        "recall_macro": 0.843084234677155,
+        "f1_macro": 0.8413040356168318,
+        "f1_binary": 0.8341232227488151,
+        "roc_auc": 0.8611930514585382,
+        "tp": 88.0,
+        "fp": 10.0,
+        "tn": 98.0,
+        "fn": 25.0
+      }
+    },
+    "75%": {
+      "stage": "75%",
+      "observation_fraction": 0.75,
+      "prefix_snapshots": 3,
+      "num_cascades_evaluated": 221,
+      "num_real": 108,
+      "num_fake": 113,
+      "metrics": {
+        "accuracy": 0.8416289592760181,
+        "precision_macro": 0.8458264462809917,
+        "recall_macro": 0.8428793838085873,
+        "f1_macro": 0.8414211616130554,
+        "f1_binary": 0.8356807511737089,
+        "roc_auc": 0.862995739101934,
+        "tp": 89.0,
+        "fp": 11.0,
+        "tn": 97.0,
+        "fn": 24.0
+      }
+    },
+    "100%": {
+      "stage": "100%",
+      "observation_fraction": 1.0,
+      "prefix_snapshots": 4,
+      "num_cascades_evaluated": 221,
+      "num_real": 108,
+      "num_fake": 113,
+      "metrics": {
+        "accuracy": 0.8416289592760181,
+        "precision_macro": 0.8445378151260504,
+        "recall_macro": 0.8426745329400196,
+        "f1_macro": 0.8415121401495749,
+        "f1_binary": 0.8372093023255814,
+        "roc_auc": 0.8670108161258605,
+        "tp": 90.0,
+        "fp": 12.0,
+        "tn": 96.0,
+        "fn": 23.0
+      }
+    }
+  },
+  "summary_table": [
+    {
+      "stage": "25%",
+      "observation_fraction": 0.25,
+      "prefix_snapshots": 1,
+      "num_cascades_evaluated": 221,
+      "accuracy": 0.8416289592760181,
+      "f1_macro": 0.8413040356168318,
+      "f1_binary": 0.8341232227488151,
+      "precision_macro": 0.8473535755765721,
+      "recall_macro": 0.843084234677155,
+      "roc_auc": 0.86758439855785,
+      "tp": 88.0,
+      "fp": 10.0,
+      "tn": 98.0,
+      "fn": 25.0
+    },
+    {
+      "stage": "50%",
+      "observation_fraction": 0.5,
+      "prefix_snapshots": 2,
+      "num_cascades_evaluated": 221,
+      "accuracy": 0.8416289592760181,
+      "f1_macro": 0.8413040356168318,
+      "f1_binary": 0.8341232227488151,
+      "precision_macro": 0.8473535755765721,
+      "recall_macro": 0.843084234677155,
+      "roc_auc": 0.8611930514585382,
+      "tp": 88.0,
+      "fp": 10.0,
+      "tn": 98.0,
+      "fn": 25.0
+    },
+    {
+      "stage": "75%",
+      "observation_fraction": 0.75,
+      "prefix_snapshots": 3,
+      "num_cascades_evaluated": 221,
+      "accuracy": 0.8416289592760181,
+      "f1_macro": 0.8414211616130554,
+      "f1_binary": 0.8356807511737089,
+      "precision_macro": 0.8458264462809917,
+      "recall_macro": 0.8428793838085873,
+      "roc_auc": 0.862995739101934,
+      "tp": 89.0,
+      "fp": 11.0,
+      "tn": 97.0,
+      "fn": 24.0
+    },
+    {
+      "stage": "100%",
+      "observation_fraction": 1.0,
+      "prefix_snapshots": 4,
+      "num_cascades_evaluated": 221,
+      "accuracy": 0.8416289592760181,
+      "f1_macro": 0.8415121401495749,
+      "f1_binary": 0.8372093023255814,
+      "precision_macro": 0.8445378151260504,
+      "recall_macro": 0.8426745329400196,
+      "roc_auc": 0.8670108161258605,
+      "tp": 90.0,
+      "fp": 12.0,
+      "tn": 96.0,
+      "fn": 23.0
+    }
+  ]
+}

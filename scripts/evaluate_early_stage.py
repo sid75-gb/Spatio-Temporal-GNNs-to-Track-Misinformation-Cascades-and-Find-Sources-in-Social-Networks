@@ -261,12 +261,29 @@ def evaluate_dataset_early_stage(
     device_str: str = "cpu",
     output_dir: str = "./outputs",
     log_interval: int = 100,
-) -> Dict[str, Any]:
+    baseline_path: Optional[Path] = None,
+    output_filename: Optional[str] = None,
+    overwrite: bool = False,
+) -> Optional[Dict[str, Any]]:
     """
     Evaluate a dataset across all early-stage milestones using identical held-out test cascades.
     """
     dataset_name = dataset_name.lower()
     device = torch.device(device_str)
+
+    # Determine destination output path before performing expensive evaluation
+    out_dir_path = Path(output_dir)
+    out_filename = output_filename if output_filename else f"early_stage_{dataset_name}_stgnn.json"
+    out_path = out_dir_path / out_filename
+
+    if out_path.exists() and not overwrite:
+        print("\n" + "=" * 70)
+        print("  [ABORTED] Destination output file already exists:")
+        print(f"    {out_path.resolve()}")
+        print("  Strict safety constraint: Existing early-stage outputs cannot be overwritten.")
+        print("  Use --overwrite to explicitly permit replacing existing files.")
+        print("=" * 70 + "\n")
+        sys.exit(1)
 
     print("\n" + "=" * 70)
     print(f"  EARLY-STAGE EVALUATION: UPFD-{dataset_name.upper()}")
@@ -483,9 +500,11 @@ def evaluate_dataset_early_stage(
     print("=" * 80)
 
     # 7. Exact comparison against baseline benchmark at 100%
-    baseline_path = BASELINE_RESULT_PATHS.get(dataset_name)
+    if baseline_path is None:
+        baseline_path = BASELINE_RESULT_PATHS.get(dataset_name)
     baseline_match = False
-    if baseline_path and baseline_path.exists():
+    if baseline_path and Path(baseline_path).exists():
+        baseline_path = Path(baseline_path)
         print(f"\n--- Benchmark Verification Check at 100% Observation ---")
         print(f"Comparing against baseline result file: {baseline_path.name}")
         with open(baseline_path, "r", encoding="utf-8") as f:
@@ -512,11 +531,11 @@ def evaluate_dataset_early_stage(
             baseline_match = True
             print("  [VERIFIED] Exact numerical equivalence at 100% observation confirmed.")
         else:
-            print("  [WARNING] Slight discrepancy found between 100% evaluation and saved baseline.")
+            print("  [WARNING] Discrepancy found between 100% evaluation and baseline.")
 
     # 8. Save results JSON
     os.makedirs(output_dir, exist_ok=True)
-    out_filename = f"early_stage_{dataset_name}_stgnn.json"
+    out_filename = output_filename if output_filename else f"early_stage_{dataset_name}_stgnn.json"
     out_path = Path(output_dir) / out_filename
 
     summary_json = {
@@ -584,6 +603,53 @@ def parse_args():
         help="Dataset to evaluate: 'politifact', 'gossipcop', or 'all' (default: all)",
     )
     parser.add_argument(
+        "--checkpoint_path",
+        type=str,
+        default=None,
+        help="Override checkpoint path for single dataset evaluation.",
+    )
+    parser.add_argument(
+        "--checkpoint_politifact",
+        type=str,
+        default=None,
+        help="Override checkpoint path for PolitiFact.",
+    )
+    parser.add_argument(
+        "--checkpoint_gossipcop",
+        type=str,
+        default=None,
+        help="Override checkpoint path for GossipCop.",
+    )
+    parser.add_argument(
+        "--baseline_path",
+        type=str,
+        default=None,
+        help="Override baseline result path for 100% verification check.",
+    )
+    parser.add_argument(
+        "--baseline_politifact",
+        type=str,
+        default=None,
+        help="Override baseline result path for PolitiFact.",
+    )
+    parser.add_argument(
+        "--baseline_gossipcop",
+        type=str,
+        default=None,
+        help="Override baseline result path for GossipCop.",
+    )
+    parser.add_argument(
+        "--output_filename",
+        type=str,
+        default=None,
+        help="Custom output filename for single dataset (default: early_stage_{dataset}_stgnn.json).",
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Allow overwriting existing output JSON files.",
+    )
+    parser.add_argument(
         "--device",
         type=str,
         default="cpu",
@@ -618,16 +684,51 @@ def main():
     overall_start = time.time()
     results = {}
 
+    checkpoints = {
+        "politifact": Path(args.checkpoint_politifact or (args.checkpoint_path if args.dataset == "politifact" else None) or DEFAULT_CHECKPOINTS["politifact"]),
+        "gossipcop": Path(args.checkpoint_gossipcop or (args.checkpoint_path if args.dataset == "gossipcop" else None) or DEFAULT_CHECKPOINTS["gossipcop"]),
+    }
+
+    baselines = {
+        "politifact": Path(args.baseline_politifact or (args.baseline_path if args.dataset == "politifact" else None)) if (args.baseline_politifact or (args.baseline_path if args.dataset == "politifact" else None)) else BASELINE_RESULT_PATHS.get("politifact"),
+        "gossipcop": Path(args.baseline_gossipcop or (args.baseline_path if args.dataset == "gossipcop" else None)) if (args.baseline_gossipcop or (args.baseline_path if args.dataset == "gossipcop" else None)) else BASELINE_RESULT_PATHS.get("gossipcop"),
+    }
+
+    if not args.overwrite:
+        conflicts = []
+        for name in datasets:
+            out_fn = args.output_filename if len(datasets) == 1 else None
+            fn = out_fn if out_fn else f"early_stage_{name}_stgnn.json"
+            target_path = Path(args.output_dir) / fn
+            if target_path.exists():
+                conflicts.append(str(target_path.resolve()))
+        if conflicts:
+            print("\n" + "=" * 70)
+            print("  [ABORTED] Destination output file(s) already exist:")
+            for c in conflicts:
+                print(f"    - {c}")
+            print("  Strict safety constraint: Existing early-stage outputs cannot be overwritten.")
+            print("  Use --overwrite to explicitly permit replacing existing files.")
+            print("=" * 70 + "\n")
+            sys.exit(1)
+
     for name in datasets:
-        ckpt_path = DEFAULT_CHECKPOINTS[name]
-        results[name] = evaluate_dataset_early_stage(
+        ckpt_path = checkpoints[name]
+        b_path = baselines.get(name)
+        out_fn = args.output_filename if len(datasets) == 1 else None
+        res = evaluate_dataset_early_stage(
             dataset_name=name,
             checkpoint_path=ckpt_path,
             data_root=args.data_root,
             device_str=args.device,
             output_dir=args.output_dir,
             log_interval=args.log_interval if name == "politifact" else max(args.log_interval, 200),
+            baseline_path=b_path,
+            output_filename=out_fn,
+            overwrite=args.overwrite,
         )
+        if res is not None:
+            results[name] = res
 
     print("\n" + "=" * 80)
     print(f"  ALL EARLY-STAGE EVALUATIONS COMPLETED in {time.time() - overall_start:.2f}s")

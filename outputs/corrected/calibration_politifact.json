@@ -1,0 +1,414 @@
+{
+  "dataset": "politifact",
+  "model": "stgnn",
+  "observation_stage": "100% full observation",
+  "num_snapshots": 4,
+  "checkpoint_path": "checkpoints\\politifact_temporal_corrected\\stgnn_politifact_best.pt",
+  "checkpoint_epoch": 17,
+  "temporal_mode": "timestamp",
+  "class_mapping": {
+    "0": "REAL",
+    "1": "FAKE"
+  },
+  "calibration_protocol": {
+    "method": "Temperature Scaling (Platt scaling)",
+    "optimizer": "scipy.optimize.minimize_scalar (bounded Brent)",
+    "fitted_on": "validation split logits and labels strictly (zero test leakage)",
+    "temperature_bounds": [
+      0.05,
+      10.0
+    ],
+    "fitted_temperature": 1.9132045356816576
+  },
+  "sample_counts": {
+    "validation_total": 31,
+    "validation_real": 13,
+    "validation_fake": 18,
+    "test_total": 221,
+    "test_real": 108,
+    "test_fake": 113
+  },
+  "validation_metrics": {
+    "uncalibrated_nll": 0.5286003071857298,
+    "calibrated_nll": 0.4293255328744103,
+    "nll_reduction": 0.09927477431131954
+  },
+  "test_metrics_uncalibrated": {
+    "accuracy": 0.8416289592760181,
+    "precision_macro": 0.8445378151260504,
+    "recall_macro": 0.8426745329400196,
+    "f1_macro": 0.8415121401495749,
+    "f1_binary": 0.8372093023255814,
+    "roc_auc": 0.8670108161258605,
+    "confusion_matrix": {
+      "tp": 90.0,
+      "fp": 12.0,
+      "tn": 96.0,
+      "fn": 23.0
+    },
+    "brier_score_binary": 0.14039094864523743,
+    "brier_score_multiclass": 0.28078189729047487,
+    "negative_log_likelihood": 0.5344199920103292,
+    "ece_top_label": 0.12134434085489583,
+    "mce_top_label": 0.5214733187947191,
+    "ece_positive_class": 0.12134434085489591,
+    "mce_positive_class": 0.5297182243726308,
+    "reliability_diagram_positive_class": {
+      "strategy": "positive_class",
+      "num_bins": 10,
+      "total_samples": 221,
+      "bin_edges": [
+        0.0,
+        0.1,
+        0.2,
+        0.30000000000000004,
+        0.4,
+        0.5,
+        0.6000000000000001,
+        0.7000000000000001,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "bin_centers": [
+        0.05,
+        0.15000000000000002,
+        0.25,
+        0.35000000000000003,
+        0.45,
+        0.55,
+        0.6500000000000001,
+        0.75,
+        0.8500000000000001,
+        0.95
+      ],
+      "sample_counts": [
+        115,
+        1,
+        2,
+        0,
+        1,
+        1,
+        3,
+        0,
+        0,
+        98
+      ],
+      "bin_confidences": [
+        0.030311040399936356,
+        0.14125565286378042,
+        0.20629646165074866,
+        null,
+        0.47028177562736917,
+        0.5132284132168077,
+        0.639867128674703,
+        null,
+        null,
+        0.9739883774877252
+      ],
+      "bin_accuracies": [
+        0.1826086956521739,
+        0.0,
+        0.5,
+        null,
+        1.0,
+        0.0,
+        0.6666666666666666,
+        null,
+        null,
+        0.8979591836734694
+      ],
+      "bin_gaps": [
+        0.15229765525223757,
+        0.14125565286378042,
+        0.29370353834925134,
+        null,
+        0.5297182243726308,
+        0.5132284132168077,
+        0.026799537991963662,
+        null,
+        null,
+        0.07602919381425577
+      ],
+      "ece": 0.12134434085489591,
+      "mce": 0.5297182243726308
+    },
+    "reliability_diagram_top_label": {
+      "strategy": "top_label",
+      "num_bins": 10,
+      "total_samples": 221,
+      "bin_edges": [
+        0.0,
+        0.1,
+        0.2,
+        0.30000000000000004,
+        0.4,
+        0.5,
+        0.6000000000000001,
+        0.7000000000000001,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "bin_centers": [
+        0.05,
+        0.15000000000000002,
+        0.25,
+        0.35000000000000003,
+        0.45,
+        0.55,
+        0.6500000000000001,
+        0.75,
+        0.8500000000000001,
+        0.95
+      ],
+      "sample_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        3,
+        2,
+        1,
+        213
+      ],
+      "bin_confidences": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        0.5214733187947191,
+        0.639867128674703,
+        0.7937035383492513,
+        0.8587443471362196,
+        0.971667095529598
+      ],
+      "bin_accuracies": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        0.0,
+        0.6666666666666666,
+        0.5,
+        1.0,
+        0.8544600938967136
+      ],
+      "bin_gaps": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        0.5214733187947191,
+        0.026799537991963662,
+        0.29370353834925134,
+        0.1412556528637804,
+        0.11720700163288433
+      ],
+      "ece": 0.12134434085489583,
+      "mce": 0.5214733187947191
+    }
+  },
+  "test_metrics_calibrated": {
+    "accuracy": 0.8416289592760181,
+    "precision_macro": 0.8445378151260504,
+    "recall_macro": 0.8426745329400196,
+    "f1_macro": 0.8415121401495749,
+    "f1_binary": 0.8372093023255814,
+    "roc_auc": 0.8670108161258605,
+    "confusion_matrix": {
+      "tp": 90.0,
+      "fp": 12.0,
+      "tn": 96.0,
+      "fn": 23.0
+    },
+    "brier_score_binary": 0.12585626434491548,
+    "brier_score_multiclass": 0.25171252868983096,
+    "negative_log_likelihood": 0.4147450868569015,
+    "ece_top_label": 0.014799626131570449,
+    "mce_top_label": 0.16915357412394072,
+    "ece_positive_class": 0.03884041561244119,
+    "mce_positive_class": 0.5155465359434519,
+    "reliability_diagram_positive_class": {
+      "strategy": "positive_class",
+      "num_bins": 10,
+      "total_samples": 221,
+      "bin_edges": [
+        0.0,
+        0.1,
+        0.2,
+        0.30000000000000004,
+        0.4,
+        0.5,
+        0.6000000000000001,
+        0.7000000000000001,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "bin_centers": [
+        0.05,
+        0.15000000000000002,
+        0.25,
+        0.35000000000000003,
+        0.45,
+        0.55,
+        0.6500000000000001,
+        0.75,
+        0.8500000000000001,
+        0.95
+      ],
+      "sample_counts": [
+        0,
+        110,
+        6,
+        2,
+        1,
+        4,
+        0,
+        2,
+        96,
+        0
+      ],
+      "bin_confidences": [
+        null,
+        0.13410671658226597,
+        0.23436806313066036,
+        0.3308464258760594,
+        0.48445346405654816,
+        0.5578295328387908,
+        null,
+        0.7932112029067574,
+        0.8724694828807319,
+        null
+      ],
+      "bin_accuracies": [
+        null,
+        0.16363636363636364,
+        0.5,
+        0.5,
+        1.0,
+        0.5,
+        null,
+        1.0,
+        0.8958333333333334,
+        null
+      ],
+      "bin_gaps": [
+        null,
+        0.029529647054097663,
+        0.2656319368693396,
+        0.1691535741239406,
+        0.5155465359434519,
+        0.057829532838790776,
+        null,
+        0.2067887970932426,
+        0.023363850452601476,
+        null
+      ],
+      "ece": 0.03884041561244119,
+      "mce": 0.5155465359434519
+    },
+    "reliability_diagram_top_label": {
+      "strategy": "top_label",
+      "num_bins": 10,
+      "total_samples": 221,
+      "bin_edges": [
+        0.0,
+        0.1,
+        0.2,
+        0.30000000000000004,
+        0.4,
+        0.5,
+        0.6000000000000001,
+        0.7000000000000001,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "bin_centers": [
+        0.05,
+        0.15000000000000002,
+        0.25,
+        0.35000000000000003,
+        0.45,
+        0.55,
+        0.6500000000000001,
+        0.75,
+        0.8500000000000001,
+        0.95
+      ],
+      "sample_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        2,
+        8,
+        206,
+        0
+      ],
+      "bin_confidences": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        0.549372933459723,
+        0.6691535741239407,
+        0.7725267533786941,
+        0.8689579200606845,
+        null
+      ],
+      "bin_accuracies": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        0.4,
+        0.5,
+        0.625,
+        0.8640776699029126,
+        null
+      ],
+      "bin_gaps": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        0.14937293345972302,
+        0.16915357412394072,
+        0.14752675337869414,
+        0.004880250157771937,
+        null
+      ],
+      "ece": 0.014799626131570449,
+      "mce": 0.16915357412394072
+    }
+  },
+  "invariance_verification": {
+    "discrete_predictions_identical": true,
+    "accuracy_invariant": true,
+    "roc_auc_invariant": true
+  },
+  "metric_settings": {
+    "num_bins": 10,
+    "binning": "uniform_width_in_0_1",
+    "score_definitions": {
+      "brier_score_binary": "MSE on P(FAKE) in [0, 1]",
+      "brier_score_multiclass": "Sum of MSE across both classes in [0, 2]",
+      "negative_log_likelihood": "-mean(log(p_true)) with eps=1e-15",
+      "ece_positive_class": "Marginal calibration of P(FAKE) over [0, 1] vs observed fake rate",
+      "ece_top_label": "Confidence calibration of max_k P(k) over [0, 1] vs accuracy"
+    }
+  }
+}

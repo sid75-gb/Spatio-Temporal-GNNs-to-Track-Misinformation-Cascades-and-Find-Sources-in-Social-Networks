@@ -216,6 +216,8 @@ def evaluate_dataset_calibration(
     output_dir: str = "./outputs",
     num_bins: int = 10,
     log_interval: int = 100,
+    output_filename: Optional[str] = None,
+    baseline_path: Optional[Path] = None,
 ) -> Optional[Dict[str, Any]]:
     """
     Executes full probability calibration evaluation for a dataset.
@@ -230,7 +232,8 @@ def evaluate_dataset_calibration(
     # Check destination file existence constraint: do NOT overwrite
     out_dir_path = Path(output_dir)
     out_dir_path.mkdir(parents=True, exist_ok=True)
-    out_file_path = out_dir_path / f"calibration_{dataset_name}.json"
+    out_file_name = output_filename if output_filename else f"calibration_{dataset_name}.json"
+    out_file_path = out_dir_path / out_file_name
     if out_file_path.exists():
         print(
             f"\n[ABORTED] Destination output file already exists:\n"
@@ -332,10 +335,10 @@ def evaluate_dataset_calibration(
     )
 
     # Reproducibility verification check against saved benchmark
-    baseline_path = BASELINE_RESULT_PATHS.get(dataset_name)
-    if baseline_path and baseline_path.exists():
+    b_path = Path(baseline_path) if baseline_path is not None else BASELINE_RESULT_PATHS.get(dataset_name)
+    if b_path and b_path.exists():
         print(f"\n--- Baseline Reproducibility Verification ---")
-        with open(baseline_path, "r", encoding="utf-8") as f:
+        with open(b_path, "r", encoding="utf-8") as f:
             base_data = json.load(f)
         base_metrics = base_data.get("metrics", {})
 
@@ -365,7 +368,7 @@ def evaluate_dataset_calibration(
         if diff_acc > 1e-4 or diff_auc > 1e-4 or not cm_match:
             print(
                 f"\n[REPRODUCIBILITY FAILURE] Obtained test predictions do not match baseline results:\n"
-                f"  Baseline file: {baseline_path}\n"
+                f"  Baseline file: {b_path}\n"
                 f"  Stopping evaluation for {dataset_name} without writing output file."
             )
             return None
@@ -540,6 +543,48 @@ def parse_args():
         help="Dataset to evaluate: 'politifact', 'gossipcop', or 'all' (default: all)",
     )
     parser.add_argument(
+        "--checkpoint_path",
+        type=str,
+        default=None,
+        help="Override checkpoint path for single dataset calibration evaluation.",
+    )
+    parser.add_argument(
+        "--checkpoint_politifact",
+        type=str,
+        default=None,
+        help="Override checkpoint path for PolitiFact.",
+    )
+    parser.add_argument(
+        "--checkpoint_gossipcop",
+        type=str,
+        default=None,
+        help="Override checkpoint path for GossipCop.",
+    )
+    parser.add_argument(
+        "--baseline_path",
+        type=str,
+        default=None,
+        help="Override baseline result path for single dataset verification.",
+    )
+    parser.add_argument(
+        "--baseline_politifact",
+        type=str,
+        default=None,
+        help="Override baseline result path for PolitiFact verification.",
+    )
+    parser.add_argument(
+        "--baseline_gossipcop",
+        type=str,
+        default=None,
+        help="Override baseline result path for GossipCop verification.",
+    )
+    parser.add_argument(
+        "--output_filename",
+        type=str,
+        default=None,
+        help="Custom output filename for single dataset.",
+    )
+    parser.add_argument(
         "--data_root",
         type=str,
         default="./data/UPFD",
@@ -579,8 +624,20 @@ def main():
     overall_start = time.time()
     all_results = {}
 
+    checkpoints = {
+        "politifact": Path(args.checkpoint_politifact or (args.checkpoint_path if args.dataset == "politifact" else None) or DEFAULT_CHECKPOINTS["politifact"]),
+        "gossipcop": Path(args.checkpoint_gossipcop or (args.checkpoint_path if args.dataset == "gossipcop" else None) or DEFAULT_CHECKPOINTS["gossipcop"]),
+    }
+
+    baselines = {
+        "politifact": Path(args.baseline_politifact or (args.baseline_path if args.dataset == "politifact" else None)) if (args.baseline_politifact or (args.baseline_path if args.dataset == "politifact" else None)) else BASELINE_RESULT_PATHS.get("politifact"),
+        "gossipcop": Path(args.baseline_gossipcop or (args.baseline_path if args.dataset == "gossipcop" else None)) if (args.baseline_gossipcop or (args.baseline_path if args.dataset == "gossipcop" else None)) else BASELINE_RESULT_PATHS.get("gossipcop"),
+    }
+
     for name in datasets:
-        ckpt_path = DEFAULT_CHECKPOINTS[name]
+        ckpt_path = checkpoints[name]
+        b_path = baselines.get(name)
+        out_fn = args.output_filename if len(datasets) == 1 else None
         res = evaluate_dataset_calibration(
             dataset_name=name,
             checkpoint_path=ckpt_path,
@@ -589,6 +646,8 @@ def main():
             output_dir=args.output_dir,
             num_bins=args.num_bins,
             log_interval=args.log_interval if name == "politifact" else max(args.log_interval, 200),
+            output_filename=out_fn,
+            baseline_path=b_path,
         )
         if res is not None:
             all_results[name] = res

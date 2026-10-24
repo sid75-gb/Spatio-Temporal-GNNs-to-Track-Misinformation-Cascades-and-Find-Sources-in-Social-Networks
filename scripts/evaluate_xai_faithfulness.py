@@ -499,6 +499,7 @@ def evaluate_dataset_faithfulness(
     overwrite: bool = False,
     random_seeds: Sequence[int] = DEFAULT_SEEDS,
     target_k_values: Sequence[int] = DEFAULT_TARGET_K,
+    output_filename: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Execute faithfulness evaluation on a deterministic sample of test cascades.
@@ -506,7 +507,8 @@ def evaluate_dataset_faithfulness(
     dataset_name = dataset_name.lower()
     device = torch.device(device_str)
 
-    output_path = Path(output_dir) / f"xai_faithfulness_{dataset_name}.json"
+    out_name = output_filename if output_filename else f"xai_faithfulness_{dataset_name}.json"
+    output_path = Path(output_dir) / out_name
     if output_path.exists() and not overwrite:
         raise FileExistsError(
             f"Output file already exists: {output_path}. "
@@ -727,6 +729,12 @@ def parse_args() -> argparse.Namespace:
         help="Directory to save JSON results (default: ./outputs).",
     )
     parser.add_argument(
+        "--output_filename",
+        type=str,
+        default=None,
+        help="Custom output filename for single dataset.",
+    )
+    parser.add_argument(
         "--overwrite",
         action="store_true",
         help="Allow overwriting existing output JSON files.",
@@ -766,6 +774,7 @@ def main() -> None:
     }
 
     for ds in datasets_to_run:
+        out_fn = args.output_filename if len(datasets_to_run) == 1 else None
         evaluate_dataset_faithfulness(
             dataset_name=ds,
             checkpoint_path=checkpoints[ds],
@@ -776,6 +785,7 @@ def main() -> None:
             overwrite=args.overwrite,
             random_seeds=seeds,
             target_k_values=k_vals,
+            output_filename=out_fn,
         )
 
 
